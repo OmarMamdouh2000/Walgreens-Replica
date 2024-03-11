@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS products (
   pricePerUnit decimal,
   ingredients text,
   warnings text,
-  frequentlyBoughtWith text
+  frequentlyBoughtWith text,
+  refundable boolean
 );
 
 CREATE TABLE IF NOT EXISTS categories (
