@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IPaymentMethodsRepo extends JpaRepository<PaymentMethods,Integer> {
 
-    @Procedure
+    
 }
