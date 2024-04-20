@@ -1,13 +1,14 @@
 package com.walgreens.paymentmicroserivce.Models;
 import com.walgreens.paymentmicroserivce.Models.Enums.card_type;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
 public class PaymentMethods {
     @Id
+    @SequenceGenerator(name = "payment_method_id_sequence", sequenceName = "payment_method_id_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_method_id_sequence")
     private String payment_method_id ;
     private String user_id;
     private card_type card_type;

@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentService {
-    private final CommandMapper commandMapper;
+//    private final CommandMapper commandMapper;
 
-    public PaymentService(CommandMapper commandMapper) {
-        this.commandMapper = commandMapper;
-    }
+//    public PaymentService(CommandMapper commandMapper) {
+//        this.commandMapper = commandMapper;
+//    }
 
-    public void invokeCommand(Request request) {
-        Command command = commandMapper.getCommand(request.getType());
-        command.execute();
-    }
+//    public void invokeCommand(Request request) {
+//        Command command = commandMapper.getCommand(request.getType());
+//        command.execute();
+//    }
 }

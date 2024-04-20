@@ -1,12 +1,17 @@
 package com.walgreens.paymentmicroserivce.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 public class Accounts {
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+
     private String account_id;
+
     private String user_id;
     private double balance;
     private int loyalty_points;
