@@ -1,4 +1,4 @@
-package com.walgreens.paymentmicroserivce.Repo;
+package com.walgreens.paymentmicroserivce.Repository;
 
 import com.walgreens.paymentmicroserivce.Models.PaymentMethods;
 import org.springframework.data.jpa.repository.JpaRepository;
