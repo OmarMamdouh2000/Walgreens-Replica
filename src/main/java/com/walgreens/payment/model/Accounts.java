@@ -1,11 +1,12 @@
-package com.walgreens.paymentmicroserivce.Models;
+package com.walgreens.payment.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -13,9 +14,8 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 public class Accounts {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
-    private String account_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID account_id;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_user_id")

@@ -1,4 +1,4 @@
-package com.walgreens.paymentmicroserivce.Models.Keys;
+package com.walgreens.payment.model.Keys;
 
 import java.io.Serializable;
 

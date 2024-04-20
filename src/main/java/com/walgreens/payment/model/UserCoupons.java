@@ -1,6 +1,6 @@
-package com.walgreens.paymentmicroserivce.Models;
+package com.walgreens.payment.model;
 
-import com.walgreens.paymentmicroserivce.Models.Keys.UserCouponKey;
+import com.walgreens.payment.model.Keys.UserCouponKey;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;

@@ -1,6 +1,5 @@
-package com.walgreens.paymentmicroserivce.Services;
+package com.walgreens.payment.service;
 
-import com.walgreens.paymentmicroserivce.PaymentCommands.Command;
 import org.springframework.stereotype.Component;
 
 @Component

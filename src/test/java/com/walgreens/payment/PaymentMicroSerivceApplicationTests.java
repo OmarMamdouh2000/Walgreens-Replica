@@ -1,4 +1,4 @@
-package com.walgreens.paymentmicroserivce;
+package com.walgreens.payment;
 
 
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.walgreens.paymentmicroserivce.MessageStructure;
+package idk;
 
 public class MessageStructure {
     private String messageType;

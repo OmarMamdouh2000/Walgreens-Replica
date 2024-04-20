@@ -1,6 +1,6 @@
-package com.walgreens.paymentmicroserivce.Services;
+package idk;
 
-import com.walgreens.paymentmicroserivce.PaymentCommands.Command;
+import com.walgreens.payment.service.command.Command;
 
 public class PaymentCommandMapper {
     public Command getCommand(String messageType) {

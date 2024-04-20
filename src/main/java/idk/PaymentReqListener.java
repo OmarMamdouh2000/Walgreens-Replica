@@ -1,5 +1,5 @@
-package com.walgreens.paymentmicroserivce.MQListener;
-import com.walgreens.paymentmicroserivce.Services.PaymentService;
+package idk;
+import com.walgreens.payment.service.PaymentService;
 //import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

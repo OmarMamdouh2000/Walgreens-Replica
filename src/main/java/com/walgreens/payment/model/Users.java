@@ -1,4 +1,4 @@
-package com.walgreens.paymentmicroserivce.Models;
+package com.walgreens.payment.model;
 
 
 import jakarta.persistence.*;
@@ -6,9 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,9 +17,8 @@ public class Users {
 
     @Id
     @Column(name = "user_id")
-    @GenericGenerator(name = "userID_uuid", strategy = "org.hibernate.id.UUIDGenerator")
-    @GeneratedValue(generator = "userID_uuid")
-    private String userID;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID user_id;
 
     private String firstName;
 

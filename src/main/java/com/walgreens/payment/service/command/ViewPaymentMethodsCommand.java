@@ -1,6 +1,4 @@
-package com.walgreens.paymentmicroserivce.PaymentCommands.ConcreteCommands;
-
-import com.walgreens.paymentmicroserivce.PaymentCommands.Command;
+package com.walgreens.payment.service.command;
 
 public class ViewPaymentMethodsCommand implements Command {
     private String userId;
