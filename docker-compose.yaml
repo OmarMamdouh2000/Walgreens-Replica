@@ -1,0 +1,23 @@
+services:
+  postgres_database:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=user_management
+    volumes:
+      - "walgreens_user_managmenet_postgres:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+    - PGADMIN_DEFAULT_EMAIL=root@root.com
+    - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+    - "8080:80"
+    volumes:
+    - walgreens_user_managmenet_pgadmin:/var/lib/pgadmin
+volumes:
+  walgreens_user_managmenet_postgres:
+  walgreens_user_managmenet_pgadmin:
