@@ -1,10 +1,15 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.command;
+import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Builder
-public class LoginCommand extends Command {
+public class LoginUserCommand extends Command {
     private String email;
     private String password;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public void execute() {
@@ -12,7 +17,7 @@ public class LoginCommand extends Command {
 
         //call stored procedure from postgres to check if user exists and password is correct
 
-
+        userRepository.loginUser(email, password);
 
         //add logic to add user session data to redis upon successful login
 

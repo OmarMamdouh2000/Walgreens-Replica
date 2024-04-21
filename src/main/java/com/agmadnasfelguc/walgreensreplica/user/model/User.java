@@ -10,6 +10,13 @@ import lombok.Data;
 @Entity
 @Data
 @Builder
+@NamedStoredProcedureQuery(name = "Login", procedureName = "Login",
+        parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "email", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "password", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.OUT, name = "status", type = Status.class),
+                @StoredProcedureParameter(mode = ParameterMode.OUT, name = "role", type = Role.class)
+        })
 public class User {
     @Id
     private String id;
