@@ -1,5 +1,7 @@
 package com.walgreens.payment.service.command;
 
+import com.walgreens.payment.service.AccountService;
+
 public class ViewPaymentMethodsCommand implements Command {
     private String userId;
 

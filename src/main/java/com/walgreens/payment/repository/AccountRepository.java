@@ -14,7 +14,9 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 //    void create_account(UUID user_id);
 
     @Procedure(name = "create_account")
-    void createAccount(UUID user_id);
+    void create_account(UUID user_id);
+
+
 
 
 

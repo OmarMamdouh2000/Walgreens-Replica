@@ -13,6 +13,6 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public void createAccount(UUID user_id){
-        accountRepository.createAccount(user_id);
+        accountRepository.create_account(user_id);
     }
 }
