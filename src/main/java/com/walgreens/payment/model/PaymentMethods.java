@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,10 +25,17 @@ public class PaymentMethods {
 //    private Users user;
 
 //    private String user_id;
+    @Enumerated(EnumType.STRING)
+//    @Column(name = "card_type")
     private card_type card_type;
+
+    @Column(columnDefinition = "TEXT")
     private String card_number;
+
+    @Column(columnDefinition = "TEXT")
     private String card_holder_name;
-    private Date expiry_date;
+    private LocalDate expiry_date;
+    @Column(columnDefinition = "TEXT")
     private String cvv;
     private Boolean is_default;
 

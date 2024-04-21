@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -12,14 +11,23 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Accounts {
+@Table(
+        name = "accounts",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "user_unique_constraint",
+                        columnNames = "fk_user_id"
+                )
+        }
+)
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID account_id;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_user_id")
-    private Users user;
+    private User user;
 
     private double balance;
     private int loyalty_points;
