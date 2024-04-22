@@ -16,23 +16,7 @@ import java.util.UUID;
 
 @Table("cart")
 public class CartTable {
-/*
 
-INSERT INTO cart (id, user_id, items, savedforlateritems, total_amount, appliedpromocodeid, ordertype)
-VALUES (
-    uuid(),
-    72678a7f-3922-4882-8a18-8dd0181213c2,
-    [
-        {item_id: uuid(), item_count: 2, purchased_price: 19.99, deliveryType: 'Standard', comment: 'None'},
-        {item_id: uuid(), item_count: 1, purchased_price: 29.99, deliveryType: 'Express', comment: 'Gift'}
-    ],
-    [],
-    89.97,
-    uuid(),
-    'online'
-);
-
-*/
     @PrimaryKey
     private UUID id;
 
