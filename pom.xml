@@ -37,14 +37,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-cassandra</artifactId>
     </dependency>
-    
-
-  
-
-  
-
-  
-  <dependency>
+    <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-api</artifactId>
     <version>0.11.2</version>

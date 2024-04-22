@@ -6,10 +6,10 @@ import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.CqlSessionFactoryBean;
 @Configuration
-public class CartCassandraConf extends AbstractCassandraConfiguration {
+public class OrderCassandraConf extends AbstractCassandraConfiguration {
 	@Override
     protected String getKeyspaceName() {
-        return "cart";
+        return "orders";
     }
 
 	 @Bean
@@ -24,7 +24,7 @@ public class CartCassandraConf extends AbstractCassandraConfiguration {
 
 	 	@Bean(name = "cassandraSession")
 	    public CqlSessionBuilderCustomizer cqlSessionBuilderConfigurer() {
-	        return cqlSessionBuilder -> cqlSessionBuilder.withKeyspace("cart");
+	        return cqlSessionBuilder -> cqlSessionBuilder.withKeyspace("orders");
 	    }
 
 }
