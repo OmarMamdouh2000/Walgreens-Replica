@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -45,8 +46,27 @@ public class OrderController {
 	}
 
 	@GetMapping("/filterOrders")
-	public List<OrderTable> filterOrders(@RequestBody Map<String,Object> data){
+	public List<OrderTable> filterOrders(@RequestBody Map<String,Object> data) {
 		String dateString = (String) data.get("date");
-		return OrderService.filterOrders((String) data.get("token"), (String) data.get("date"),(String) data.get("status"));
+		return OrderService.filterOrders((String) data.get("token"), (String) data.get("date"), (String) data.get("status"));
 	}
+	@GetMapping("/getOrders")
+	public List<OrderTable> getOrders(@RequestBody Map<String,Object> data) {
+		
+		return OrderService.getOrders((String) data.get("token"));
+		
+		
+	}
+	@GetMapping("/getActiveOrders")
+	public List<OrderTable> getActiveOrders(@RequestBody Map<String,Object> data) {
+		
+		return OrderService.getActiveOrders((String) data.get("token"));
+		
+		
+	}
+//	@GetMapping("/getOrderByDate")
+//	public OrderTable getOrderByDate(@RequestParam String date) {
+//		System.out.println(date+"-----------------");
+//		return service.getOrderByDate(date);
+//	}
 }

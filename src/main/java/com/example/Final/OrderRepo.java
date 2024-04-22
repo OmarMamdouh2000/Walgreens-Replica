@@ -21,5 +21,11 @@ public interface OrderRepo extends CassandraRepository<OrderTable, UUID> {
 
     @Query("Select * from orders where user_id = :userId and order_status = :orderstatus ALLOW FILTERING")
     List<OrderTable> filterByStatus(@Param("userId")UUID userId,@Param("orderstatus") String orderStatus);
+	@Query("select * from orders where user_id=:userId ALLOW FILTERING" )
+	public List<OrderTable> getOrders(UUID userId);
+	@Query("select * from orders where date_issued=:date ALLOW FILTERING")
+	public OrderTable getOrderByDate(@Param("date") LocalDate  date);
+	@Query("select * from orders where order_status='active' and user_id=:userId  ALLOW FILTERING")
+	public List<OrderTable> getActiveOrders(UUID userId);
 
 }

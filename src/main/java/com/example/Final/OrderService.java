@@ -14,23 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-class JwtDecoderService {
-
-    public Claims decodeJwtToken(String token, String secretKey) {
-        try {
-            Jws<Claims> jws = Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
-                    .build()
-                    .parseClaimsJws(token);
-            return jws.getBody();
-        } catch (Exception e) {
-            // Handle exception (e.g., invalid token)
-            e.printStackTrace();
-            return null;
-        }
-    }
-}
+//@Service
+//class JwtDecoderService {
+//
+//    public Claims decodeJwtToken(String token, String secretKey) {
+//        try {
+//            Jws<Claims> jws = Jwts.parserBuilder()
+//                    .setSigningKey(secretKey.getBytes())
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return jws.getBody();
+//        } catch (Exception e) {
+//            // Handle exception (e.g., invalid token)
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//}
 @Service
 public class OrderService {
     @Autowired
@@ -38,6 +38,34 @@ public class OrderService {
 
     @Autowired
     private OrderRepo orderRepo;
+
+    public List<OrderTable> getOrders(String token){
+        String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa";
+        Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
+        if (claims != null) {
+            String userId=(String) claims.get("userId");
+
+            return orderRepo.getOrders(UUID.fromString(userId));
+
+
+        }else {
+            return new ArrayList<OrderTable>();
+        }
+    }
+
+    public List<OrderTable> getActiveOrders(String token){
+        String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa";
+        Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
+        if (claims != null) {
+            String userId=(String) claims.get("userId");
+
+            return orderRepo.getActiveOrders(UUID.fromString(userId));
+
+
+        }else {
+            return new ArrayList<OrderTable>();
+        }
+    }
     public List<OrderTable> getUserOrders(String token){
         String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa";
         Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
