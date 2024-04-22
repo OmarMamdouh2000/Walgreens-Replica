@@ -125,7 +125,7 @@ Notes:
 - Updates the email/password if provided.
 */
 
-CREATE OR REPLACE PROCEDURE ChangeEmailOrPassword(
+/*CREATE OR REPLACE PROCEDURE ChangeEmailOrPassword(
     p_user_id VARCHAR,
     p_new_email VARCHAR,
     p_new_password VARCHAR
@@ -154,6 +154,61 @@ BEGIN
             WHERE id = p_user_id;
             RAISE NOTICE 'Password updated successfully.';
         END IF;
+    END IF;
+END;
+$$;*/
+
+CREATE OR REPLACE PROCEDURE ChangeEmail(
+    p_user_id VARCHAR,
+    p_new_email VARCHAR
+)
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_user_role "Role";
+BEGIN
+    SELECT role INTO v_user_role
+    FROM "User"
+    WHERE id = p_user_id;
+    IF v_user_role = 'Administrator' THEN
+        RAISE NOTICE 'Administrator email/password cannot be changed.';
+    ELSE
+        IF p_new_email IS NOT NULL THEN
+            UPDATE "User"
+            SET email = p_new_email
+            WHERE id = p_user_id;
+            RAISE NOTICE 'Email updated successfully.';
+        END IF;
+
+    END IF;
+END;
+$$;
+
+
+
+CREATE OR REPLACE PROCEDURE ChangePassword(
+    p_user_id VARCHAR,
+    p_new_password VARCHAR
+
+)
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_user_role "Role";
+BEGIN
+    SELECT role INTO v_user_role
+    FROM "User"
+    WHERE id = p_user_id;
+    IF v_user_role = 'Administrator' THEN
+        RAISE NOTICE 'Administrator email/password cannot be changed.';
+    ELSE
+        IF p_new_password IS NOT NULL THEN
+            UPDATE "User"
+            SET password = p_new_password
+            WHERE id = p_user_id;
+            RAISE NOTICE 'Password updated successfully.';
+        END IF;
+
     END IF;
 END;
 $$;

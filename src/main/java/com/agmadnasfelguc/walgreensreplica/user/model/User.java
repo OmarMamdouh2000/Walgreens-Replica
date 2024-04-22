@@ -17,6 +17,7 @@ import lombok.Data;
                 @StoredProcedureParameter(mode = ParameterMode.OUT, name = "status", type = Status.class),
                 @StoredProcedureParameter(mode = ParameterMode.OUT, name = "role", type = Role.class)
         })
+
 public class User {
     @Id
     private String id;
