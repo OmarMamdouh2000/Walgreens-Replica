@@ -48,13 +48,13 @@ class UserRepositoryTest {
     void saveAllMethod() {
         // Create User
         User user = new User();
-        user.setFirstName("Karim");
-        user.setLastName("Abouzeid");
+        user.setFirstName("Yasmine");
+        user.setLastName("Mohamed");
 
         // Create User2
         User user2 = new User();
-        user2.setFirstName("Maram");
-        user2.setLastName("Fetteha");
+        user2.setFirstName("Yahya");
+        user2.setLastName("Ramzy");
 
         userRepository.saveAll(List.of(user, user2));
 
