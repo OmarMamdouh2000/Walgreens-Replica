@@ -22,8 +22,11 @@ public class PaymentMicroSerivceApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        accountService.createAccount(UUID.fromString("d2d09b2a-1b5a-4d4d-b7c1-30d3ce0aa055"));
+      //  accountService.createAccount(UUID.fromString("6a9fb292-b400-48f6-9b4f-8208ca168bce"));
 
-//        CreateAccountCommand command = CreateAccountCommand.builder().userId(UUID.fromString("123")).accountRepository().build();
+     //   accountService.getBalance(UUID.fromString("f737eeb9-9015-4470-951c-f95f24083a77"));
+        UUID accountId = UUID.fromString("f737eeb9-9015-4470-951c-f95f24083a77");
+        accountService.printBalance(accountId);
+        //  CreateAccountCommand command = CreateAccountCommand.builder().userId(UUID.fromString("123")).accountRepository().build();
     }
 }

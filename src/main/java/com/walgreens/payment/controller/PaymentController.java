@@ -21,7 +21,7 @@ public class PaymentController implements CommandLineRunner {
 
     public void createAccount(UUID userID){
 
-//        Command createAccount = ((CreateAccountCommand)createAccountCommand).builder().userId(userID).build();
+        Command createAccount = ((CreateAccountCommand)createAccountCommand).builder().userId(userID).build();
         ((CreateAccountCommand)createAccountCommand).setUserId(userID);
         createAccountCommand.execute();
     }
@@ -29,6 +29,6 @@ public class PaymentController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        this.createAccount(UUID.fromString("0e9e047a-da18-474b-a416-8022a82b605e"));
+     //   this.createAccount(UUID.fromString("0e9e047a-da18-474b-a416-8022a82b605e"));
     }
 }

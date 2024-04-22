@@ -1,7 +1,10 @@
 package com.walgreens.payment.service.command;
 
 import com.walgreens.payment.repository.AccountRepository;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,20 +15,20 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateAccountCommand implements Command{
+public class GetBalanceCommand implements Command{
 
-    private  UUID userId;
+    private  UUID accountId;
 
     @Autowired
     private AccountRepository accountRepository;
 
 
 
-    @Override
+  //  @Override
     public void execute() {
-        UUID accountId = UUID.randomUUID();
-      //  accountRepository.create_account(accountId, this.getUserId());
-
+//        accountRepository.get_balance(accountId);
+//
+//
     }
 
 }
