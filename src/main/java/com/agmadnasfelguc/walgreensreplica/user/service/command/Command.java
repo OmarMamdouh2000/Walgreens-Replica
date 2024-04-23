@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public abstract class Command {
     private Formulator formulator;
-    abstract void execute();
+    public abstract void execute();
 }

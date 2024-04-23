@@ -2,18 +2,18 @@ package com.agmadnasfelguc.walgreensreplica.user.model;
 
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Gender;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.util.Date;
-
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "Customer")
 @Entity
-@Data
 @Getter
 @Setter
-@Builder
 public class Customer extends User {
+    @Id
+    private String id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
@@ -26,4 +26,11 @@ public class Customer extends User {
     private Gender gender;
     @Column(name = "phone_id")
     private String phoneId;
+    public Customer(String email, String password, String firstName, String lastName, String address, Date dateOfBirth){
+        super(email, password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.dateOfBirth = dateOfBirth;
+    }
 }

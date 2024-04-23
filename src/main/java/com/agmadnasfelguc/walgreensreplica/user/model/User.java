@@ -1,22 +1,16 @@
 package com.agmadnasfelguc.walgreensreplica.user.model;
 
+import com.agmadnasfelguc.walgreensreplica.user.model.dto.LoginResultDTO;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Role;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Status;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+@Inheritance
 @Table(name = "User")
 @Entity
 @Data
-@Builder
-@NamedStoredProcedureQuery(name = "Login", procedureName = "Login",
-        parameters = {
-                @StoredProcedureParameter(mode = ParameterMode.IN, name = "email", type = String.class),
-                @StoredProcedureParameter(mode = ParameterMode.IN, name = "password", type = String.class),
-                @StoredProcedureParameter(mode = ParameterMode.OUT, name = "status", type = Status.class),
-                @StoredProcedureParameter(mode = ParameterMode.OUT, name = "role", type = Role.class)
-        })
+@NoArgsConstructor
 public class User {
     @Id
     private String id;
@@ -30,4 +24,9 @@ public class User {
     private Status status;
     @Column(name = "2FA_Enabled")
     private boolean twoFactorEnabled;
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

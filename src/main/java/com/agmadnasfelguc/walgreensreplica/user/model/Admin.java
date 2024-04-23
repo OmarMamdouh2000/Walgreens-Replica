@@ -5,11 +5,13 @@ import com.agmadnasfelguc.walgreensreplica.user.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Table(name = "Administrator")
 @Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NamedStoredProcedureQuery(name = "LoginAdmin", procedureName = "Login_Admin",
         parameters = {
                 @StoredProcedureParameter(mode = ParameterMode.IN, name = "email", type = String.class),
@@ -23,4 +25,9 @@ public class Admin {
     private String username;
     @Column
     private String password;
+
+    public Admin(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }
