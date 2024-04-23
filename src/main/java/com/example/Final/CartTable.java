@@ -43,7 +43,7 @@ public class CartTable {
 
     }
 
-    public CartTable(UUID id,UUID appliedPromoCodeId, List<CartItem> items, String orderType,
+    public CartTable(UUID id,String appliedPromoCodeId, List<CartItem> items, String orderType,
                      List<CartItem> savedForLaterItems, double totalAmount, UUID userId)
     {
         this.id = id;
@@ -51,7 +51,7 @@ public class CartTable {
         this.items = items;
         this.savedforlateritems = savedForLaterItems;
         this.total_amount = totalAmount;
-        this.appliedpromocodeid = appliedPromoCodeId;
+        this.appliedPromoCodeId = appliedPromoCodeId;
         this.ordertype = orderType;
     }
 
@@ -120,7 +120,7 @@ public class CartTable {
                 ", items=" + items +
                 ", savedForLaterItems=" + savedforlateritems +
                 ", totalAmount=" + total_amount +
-                ", appliedPromoCodeId=" + appliedpromocodeid +
+                ", appliedPromoCodeId=" + appliedPromoCodeId +
                 ", orderType='" + ordertype + '\'' +
                 '}';
     }
