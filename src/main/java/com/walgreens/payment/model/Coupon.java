@@ -1,9 +1,6 @@
 package com.walgreens.payment.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,10 +14,34 @@ import java.util.UUID;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID coupon_id;
+    @Column(
+            name = "coupon_id",
+            updatable = false
+    )
+    private UUID couponId;
+
+    @Column(
+            name = "code",
+            updatable = false
+    )
     private String code;
-    private int discount_value;
-    private double maximum_discount;
-    private double minimum_spend;
+
+    @Column(
+            name = "discount_value",
+            updatable = false
+    )
+    private int discountValue;
+
+    @Column(
+            name = "maximum_discount",
+            updatable = false
+    )
+    private double maximumDiscount;
+
+    @Column(
+            name = "minimum_spend",
+            updatable = false
+    )
+    private double minimumSpend;
 
 }
