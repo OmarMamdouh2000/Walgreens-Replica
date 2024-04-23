@@ -23,6 +23,28 @@ public class CartItem {
     @CassandraType(type = CassandraType.Name.TEXT)
     private String comment;
 
+    public CartItem() {
+    }
+
+    public CartItem(UUID itemId, int itemCount, double purchasedPrice, String deliveryType, String comment) {
+        this.item_id = itemId;
+        this.item_count = itemCount;
+        this.purchased_price = purchasedPrice;
+        this.deliveryType = deliveryType;
+        this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "CartItem{" +
+                "itemId=" + item_id +
+                ", itemCount=" + item_count +
+                ", purchasedPrice=" + purchased_price +
+                ", deliveryType='" + deliveryType + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
+
     // Getters and setters
 
     public UUID getItemId() {

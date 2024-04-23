@@ -21,6 +21,14 @@ public class UserUsedPromo {
         this.promoCodeId = promoCodeId;
     }
 
+    @Override
+    public String toString() {
+        return "UserUsedPromoKey{" +
+                "userId=" + userId +
+                ", promoCodeId=" + promoCodeId +
+                '}';
+    }
+
     public UUID getUserId() {
         return userId;
     }

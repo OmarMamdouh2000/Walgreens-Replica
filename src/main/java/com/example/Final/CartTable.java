@@ -26,21 +26,36 @@ public class CartTable {
     private List<CartItem> items;
 
     
-    private List<CartItem> savedForLaterItems;
+    private List<CartItem> savedforlateritems;
 
     @Column("total_amount")
-    private double totalAmount;
+    private double total_amount;
 
     @Column("appliedPromoCodeId")
     private String appliedPromoCodeId;
     
     private double promoCodeAmount;
 
-    @Column("orderType")
-    private String orderType;
+    @Column("ordertype")
+    private String ordertype;
+
+    public CartTable(){
+
+    }
+
+    public CartTable(UUID id,UUID appliedPromoCodeId, List<CartItem> items, String orderType,
+                     List<CartItem> savedForLaterItems, double totalAmount, UUID userId)
+    {
+        this.id = id;
+        this.userId = userId;
+        this.items = items;
+        this.savedforlateritems = savedForLaterItems;
+        this.total_amount = totalAmount;
+        this.appliedpromocodeid = appliedPromoCodeId;
+        this.ordertype = orderType;
+    }
 
     // Getters and setters
-
     public UUID getId() {
         return id;
     }
@@ -66,19 +81,19 @@ public class CartTable {
     }
 
     public List<CartItem> getSavedForLaterItems() {
-        return savedForLaterItems;
+        return savedforlateritems;
     }
 
     public void setSavedForLaterItems(List<CartItem> savedForLaterItems) {
-        this.savedForLaterItems = savedForLaterItems;
+        this.savedforlateritems = savedForLaterItems;
     }
 
     public double getTotalAmount() {
-        return totalAmount;
+        return total_amount;
     }
 
     public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+        this.total_amount = totalAmount;
     }
 
     public String getAppliedPromoCodeId() {
@@ -90,11 +105,24 @@ public class CartTable {
     }
 
     public String getOrderType() {
-        return orderType;
+        return ordertype;
     }
 
     public void setOrderType(String orderType) {
-        this.orderType = orderType;
+        this.ordertype = orderType;
+    }
+
+    @Override
+    public String toString() {
+        return "CartTable{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", savedForLaterItems=" + savedforlateritems +
+                ", totalAmount=" + total_amount +
+                ", appliedPromoCodeId=" + appliedpromocodeid +
+                ", orderType='" + ordertype + '\'' +
+                '}';
     }
 
 	public double getPromoCodeAmount() {

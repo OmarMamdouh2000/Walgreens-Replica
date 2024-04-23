@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CartRepo extends CassandraRepository<CartTable, UUID> {
 	
@@ -16,5 +17,8 @@ public interface CartRepo extends CassandraRepository<CartTable, UUID> {
 	CartTable getCart(UUID userId);
 	@Query("update cart set items=:items,savedForLaterItems=:savedForLater,total_amount=:newTotal where id=:cartId")
 	void updateCartItemsAndSaved(List<CartItem> items,List<CartItem> savedForLater,UUID cartId,double newTotal);
+
+	@Query("select * from promocodes where id=:promoId ALLOW FILTERING")
+	PromoCodeTable getPromoCode(@Param("promoId") UUID promoId);
 
 }
