@@ -17,4 +17,10 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
                         @Param("p_minimum_spend") double minimumSpend
                         );
 
+
+    @Procedure(name = "delete_coupon")
+    void delete_coupon(
+            @Param("p_coupon_id") UUID couponId
+    );
+
 }
