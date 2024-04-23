@@ -32,7 +32,9 @@ public class CartTable {
     private double totalAmount;
 
     @Column("appliedPromoCodeId")
-    private UUID appliedPromoCodeId;
+    private String appliedPromoCodeId;
+    
+    private double promoCodeAmount;
 
     @Column("orderType")
     private String orderType;
@@ -79,11 +81,11 @@ public class CartTable {
         this.totalAmount = totalAmount;
     }
 
-    public UUID getAppliedPromoCodeId() {
+    public String getAppliedPromoCodeId() {
         return appliedPromoCodeId;
     }
 
-    public void setAppliedPromoCodeId(UUID appliedPromoCodeId) {
+    public void setAppliedPromoCodeId(String appliedPromoCodeId) {
         this.appliedPromoCodeId = appliedPromoCodeId;
     }
 
@@ -94,4 +96,13 @@ public class CartTable {
     public void setOrderType(String orderType) {
         this.orderType = orderType;
     }
+
+	public double getPromoCodeAmount() {
+		return promoCodeAmount;
+	}
+
+	public void setPromoCodeAmount(double promoCodeAmount) {
+		this.promoCodeAmount = promoCodeAmount;
+	}
+    
 }

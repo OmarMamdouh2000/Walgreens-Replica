@@ -36,6 +36,8 @@ public class Services {
     private JwtDecoderService jwtDecoderService;
 	@Autowired
 	private CartRepo cartRepo;
+	@Autowired
+	private UserUsedPromoRepo userUsedPromoRepo;
 	public String updateItemCount(String itemId,String token,int count) {
 		 
 	    String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa"; 
@@ -50,19 +52,36 @@ public class Services {
             List<CartItem> oldItems=oldCart.getItems();
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             for(int i=0;i<oldItems.size();i++) {
             	if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
-            		if(count>0)
+            		if(count>0) {
+            			int oldcount=oldItems.get(i).getItemCount();
             			oldItems.get(i).setItemCount(count);
-            		else {
+            			double increase=(count-oldcount)*oldItems.get(i).getPurchasedPrice();
+            			if(oldCart.getAppliedPromoCodeId() !=null) {
+            				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+            			}
+            			newTotal=oldCart.getTotalAmount()+increase;
+            			System.out.println(newTotal);
+            		}else {
+            			int oldcount=oldItems.get(i).getItemCount();
+            			double increase=(count-oldcount)*oldItems.get(i).getPurchasedPrice();
+            			if(oldCart.getAppliedPromoCodeId() !=null) {
+            				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+            			}
+            			newTotal=oldCart.getTotalAmount()+increase;
+            			
             			oldItems.remove(i);
+            			
+            			
             		}
             		found=true;
             		break;
             	}
             }
             if(found)
-            	cartRepo.updateCartItems(oldItems, cartId);
+            	cartRepo.updateCartItems(oldItems, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -89,15 +108,22 @@ public class Services {
             }
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             for(int i=0;i<oldItems.size();i++) {
             	if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
             		newSaved.add(oldItems.get(i));
+            		int oldcount=oldItems.get(i).getItemCount();
+        			double increase=(0-oldcount)*oldItems.get(i).getPurchasedPrice();
+        			if(oldCart.getAppliedPromoCodeId() !=null) {
+        				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+        			}
+        			newTotal=oldCart.getTotalAmount()+increase;
             		oldItems.remove(i);
             		found=true;
             	}
             }
             if(found)
-            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId);
+            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -121,18 +147,25 @@ public class Services {
             List<CartItem> newSaved=oldCart.getSavedForLaterItems();
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             if(oldItems==null) {
             	oldItems=new ArrayList<CartItem>();
             }
             for(int i=0;i<newSaved.size();i++) {
             	if(newSaved.get(i).getItemId().equals(UUID.fromString(itemId))) {
             		oldItems.add(newSaved.get(i));
+            		int oldcount=newSaved.get(i).getItemCount();
+        			double increase=(oldcount)*newSaved.get(i).getPurchasedPrice();
+        			if(oldCart.getAppliedPromoCodeId() !=null) {
+        				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+        			}
+        			newTotal=oldCart.getTotalAmount()+increase;
             		newSaved.remove(i);
             		found=true;
             	}
             }
             if(found)
-            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId);
+            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -143,5 +176,8 @@ public class Services {
             return "failed";
         }
 
+	}
+	public List<UserUsedPromo> getAllUsedPromo(){
+		return userUsedPromoRepo.getAll();
 	}
 }

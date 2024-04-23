@@ -11,9 +11,8 @@ import java.util.UUID;
 public class PromoCodeTable {
 
     @PrimaryKey
-    private UUID id;
-
     private String code;
+
 
     @Column("discountValue")
     private double discountValue;
@@ -25,13 +24,7 @@ public class PromoCodeTable {
 
     // Getters and setters
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
+    
 
     public String getCode() {
         return code;
