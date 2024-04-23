@@ -14,23 +14,23 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 
-@Service
-class JwtDecoderService {
+// @Service
+// class JwtDecoderService {
 
-   public Claims decodeJwtToken(String token, String secretKey) {
-       try {
-           Jws<Claims> jws = Jwts.parserBuilder()
-                   .setSigningKey(secretKey.getBytes())
-                   .build()
-                   .parseClaimsJws(token);
-           return jws.getBody();
-       } catch (Exception e) {
-           // Handle exception (e.g., invalid token)
-           e.printStackTrace();
-           return null;
-       }
-   }
-}
+//    public Claims decodeJwtToken(String token, String secretKey) {
+//        try {
+//            Jws<Claims> jws = Jwts.parserBuilder()
+//                    .setSigningKey(secretKey.getBytes())
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return jws.getBody();
+//        } catch (Exception e) {
+//            // Handle exception (e.g., invalid token)
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+// }
 @Service
 public class Services {
 	@Autowired
