@@ -41,6 +41,9 @@ public class Services {
     @Autowired
     private UserUsedPromoRepo userUsedPromoRepo;
 
+    @Autowired
+    private PromoRepo promoRepo;
+
     public CartTable getUserCart(String user) throws Exception {
         UUID userId = UUID.fromString(user);
         try{
@@ -169,11 +172,20 @@ public class Services {
             CartTable userCart = cartRepo.getCart(userId);
 
             if(userCart != null){
+                CartItem toBeDeleted = userCart.getItems().stream()
+                        .filter(item -> item.getItemId().equals(itemId))
+                        .findFirst()
+                        .orElse(null);
+
+                double priceRemove = toBeDeleted.getPurchasedPrice() * toBeDeleted.getItemCount();
+
                 List<CartItem> updatedItems = userCart.getItems().stream()
                         .filter(item -> !item.getItemId().equals(itemId))
                         .collect(Collectors.toList());
 
+
                 userCart.setItems(updatedItems);
+                userCart.setTotalAmount(userCart.getTotalAmount() - priceRemove);
                 return cartRepo.save(userCart);
             }else{
                 throw new Exception("Cart not found");
@@ -209,46 +221,51 @@ public class Services {
         }
     }
 
-    public CartTable applyPromo(String user, String promoId){
+    public CartTable applyPromo(String user, String promoCode) throws Exception {
         UUID userID = UUID.fromString(user);
-        UUID promoID = UUID.fromString(promoId);
-        System.out.println(userID);
-        System.out.println(promoID);
-        try{
-            CartTable userCart = cartRepo.getCart(userID);
 
-            if(userCart == null){
-                throw new Exception("Cart not found");
-            }
+        try {
+            //get promo from userPromos --> if not found return invalid
+//            PromoCodeTable promo = promoRepo.getPromoCodeByCode(promoCode);
+            UUID promoID = promoRepo.getPromoCodeByCode(promoCode);
 
-            //check if promo is in userUsedPromos --> if so return invalid
-            UserUsedPromo isUsed = userUsedPromoRepo.findUserPromo(userID, promoID);
-            System.out.println(isUsed);
-            if(isUsed == null){
-                //get promo from userPromos --> if not found return invalid
-                PromoCodeTable promo = cartRepo.getPromoCode(promoID);
+            if (promoID == null) {
+                throw new Exception("Promo not found");
+            }else {
+                PromoCodeTable promo = promoRepo.getPromoCode(promoID);
 
-                if(promo == null){
-                    throw new Exception("Promo not found");
+                CartTable userCart = cartRepo.getCart(userID);
+                if (userCart == null) {
+                    throw new Exception("Cart not found");
                 }
-                else{
+                //check if promo is in userUsedPromos --> if so return invalid
+                UserUsedPromo isUsed = userUsedPromoRepo.findUserPromo(userID, promoID);
+
+                if (isUsed != null) {
+                    throw new Exception("Promo already used");
+                } else if (!promo.isValid()) {
+                    throw new Exception("Promo not valid");
+                } else if (promo.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+                    throw new Exception("Promo expired");
+                } else {
                     double totalAmount = userCart.getTotalAmount();
                     double promoAmount = promo.getDiscountValue();
 
                     //apply promo amount to total amount
-                    userCart.setTotalAmount(totalAmount * (1 - promoAmount));
+                    double newAmount = totalAmount * (1 - promoAmount / 100);
+                    userCart.setTotalAmount(newAmount);
 
+                    //apply promo to cart
+                    userCart.setAppliedPromoCodeId(promoID);
                     //add promo to userUsedPromos
-//                userUsedPromoRepo.save(new UserUsedPromo(userID, promoID));
+                    userUsedPromoRepo.insertUserPromo(userID, promoID);
+
                     return cartRepo.save(userCart);
                 }
-
-            }else{
-                throw new Exception("Promo already used");
             }
 
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 }

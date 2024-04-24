@@ -2,28 +2,52 @@ package com.example.Final;
 
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
 @Table("PromoCodes")
 public class PromoCodeTable {
 
-    @PrimaryKey
+    @PrimaryKeyColumn
     private UUID id;
 
+    @PrimaryKeyColumn
     private String code;
 
-    @Column("discountValue")
+    @Column("discountvalue")
     private double discountValue;
 
     private boolean valid;
 
-    @Column("expiryDate")
-    private Date expiryDate;
+    @Column("expirydate")
+    private LocalDate expiryDate;
 
     // Getters and setters
+    public PromoCodeTable() {
+    }
+
+    public PromoCodeTable(UUID id, String code, double discountValue, boolean valid, LocalDate expiryDate) {
+        this.id = id;
+        this.code = code;
+        this.discountValue = discountValue;
+        this.valid = valid;
+        this.expiryDate = expiryDate;
+    }
+
+    @Override
+    public String toString() {
+        return "PromoCode{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", discountValue=" + discountValue +
+                ", valid=" + valid +
+                ", expiryDate=" + expiryDate +
+                '}';
+    }
 
     public UUID getId() {
         return id;
@@ -57,11 +81,11 @@ public class PromoCodeTable {
         this.valid = valid;
     }
 
-    public Date getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 }

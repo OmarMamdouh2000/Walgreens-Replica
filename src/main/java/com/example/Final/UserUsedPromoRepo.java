@@ -10,7 +10,7 @@ public interface UserUsedPromoRepo  extends CassandraRepository<UserUsedPromo, U
     @Query("select * from userusedpromo where userid=:userId and promocodeid=:promoCodeId ALLOW FILTERING")
     UserUsedPromo findUserPromo(@Param("userId") UUID userId, @Param("promoCodeId") UUID promoCodeId);
 
-    @Query("insert into userusedpromo (userid,promocodeid) values(:userId,:promoCodeId)")
+    @Query("insert into userusedpromo (userid,promocodeid) values (:userId,:promoCodeId)")
     void insertUserPromo(@Param("userId") UUID userId,@Param("promoCodeId") UUID promoCodeId);
 }
 

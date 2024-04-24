@@ -34,6 +34,9 @@ public class CartTable {
     @Column("appliedpromocodeid")
     private UUID appliedpromocodeid;
 
+    @Column("promocodeamount")
+    private double promocodeamount;
+
     @Column("ordertype")
     private String ordertype;
 
@@ -101,6 +104,10 @@ public class CartTable {
     public void setAppliedPromoCodeId(UUID appliedPromoCodeId) {
         this.appliedpromocodeid = appliedPromoCodeId;
     }
+
+    public double getPromocodeamount() { return promocodeamount;}
+
+    public void setPromocodeamount(double promocodeamount) {this.promocodeamount = promocodeamount; }
 
     public String getOrderType() {
         return ordertype;

@@ -4,7 +4,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.jsonwebtoken.Claims;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,26 +17,22 @@ public class CartController {
 	@Autowired
 	public Services cartService;
 
-	@GetMapping("/error")
-	public String error() {
-		return "error";
-	}
-
 	@GetMapping("/hello")
 	public String hello() {
 		return "hello";
 	}
 
 	@GetMapping("/getCart")
-	public CartTable getCart(@RequestParam String token) throws Exception {
+	public ResponseEntity<Object> getCart(@RequestParam String token) throws Exception {
 		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 		if (claims == null) {
-			throw new Exception("Invalid token");
+			return new ResponseEntity<>("Invalid Token", HttpStatus.UNAUTHORIZED);
 		} else {
 			try {
-				return cartService.getUserCart((String) claims.get("userId"));
+				CartTable cart = cartService.getUserCart((String) claims.get("userId"));
+				return new ResponseEntity<>(cart, HttpStatus.OK);
 			} catch (Exception e) {
-				throw new Exception(e.getMessage());
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 	}
@@ -52,17 +51,18 @@ public class CartController {
 	}
 
 	@PostMapping("/removeItem")
-	public CartTable removeItemFromCart(@RequestBody  Map<String, Object> data) throws Exception{
+	public ResponseEntity<Object> removeItemFromCart(@RequestBody  Map<String, Object> data) throws Exception{
 		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 		String item = (String) data.get("itemId");
 		UUID itemID = UUID.fromString(item);
 
 		if (claims == null) {
-			throw new Exception("Invalid token");
+			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 		}
 		else{
 			try {
-				return cartService.removeItemFromCart((String) claims.get("userId"), itemID);
+				CartTable cart = cartService.removeItemFromCart((String) claims.get("userId"), itemID);
+				return new ResponseEntity<>(cart, HttpStatus.OK);
 			} catch (Exception e) {
 				throw new Exception(e.getMessage());
 			}
@@ -71,31 +71,32 @@ public class CartController {
 	}
 
 	@PostMapping("/changeOrderType")
-	public void setOrderType(@RequestBody Map<String, Object> data) throws Exception {
+	public ResponseEntity<String> setOrderType(@RequestBody Map<String, Object> data) throws Exception {
 		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 
 		if (claims == null) {
-			throw new Exception("Invalid token");
+			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 		}
 		else{
 			try {
 				cartService.setOrderType((String) claims.get("userId"), (String) data.get("orderType"), (String) data.get("itemId"));
+				return new ResponseEntity<>("Order type changed successfully", HttpStatus.OK);
 			} catch (Exception e) {
-				throw new Exception(e.getMessage());
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 	}
 	@PostMapping("/applyPromo")
-	public CartTable applyPromo(@RequestBody Map<String, Object> data) throws Exception{
+	public ResponseEntity<Object> applyPromo(@RequestBody Map<String, Object> data) {
 		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 		if (claims == null) {
-			throw new Exception("Invalid token");
-		}
-		else{
+			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+		} else {
 			try {
-				return cartService.applyPromo((String) claims.get("userId"), (String) data.get("promoId"));
+				CartTable cart = cartService.applyPromo((String) claims.get("userId"), (String) data.get("promoCode"));
+				return new ResponseEntity<>(cart, HttpStatus.OK);
 			} catch (Exception e) {
-				throw new Exception(e.getMessage());
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 	}

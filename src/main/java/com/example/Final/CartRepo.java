@@ -18,7 +18,4 @@ public interface CartRepo extends CassandraRepository<CartTable, UUID> {
 	@Query("update cart set items=:items,savedForLaterItems=:savedForLater where id=:cartId")
 	void updateCartItemsAndSaved(List<CartItem> items,List<CartItem> savedForLater,UUID cartId);
 
-	@Query("select * from promocodes where id=:promoId ALLOW FILTERING")
-	PromoCodeTable getPromoCode(@Param("promoId") UUID promoId);
-
 }
