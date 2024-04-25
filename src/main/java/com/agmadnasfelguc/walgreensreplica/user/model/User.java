@@ -1,6 +1,5 @@
 package com.agmadnasfelguc.walgreensreplica.user.model;
 
-import com.agmadnasfelguc.walgreensreplica.user.model.dto.LoginResultDTO;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Role;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Status;
 import jakarta.persistence.*;
