@@ -19,7 +19,7 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
         try {
-            Object loginResult = adminRepository.loginAdmin(username, password);
+            List<String> loginResult = adminRepository.loginAdmin(username, password);
             return ResponseEntity.ok(loginResult);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
