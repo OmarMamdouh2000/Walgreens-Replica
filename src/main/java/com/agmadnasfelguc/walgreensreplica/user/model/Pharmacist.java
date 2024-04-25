@@ -6,11 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "Pharmacist")
 @Entity
-@Data
-@Builder
 @Getter
 @Setter
 public class Pharmacist extends User {
@@ -20,4 +17,9 @@ public class Pharmacist extends User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
+    public Pharmacist(String email, String password, String firstName, String lastName){
+        super(email, password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }
