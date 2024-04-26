@@ -5,27 +5,28 @@ import com.agmadnasfelguc.walgreensreplica.user.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Inheritance
-@Table(name = "User")
 @Entity
 @Data
-@NoArgsConstructor
+@Table(name = "\"User\"")
 public class User {
     @Id
     private String id;
-    @Column
-    private String email;
-    @Column
-    private String password;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    @Enumerated(EnumType.STRING)
-    private Status status;
-    @Column(name = "2FA_Enabled")
-    private boolean twoFactorEnabled;
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @Column(name = "2FA_Enabled", nullable = false)
+    private boolean twoFAEnabled = false;
+
 }

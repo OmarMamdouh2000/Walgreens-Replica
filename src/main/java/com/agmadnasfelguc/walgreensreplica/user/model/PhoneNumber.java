@@ -9,18 +9,16 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table(name = "Phone_Number")
 @Entity
-@Getter
-@Setter
-@Builder
+@Data
+@Table(name = "\"Phone_Number\"")
 public class PhoneNumber {
     @Id
     private String id;
-    @Column
-    private String extension;
-    @Column
+
+    @Column(unique = true, nullable = false)
     private int number;
-    @Column
-    private boolean verified;
+
+    @Column(nullable = false)
+    private String extension;
 }
