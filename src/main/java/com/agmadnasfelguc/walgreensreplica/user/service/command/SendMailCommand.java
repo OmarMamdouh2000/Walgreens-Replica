@@ -2,6 +2,8 @@ package com.agmadnasfelguc.walgreensreplica.user.service.command;
 
 import com.agmadnasfelguc.walgreensreplica.user.model.Customer;
 import com.agmadnasfelguc.walgreensreplica.user.repository.CustomerRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
+import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +31,8 @@ public class SendMailCommand extends Command{
     private String subject;
     private String OTP;
 
+    private boolean emailSent = false;
+
     private Customer customerInfo;
 
     @Autowired
@@ -41,16 +45,22 @@ public class SendMailCommand extends Command{
         try {
             Optional<Customer> customer = customerRepository.findById("81c9cba4-f044-463e-b412-5ae7fb357b5a");
             customerInfo =  customer.orElseThrow(() -> new RuntimeException("Customer not found" ));
-            System.out.println("Sending mail to: " + customerInfo.getUser().getEmail());
             sendMail();
+            if(emailSent) {
+                this.setState(new ResponseStatus(ResponseState.SUCCESS, "Email sent successfully"));
+            } else {
+                this.setState(new ResponseStatus(ResponseState.FAILURE, "Could not open HTML file"));
+            }
         } catch (Exception e) {
-            System.out.println("Error sending mail: " + e.getMessage());
+            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
         }
     }
 
     private void sendMail(){
         String htmlBody = readHtmlFile();
-        assert htmlBody != null;
+        if(htmlBody == null) {
+            return;
+        }
         htmlBody = htmlBody.replace("${firstName}", customerInfo.getFirstName());
         htmlBody = htmlBody.replace("${lastName}", customerInfo.getLastName());
         htmlBody = htmlBody.replace("${otpPurpose}", subject.toLowerCase());
@@ -64,20 +74,16 @@ public class SendMailCommand extends Command{
             messageHelper.setText(finalHtmlBody, true);
         };
         mailSender.send(messagePreparator);
+        emailSent = true;
     }
 
-    private  String readHtmlFile() {
+    private String readHtmlFile() {
         InputStream inputStream = SendMailCommand.class.getClassLoader().getResourceAsStream("templates/OTP.html");
         if (inputStream == null) {
-            return "File not found";
+            return null;
         } else {
-            // Using BufferedReader to read InputStream into a String
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            } catch (Exception e) {
-                System.out.println("Error reading file: " + e.getMessage());
-                return null;
-            }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }
     }
 }

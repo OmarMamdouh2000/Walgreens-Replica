@@ -1,6 +1,7 @@
 services:
   postgres_database:
     image: postgres:13
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
@@ -21,3 +22,4 @@ services:
 volumes:
   walgreens_user_managmenet_postgres:
   walgreens_user_managmenet_pgadmin:
+

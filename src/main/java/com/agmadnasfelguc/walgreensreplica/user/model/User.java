@@ -19,11 +19,11 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "\"Role\"", nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "\"Status\"", nullable = false)
     private Status status;
 
     @Column(name = "2FA_Enabled", nullable = false)
