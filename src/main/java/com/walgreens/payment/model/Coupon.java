@@ -17,7 +17,10 @@ import java.util.UUID;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID coupon_id;
+    private UUID coupon_uuid;
+
+    private String coupon_id;
+
     private String code;
     private int discount_value;
     private double maximum_discount;

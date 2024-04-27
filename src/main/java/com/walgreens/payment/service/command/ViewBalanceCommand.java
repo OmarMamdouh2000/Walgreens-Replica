@@ -17,26 +17,24 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-public class ViewPaymentMethodsCommand implements Command {
+public class ViewBalanceCommand implements  Command{
 
     private UUID customerUuid;
-
 
     @Autowired
     private CustomerRepository customerRepository;
 
 
-
     @Override
     public void execute() {
-        try {
 
+        try{
             String customerId = customerRepository.get_customer(customerUuid);
             Customer customer = Customer.retrieve(customerId);
-            System.out.println(customer.listPaymentMethods());
+            System.out.println(customer.getBalance());
 
         }catch (StripeException e){
-            log.error("Exception viewPaymentMethodsCommand", e);
+            log.error("Exception viewBalanceCommand", e);
         }
 
     }

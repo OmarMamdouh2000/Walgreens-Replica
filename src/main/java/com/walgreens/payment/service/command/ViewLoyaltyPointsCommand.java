@@ -1,7 +1,5 @@
 package com.walgreens.payment.service.command;
 
-import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
 import com.walgreens.payment.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,29 +15,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-public class ViewPaymentMethodsCommand implements Command {
+public class ViewLoyaltyPointsCommand implements Command {
 
     private UUID customerUuid;
-
 
     @Autowired
     private CustomerRepository customerRepository;
 
 
-
     @Override
     public void execute() {
-        try {
-
-            String customerId = customerRepository.get_customer(customerUuid);
-            Customer customer = Customer.retrieve(customerId);
-            System.out.println(customer.listPaymentMethods());
-
-        }catch (StripeException e){
-            log.error("Exception viewPaymentMethodsCommand", e);
-        }
-
+        int loyaltyPoints = customerRepository.get_loyalty_points(customerUuid);
+        System.out.println(loyaltyPoints);
     }
-
-
 }

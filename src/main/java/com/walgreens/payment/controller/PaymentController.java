@@ -1,34 +1,115 @@
 package com.walgreens.payment.controller;
 
-import com.walgreens.payment.service.command.Command;
-import com.walgreens.payment.service.command.CreateAccountCommand;
+import com.stripe.Stripe;
+import com.walgreens.payment.service.command.*;
 
+
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@RestController
-public class PaymentController implements CommandLineRunner {
 
-    private final Command createAccountCommand;
+@RestController
+@RequestMapping("/stripe")
+public class PaymentController {
+
+
+
+    private final CreateCustomerCommand createCustomerCommand;
+    private final AddPaymentMethodCommand addPaymentMethodCommand;
+    private final ViewPaymentMethodsCommand viewPaymentMethodsCommand;
+    private final ViewBalanceCommand viewBalanceCommand;
+    private final ViewLoyaltyPointsCommand viewLoyaltyPointsCommand;
+    private final CreateCheckoutCommand createCheckoutCommand;
+    private final WebhookService webhookService;
 
     @Autowired
-    public PaymentController(Command createAccountCommand) {
-        this.createAccountCommand = createAccountCommand;
+    public PaymentController(CreateCustomerCommand createCustomerCommand,
+                             AddPaymentMethodCommand addPaymentMethodCommand,
+                             ViewPaymentMethodsCommand viewPaymentMethodsCommand,
+                             ViewBalanceCommand viewBalanceCommand,
+                             ViewLoyaltyPointsCommand viewLoyaltyPointsCommand,
+                             CreateCheckoutCommand createCheckoutCommand,
+                             WebhookService webhookService
+                             ) {
+        this.createCustomerCommand = createCustomerCommand;
+        this.addPaymentMethodCommand = addPaymentMethodCommand;
+        this.viewPaymentMethodsCommand = viewPaymentMethodsCommand;
+        this.viewBalanceCommand = viewBalanceCommand;
+        this.viewLoyaltyPointsCommand = viewLoyaltyPointsCommand;
+        this.createCheckoutCommand = createCheckoutCommand;
+        this.webhookService = webhookService;
     }
 
-    public void createAccount(UUID userID){
+    @Value("${api.stripe.key}")
+    private String stripeApiKey;
 
-//        Command createAccount = ((CreateAccountCommand)createAccountCommand).builder().userId(userID).build();
-        ((CreateAccountCommand)createAccountCommand).setUserId(userID);
-        createAccountCommand.execute();
+    @PostConstruct
+    public void init() {
+
+        Stripe.apiKey = stripeApiKey;
+    }
+
+    @PostMapping("/createCustomer")
+    public void createCustomer(UUID customerUuid, String name, String email){
+        createCustomerCommand.setCustomerUuid(customerUuid);
+        createCustomerCommand.setName(name);
+        createCustomerCommand.setEmail(email);
+        createCustomerCommand.execute();
+    }
+
+    @PostMapping("/addPaymentMethod")
+    public void addPaymentMethod(UUID customerUuid, String cardNumber, String expiryMonth, String expiryYear, String cvv, String cardholderName, boolean isDefault){
+        addPaymentMethodCommand.setCustomerUuid(customerUuid);
+        addPaymentMethodCommand.setCardNumber(cardNumber);
+        addPaymentMethodCommand.setExpiryMonth(expiryMonth);
+        addPaymentMethodCommand.setExpiryYear(expiryYear);
+        addPaymentMethodCommand.setCvv(cvv);
+        addPaymentMethodCommand.setCardholderName(cardholderName);
+        addPaymentMethodCommand.setIsDefault(isDefault);
+        addPaymentMethodCommand.setIsDefault(isDefault);
+        addPaymentMethodCommand.execute();
+    }
+
+    @PostMapping("/viewPaymentMethods")
+    public void viewPaymentMethods(UUID customerUuid){
+        viewPaymentMethodsCommand.setCustomerUuid(customerUuid);
+        viewPaymentMethodsCommand.execute();
+    }
+
+    @PostMapping("/viewBalance")
+    public void viewBalance(UUID customerUuid){
+        viewBalanceCommand.setCustomerUuid(customerUuid);
+        viewBalanceCommand.execute();
+    }
+
+    @PostMapping("/viewLoyaltyPoints")
+    public void viewLoyaltyPoints(UUID customerUuid){
+        viewLoyaltyPointsCommand.setCustomerUuid(customerUuid);
+        viewLoyaltyPointsCommand.execute();
+    }
+
+    @PostMapping("/createCheckout")
+    public void createCheckout(UUID customerUuid){
+        createCheckoutCommand.setCustomerUuid(customerUuid);
+        createCheckoutCommand.execute();
+    }
+
+    @PostMapping("/webhook")
+    public void handleStripeEvent(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        webhookService.setPayload(payload);
+        webhookService.setSigHeader(sigHeader);
+        ResponseEntity<String> stringResponseEntity = webhookService.handleEvent();
+        System.out.println(stringResponseEntity.toString());
+
     }
 
 
-    @Override
-    public void run(String... args) throws Exception {
-        this.createAccount(UUID.fromString("0e9e047a-da18-474b-a416-8022a82b605e"));
-    }
+
+
+
 }

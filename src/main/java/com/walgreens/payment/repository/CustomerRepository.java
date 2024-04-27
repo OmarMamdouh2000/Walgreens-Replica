@@ -1,15 +1,14 @@
 package com.walgreens.payment.repository;
 
-import com.walgreens.payment.model.Account;
+import com.walgreens.payment.model.CustomerDto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-public interface AccountRepository extends JpaRepository<Account, UUID> {
+public interface CustomerRepository extends JpaRepository<CustomerDto, UUID> {
 
 //    @Procedure
 //    void create_account(UUID user_id);
@@ -17,8 +16,14 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 //    @Procedure(name = "public.create_account")
 //    void createAccount(@Param("p_user_id") UUID user_id);
 
-    @Procedure(name = "create_account")
-    void create_account(@Param("p_account_id") UUID accountId, @Param("p_user_id") UUID userId);
+    @Procedure(name = "create_customer")
+    void create_customer(@Param("p_customer_uuid") UUID customer_uuid, @Param("p_customer_id") String userId);
+
+    @Procedure(name = "get_customer")
+    String get_customer(@Param("p_customer_uuid") UUID customer_uuid);
+
+    @Procedure(name = "get_loyalty_points")
+    int get_loyalty_points(@Param("p_customer_uuid") UUID customer_uuid);
 
 
 

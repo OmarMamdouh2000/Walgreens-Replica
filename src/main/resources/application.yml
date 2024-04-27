@@ -1,9 +1,15 @@
 #spring.application.name=PaymentMicroSerivce
+
+server:
+  port: 9095
+  servlet:
+    context-path: /api/integration
+
 spring:
   application:
     name: PaymentMicroservice
   datasource:
-    url: jdbc:postgresql://localhost:5332/payments
+    url: jdbc:postgresql://localhost:5332/paymentsstripe
     username: paymentcluster
     password: password
   jpa:
@@ -16,3 +22,15 @@ spring:
       show-sql: true
   main:
     web-application-type: servlet
+
+api:
+  stripe:
+    key: sk_test_51P8PpqC0ZDZEI6HDMJ1lWvt421a5HzvPoETyIV5p8m7hiwxODqHZhVHATtoKHdHnZX9ZQrMiJ3o0QVkVLT12wv1y00DWdQ010x
+
+encryption:
+  secret:
+    key: MY_ENCRYPTION_SECRET_KEY_PAYMENTCLUSTER
+
+stripe:
+  endpoint:
+    secret: whsec_8978440acc3fda64ff18a4f6dcfb0a445962eb7db8e88875dd58fe797c16766b
