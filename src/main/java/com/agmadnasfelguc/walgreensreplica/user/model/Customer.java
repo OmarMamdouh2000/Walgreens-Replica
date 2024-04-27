@@ -2,28 +2,43 @@ package com.agmadnasfelguc.walgreensreplica.user.model;
 
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Gender;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.util.Date;
-
-@EqualsAndHashCode(callSuper = true)
-@Table(name = "Customer")
-@Entity
 @Data
-@Getter
-@Setter
-@Builder
-public class Customer extends User {
-    @Column(name = "first_name")
+@Entity
+@Table(name = "\"Customer\"")
+public class Customer {
+    @Id
+    private String id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private User user;
+
+    @Column(name = "first_name", nullable = false)
     private String firstName;
-    @Column(name = "last_name")
+
+    @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column
+
     private String address;
+
+    @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "\"Gender\"")
     private Gender gender;
-    @Column(name = "phone_id")
-    private String phoneId;
+
+    @OneToOne
+    @JoinColumn(name = "phone_id")
+    private PhoneNumber phoneNumber;
+
+    // getters and setters
 }

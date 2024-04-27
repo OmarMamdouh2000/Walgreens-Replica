@@ -1,21 +1,19 @@
 package com.agmadnasfelguc.walgreensreplica.user.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
-@Table(name = "Pharmacist")
+@Table(name = "\"Pharmacist\"")
 @Entity
 @Data
-@Builder
-@Getter
-@Setter
-public class Pharmacist extends User {
+public class Pharmacist{
     @Id
     private String id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private User user;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")

@@ -1,6 +1,7 @@
 services:
   postgres_database:
     image: postgres:13
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
@@ -15,9 +16,10 @@ services:
     - PGADMIN_DEFAULT_EMAIL=root@root.com
     - PGADMIN_DEFAULT_PASSWORD=root
     ports:
-    - "8080:80"
+    - "8081:80"
     volumes:
     - walgreens_user_managmenet_pgadmin:/var/lib/pgadmin
 volumes:
   walgreens_user_managmenet_postgres:
   walgreens_user_managmenet_pgadmin:
+
