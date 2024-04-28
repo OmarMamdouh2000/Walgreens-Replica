@@ -2,13 +2,13 @@ package com.example.demo.cassandraModels;
 
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.UUID;
-import com.datastax.oss.driver.api.core.uuid.Uuids;
 
 
 
@@ -21,14 +21,14 @@ public class Products {
     @PrimaryKey
     private UUID id;
     private String name;
-    private String description;
-    private int price;
-    private int discount;
-    private boolean sale;
     private String image;
-    private ArrayList<UUID> parentCategories;
+    private double price;
+    private String discount;
+    private String description;
+    private UUID brand;
+    private UUID parentCategory;
+    private boolean sale;
     private String productType;
-    private UUID brandId;
     private ProductSize sizeList;
     private String customMessage;
     private boolean inStore;
@@ -41,22 +41,30 @@ public class Products {
     private String frequentlyBoughtWith;
     private boolean refundable;
 
-    public Products(String name, String description, int price, String productType) {
-        this.id = Uuids.timeBased();
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.productType = productType;
-        this.parentCategories = new ArrayList<>();
-    }
+//    public Products(UUID id, String name, String description, int price, String image, UUID parentCategory) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//        this.price = price;
+//        this.image= image;
+//        this.parentCategory = parentCategory;
+//    }
+
+	public UUID getParentCategory() {
+		return parentCategory;
+	}
+
+	public void setParentCategory(UUID parentCategory) {
+		this.parentCategory = parentCategory;
+	}
 
 	public UUID getId() {
 		return id;
 	}
 
-//	public void setId(UUID id) {
-//		this.id = id;
-//	}
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
@@ -74,19 +82,27 @@ public class Products {
 		this.description = description;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
+	
+	public String getImage() {
+		return image;
+	}
 
-	public int getDiscount() {
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getDiscount() {
 		return discount;
 	}
 
-	public void setDiscount(int discount) {
+	public void setDiscount(String discount) {
 		this.discount = discount;
 	}
 
@@ -98,22 +114,6 @@ public class Products {
 		this.sale = sale;
 	}
 
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public ArrayList<UUID> getParentCategories() {
-		return parentCategories;
-	}
-
-	public void setParentCategories(ArrayList<UUID> parentCategories) {
-		this.parentCategories = parentCategories;
-	}
-
 	public String getProductType() {
 		return productType;
 	}
@@ -122,12 +122,12 @@ public class Products {
 		this.productType = productType;
 	}
 
-	public UUID getBrandId() {
-		return brandId;
+	public UUID getBrand() {
+		return brand;
 	}
 
-	public void setBrandId(UUID brandId) {
-		this.brandId = brandId;
+	public void setBrand(UUID brand) {
+		this.brand = brand;
 	}
 
 	public ProductSize getSizeList() {

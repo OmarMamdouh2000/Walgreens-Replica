@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
-//import com.datastax.oss.driver.api.core.uuid.Uuids;
 
 
 @Table
@@ -24,7 +23,7 @@ public class Categories {
 	private String image;
 	private UUID parentCategory;
 	private List<UUID> subCategories;
-	private List<UUID> products;
+	private List<Pobject> categoryProducts;
 
 	public UUID getId() {
 		return id;
@@ -61,10 +60,10 @@ public class Categories {
 		this.subCategories = subCategories;
 	}
 
-	public List<UUID> getProducts() {
-		return products;
+	public List<Pobject> getCategoryProducts() {
+		return categoryProducts;
 	}
-	public void setProducts(List<UUID> products) {
-		this.products = products;
+	public void setCategoryProducts(List<Pobject> categoryProducts) {
+		this.categoryProducts = categoryProducts;
 	}
 }

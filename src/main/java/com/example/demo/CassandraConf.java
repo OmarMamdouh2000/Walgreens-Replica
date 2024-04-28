@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.CqlSessionFactoryBean;
+
 @Configuration
 public class CassandraConf extends AbstractCassandraConfiguration {
 	@Override
@@ -26,5 +27,6 @@ public class CassandraConf extends AbstractCassandraConfiguration {
 	    public CqlSessionBuilderCustomizer cqlSessionBuilderConfigurer() {
 	        return cqlSessionBuilder -> cqlSessionBuilder.withKeyspace("keyspaceName");
 	    }
+	 	
 
 }
