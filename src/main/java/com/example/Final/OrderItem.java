@@ -7,36 +7,36 @@ import java.util.UUID;
 @UserDefinedType("orderItem")
 public class OrderItem {
 
-    private UUID item_id;
-    private int item_count;
-    private double purchased_price;
+    private UUID itemId;
+    private int itemCount;
+    private double purchasedPrice;
     private String deliveryType;
     private String comment;
 
     // Getters and setters
 
     public UUID getItemId() {
-        return item_id;
+        return itemId;
     }
 
     public void setItemId(UUID itemId) {
-        this.item_id = itemId;
+        this.itemId = itemId;
     }
 
     public int getItemCount() {
-        return item_count;
+        return itemCount;
     }
 
     public void setItemCount(int itemCount) {
-        this.item_count = itemCount;
+        this.itemCount = itemCount;
     }
 
     public double getPurchasedPrice() {
-        return purchased_price;
+        return purchasedPrice;
     }
 
     public void setPurchasedPrice(double purchasedPrice) {
-        this.purchased_price = purchasedPrice;
+        this.purchasedPrice = purchasedPrice;
     }
 
     public String getDeliveryType() {
