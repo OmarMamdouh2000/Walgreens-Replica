@@ -16,6 +16,7 @@ import io.jsonwebtoken.Claims;
 
 @Service
 public class AddToSavedForLaterCommand implements Command {
+    @Autowired
     private JwtDecoderService jwtDecoderService;
     
     private CartRepo cartRepo;
