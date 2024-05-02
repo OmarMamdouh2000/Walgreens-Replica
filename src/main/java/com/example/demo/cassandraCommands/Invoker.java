@@ -33,11 +33,15 @@ public class Invoker {
         commandMap.put("updateCategoryCommand", "com.example.demo.cassandraCommands.updateCategoryCommand");
 	}
 	
-	public Object executeCommand(String commandName,Map<String,Object> body) {
+	public Object executeCommand(String commandName, Object parameter, Map<String,Object> body) {
         if (commandMap.containsKey(commandName)) 
         {
             try
             {
+            	if(parameter != null)
+            	{
+            		body.put("parameter", parameter);
+            	}
                 String className = commandMap.get(commandName);
 	            Class<?> class1 = Class.forName(className);
 	            Constructor<?> constructor = class1.getDeclaredConstructor(CategoriesRepo.class, ProductsRepo.class, BrandsRepo.class); // replace with your parameter types

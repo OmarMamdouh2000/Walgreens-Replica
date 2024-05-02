@@ -32,9 +32,9 @@ public class deleteCategoryCommand implements Command{
 	@Override
 	public Object execute(Map<String,Object> body) 
 	{
-		if(body.containsKey("id"))
+		if(body.containsKey("parameter"))
 		{
-			UUID categoryId = UUID.fromString((String)body.get("id"));
+			UUID categoryId = UUID.fromString((String)body.get("parameter"));
 			Categories category = catRepo.getCategoryRepo(categoryId);
 			
 			//Set all products to be null parent category if had products

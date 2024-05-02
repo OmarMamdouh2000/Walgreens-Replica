@@ -30,9 +30,9 @@ public class getCategoryCommand implements Command{
 	@Override
 	public Object execute(Map<String,Object> body) 
 	{
-		if(body.containsKey("id"))
+		if(body.containsKey("parameter"))
 		{
-			UUID categoryId = UUID.fromString((String)body.get("id"));
+			UUID categoryId = UUID.fromString((String)body.get("parameter"));
 			Categories returnedCategory = catRepo.getCategoryRepo(categoryId);
 			return returnedCategory;
 		}

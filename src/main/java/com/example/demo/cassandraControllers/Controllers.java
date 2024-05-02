@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,31 +39,31 @@ public class Controllers {
 	@GetMapping("/listCategories")
 	public List<Categories> listCategories()
 	{
-		return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null);
+		return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null, null);
 	}
 	
-	@PostMapping("/getCategory")
-	public Categories getCategory(@RequestBody Map<String, Object> body)
+	@GetMapping("/getCategory/{categoryId}")
+	public Categories getCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
-		return (Categories) invoker.executeCommand("getCategoryCommand", body);
+		return (Categories) invoker.executeCommand("getCategoryCommand", categoryId, body);
 	}
 	
-	@DeleteMapping("/deleteCategory")
-	public String deleteCategory(@RequestBody Map<String, Object> body)
+	@DeleteMapping("/deleteCategory/{categoryId}")
+	public String deleteCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
-		return (String) invoker.executeCommand("deleteCategoryCommand", body);
+		return (String) invoker.executeCommand("deleteCategoryCommand", categoryId, body);
 	}
 	
 	@PostMapping("/addCategory")
 	public String addCategory(@RequestBody Map<String, Object> body)
 	{
-		return (String) invoker.executeCommand("addCategoryCommand", body);
+		return (String) invoker.executeCommand("addCategoryCommand", null,  body);
 	}
 	
-	@PutMapping("/updateCategory")
-	public String updateCategory(@RequestBody Map<String, Object> body)
+	@PutMapping("/updateCategory/{categoryId}")
+	public String updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
-		return (String) invoker.executeCommand("updateCategoryCommand", body);
+		return (String) invoker.executeCommand("updateCategoryCommand", categoryId,  body);
 	}
 	
 	// --------------------------------------------- END CATEGORIES ------------------------------------------------
