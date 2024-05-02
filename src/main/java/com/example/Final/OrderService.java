@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import com.example.Commands.JwtDecoderService;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,23 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-//@Service
-//class JwtDecoderService {
-//
-//    public Claims decodeJwtToken(String token, String secretKey) {
-//        try {
-//            Jws<Claims> jws = Jwts.parserBuilder()
-//                    .setSigningKey(secretKey.getBytes())
-//                    .build()
-//                    .parseClaimsJws(token);
-//            return jws.getBody();
-//        } catch (Exception e) {
-//            // Handle exception (e.g., invalid token)
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-//}
+
 @Service
 public class OrderService {
     @Autowired

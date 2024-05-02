@@ -42,11 +42,7 @@ public class OrderController {
 		orderRepo.save(data);
 	}
 
-	@GetMapping("/getOrders")
-	public List<OrderTable> getUserOrders(@RequestBody Map<String,Object> data) {
-		return OrderService.getUserOrders((String) data.get("token"));
-	}
-
+	
 	@GetMapping("/filterOrders")
 	public List<OrderTable> filterOrders(@RequestBody Map<String,Object> data) {
 		String dateString = (String) data.get("date");
