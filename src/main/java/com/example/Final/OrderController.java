@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Commands.Invoker;
 
 import jakarta.annotation.PostConstruct;
 
@@ -29,17 +30,18 @@ public class OrderController {
 
 	@Autowired
 	public Services service;
+	@Autowired Invoker invoker;
 	@GetMapping("/getOrders")
 	public List<OrderTable> getOrders(@RequestBody Map<String,Object> data) {
 		
-		return service.getOrders((String) data.get("token"));
+		return (List<OrderTable>) invoker.executeCommand("GetOrdersCommand", data);
 		
 		
 	}
 	@GetMapping("/getActiveOrders")
 	public List<OrderTable> getActiveOrders(@RequestBody Map<String,Object> data) {
 		
-		return service.getActiveOrders((String) data.get("token"));
+		return (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
 		
 		
 	}
