@@ -78,13 +78,13 @@ public class Controllers {
 	    return service.listProductsService(page, size);
 	}
 
-	@PostMapping("/getProduct")
+	@GetMapping("/getProduct")
 	public Products getProduct(@RequestBody Map<String, Object> body)
 	{
 		return service.getProductService(body);
 	}
 	
-	@PostMapping("/listCategoryProducts")
+	@GetMapping("/listCategoryProducts")
 	public List<Pobject> listCategoryProducts(@RequestBody Map<String, Object> body) {
 	    return service.listCategoryProductsService(body);
 	}
@@ -115,13 +115,13 @@ public class Controllers {
 		return service.listBrandService();
 	}
 	
-	@PostMapping("/getBrand")
+	@GetMapping("/getBrand")
 	public Brands getBrand(@RequestBody Map<String, Object> body)
 	{
 		return service.getBrandService(body);
 	}
 	
-	@PostMapping("/listBrandProducts")
+	@GetMapping("/listBrandProducts")
 	public List<Pobject> listBrandProducts(@RequestBody Map<String, Object> body) 
 	{
 	    return service.listBrandProductsService(body);
