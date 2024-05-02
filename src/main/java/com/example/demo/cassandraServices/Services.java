@@ -16,12 +16,12 @@ import com.example.demo.cassandraRepositories.CategoriesRepo;
 
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 
-import com.example.demo.cassandraModels.Brand;
+import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Products;
 import com.example.demo.cassandraModels.Pobject;
 import com.example.demo.cassandraRepositories.ProductsRepo;
 
-import com.example.demo.cassandraRepositories.BrandRepo;
+import com.example.demo.cassandraRepositories.BrandsRepo;
 import org.springframework.data.domain.Slice;
 
 
@@ -33,177 +33,177 @@ public class Services {
 	@Autowired
 	private ProductsRepo prodRepo;
 	@Autowired
-	private BrandRepo brandRepo;
+	private BrandsRepo brandRepo;
 	
 	// --------------------------------------------- CATEGORIES ---------------------------------------------
 	
-	public List<Categories> listCategoriesService()
-	{
-		return catRepo.listCategoriesRepo();
-	}
+//	public List<Categories> listCategoriesService()
+//	{
+//		return catRepo.listCategoriesRepo();
+//	}
 	
-	public Categories getCategoryService(UUID categoryId)
-	{
-		return catRepo.getCategoryRepo(categoryId);
-	}
+//	public Categories getCategoryService(Map<String, Object> body)
+//	{
+//		UUID categoryId = UUID.fromString((String)body.get("id"));
+//		Categories returnedCategory = catRepo.getCategoryRepo(categoryId);
+//		return returnedCategory;
+//	}
 	
-	public void deleteCategoryService(UUID categoryId)
-	{
-		Categories category = catRepo.getCategoryRepo(categoryId);
-		
-		//Set all products to be null parent category if had products
-		if(category.getCategoryProducts() != null)
-		{
-			for(Pobject prod: category.getCategoryProducts())
-			{
-				Products product = prodRepo.getProductRepo(prod.getId());
-				product.setParentCategory(null);
-				prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
-			}
-		}
-		
-		if(category.getSubCategories() != null)
-		{
-			if(category.getParentCategory() != null)
-			{
-				Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
-				for(UUID subCategoryId: category.getSubCategories())
-				{
-					Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
-					subCategory.setParentCategory(parentCategory.getId());
-					catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
-					
-					parentCategory.getSubCategories().add(subCategoryId);
-				}
-				
-				parentCategory.getSubCategories().remove(categoryId);
-				catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-			}
-			else
-			{
-				for(UUID subCategoryId: category.getSubCategories())
-				{
-					Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
-					subCategory.setParentCategory(null);
-					catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
-				}
-			}
-		}
-		if(category.getParentCategory() != null)
-		{
-			Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
-			parentCategory.getSubCategories().remove(categoryId);
-			catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-		}
-		
-		catRepo.deleteCategoryRepo(categoryId);
-	}
+//	public void deleteCategoryService(Map<String, Object> body)
+//	{
+//		UUID categoryId = UUID.fromString((String)body.get("id"));
+//		Categories category = catRepo.getCategoryRepo(categoryId);
+//		
+//		//Set all products to be null parent category if had products
+//		if(category.getCategoryProducts() != null)
+//		{
+//			for(Pobject prod: category.getCategoryProducts())
+//			{
+//				Products product = prodRepo.getProductRepo(prod.getId());
+//				product.setParentCategory(null);
+//				prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
+//			}
+//		}
+//		
+//		if(category.getSubCategories() != null)
+//		{
+//			if(category.getParentCategory() != null)
+//			{
+//				Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
+//				for(UUID subCategoryId: category.getSubCategories())
+//				{
+//					Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
+//					subCategory.setParentCategory(parentCategory.getId());
+//					catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
+//					
+//					parentCategory.getSubCategories().add(subCategoryId);
+//				}
+//				
+//				parentCategory.getSubCategories().remove(categoryId);
+//				catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+//			}
+//			else
+//			{
+//				for(UUID subCategoryId: category.getSubCategories())
+//				{
+//					Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
+//					subCategory.setParentCategory(null);
+//					catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
+//				}
+//			}
+//		}
+//		if(category.getParentCategory() != null)
+//		{
+//			Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
+//			parentCategory.getSubCategories().remove(categoryId);
+//			catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+//		}
+//		
+//		catRepo.deleteCategoryRepo(categoryId);
+//	}
 	
-	public void addCategoryService(Map<String, Object> body)
-	{
-		UUID categoryId = Uuids.timeBased();
-		String categoryName = "";
-		String categoryImage = "";
-		UUID parentCategoryId = null;
-		List<UUID> categorySubCategories = new ArrayList<>();
-		List<Pobject> categoryProducts = new ArrayList<>();
-		
-		if(body.containsKey("name"))
-			categoryName = (String)body.get("name");
-		
-		if(body.containsKey("image"))
-			categoryImage = (String)body.get("image");
-		
-		catRepo.addCategoryRepo(categoryId, categoryName, categoryImage, parentCategoryId, categorySubCategories, categoryProducts);
-	}
+//	public void addCategoryService(Map<String, Object> body)
+//	{
+//		UUID categoryId = Uuids.timeBased();
+//		String categoryName = "";
+//		String categoryImage = "";
+//		UUID parentCategoryId = null;
+//		List<UUID> categorySubCategories = new ArrayList<>();
+//		List<Pobject> categoryProducts = new ArrayList<>();
+//		
+//		if(body.containsKey("name"))
+//			categoryName = (String)body.get("name");
+//		
+//		if(body.containsKey("image"))
+//			categoryImage = (String)body.get("image");
+//		
+//		catRepo.addCategoryRepo(categoryId, categoryName, categoryImage, parentCategoryId, categorySubCategories, categoryProducts);
+//	}
 	
-	public void addCategoryService(UUID parentCategoryId, Map<String, Object> body)
-	{
-		UUID categoryId = Uuids.timeBased();
-		String categoryName = "";
-		String categoryImage = "";
-		List<UUID> categorySubCategories = new ArrayList<>();
-		List<Pobject> categoryProducts = new ArrayList<>();
-		
-		if(body.containsKey("name"))
-			categoryName = (String)body.get("name");
-		
-		if(body.containsKey("image"))
-			categoryImage = (String)body.get("image");
-		
-		
-		if(parentCategoryId != null)
-		{	
-			Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-			if(parentCategory.getSubCategories() == null)
-			{
-				List<UUID> parentSubCategories = new ArrayList<>();
-				parentSubCategories.add(categoryId);
-				parentCategory.setSubCategories(parentSubCategories);
-				
-				if(parentCategory.getCategoryProducts() != null)
-				{	
-					for(Pobject prod: parentCategory.getCategoryProducts())
-					{
-						Products product = prodRepo.getProductRepo(prod.getId());
-						product.setParentCategory(categoryId);
-						prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
-						
-						categoryProducts.add(prod);
-					}
-					
-					parentCategory.getCategoryProducts().clear();
-				}
-			}
-			else
-				parentCategory.getSubCategories().add(categoryId);
-			
-			catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-		}
-		
-		catRepo.addCategoryRepo(categoryId, categoryName, categoryImage, parentCategoryId, categorySubCategories, categoryProducts);
-	}
+//	public void addCategoryService(Map<String, Object> body)
+//	{
+//		UUID categoryId = Uuids.timeBased();
+//		String categoryName = "";
+//		String categoryImage = "";
+//		UUID parentCategoryId = null;
+//		List<UUID> categorySubCategories = new ArrayList<>();
+//		List<Pobject> categoryProducts = new ArrayList<>();
+//		
+//		if(body.containsKey("parentcategory"))
+//			parentCategoryId = UUID.fromString((String)body.get("parentcategory"));
+//		
+//		if(body.containsKey("name"))
+//			categoryName = (String)body.get("name");
+//		
+//		if(body.containsKey("image"))
+//			categoryImage = (String)body.get("image");
+//		
+//		
+//		if(parentCategoryId != null)
+//		{	
+//			Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+//			if(parentCategory.getSubCategories() == null)
+//			{
+//				List<UUID> parentSubCategories = new ArrayList<>();
+//				parentSubCategories.add(categoryId);
+//				parentCategory.setSubCategories(parentSubCategories);
+//				
+//				if(parentCategory.getCategoryProducts() != null)
+//				{	
+//					for(Pobject prod: parentCategory.getCategoryProducts())
+//					{
+//						Products product = prodRepo.getProductRepo(prod.getId());
+//						product.setParentCategory(categoryId);
+//						prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
+//						
+//						categoryProducts.add(prod);
+//					}
+//					
+//					parentCategory.getCategoryProducts().clear();
+//				}
+//			}
+//			else
+//				parentCategory.getSubCategories().add(categoryId);
+//			
+//			catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+//		}
+//		
+//		catRepo.addCategoryRepo(categoryId, categoryName, categoryImage, parentCategoryId, categorySubCategories, categoryProducts);
+//	}
 	
-	public void updateCategoryService(UUID categoryId, Map<String, Object> body)
-	{
-		String newCategoryName;
-		String newCategoryImage;
-		UUID newParentCategoryId;
-		List<UUID> newCategorySubCategories;
-		List<Pobject> newCategoryProducts;
-		
-		Categories category = catRepo.getCategoryRepo(categoryId);
-		
-		if(body.containsKey("name"))
-			newCategoryName = (String)body.get("name");
-		else
-			newCategoryName = category.getName();
-		
-		if(body.containsKey("image"))
-			newCategoryImage = (String)body.get("image");
-		else
-			newCategoryImage = category.getImage();
-		
-		newParentCategoryId = category.getParentCategory();
-		newCategorySubCategories = category.getSubCategories();
-		newCategoryProducts = category.getCategoryProducts();
-		
-		catRepo.updateCategoryRepo(categoryId, newCategoryName, newCategoryImage, newParentCategoryId, newCategorySubCategories, newCategoryProducts);
-	}
+//	public void updateCategoryService(Map<String, Object> body)
+//	{
+//		UUID categoryId = UUID.fromString((String)body.get("id"));
+//		String newCategoryName;
+//		String newCategoryImage;
+//		UUID newParentCategoryId;
+//		List<UUID> newCategorySubCategories;
+//		List<Pobject> newCategoryProducts;
+//		
+//		Categories category = catRepo.getCategoryRepo(categoryId);
+//		
+//		if(body.containsKey("name"))
+//			newCategoryName = (String)body.get("name");
+//		else
+//			newCategoryName = category.getName();
+//		
+//		if(body.containsKey("image"))
+//			newCategoryImage = (String)body.get("image");
+//		else
+//			newCategoryImage = category.getImage();
+//		
+//		newParentCategoryId = category.getParentCategory();
+//		newCategorySubCategories = category.getSubCategories();
+//		newCategoryProducts = category.getCategoryProducts();
+//		
+//		catRepo.updateCategoryRepo(categoryId, newCategoryName, newCategoryImage, newParentCategoryId, newCategorySubCategories, newCategoryProducts);
+//	}
 	
-
 	// --------------------------------------------- END CATEGORIES ---------------------------------------------
 	
-
 	
 	// --------------------------------------------- PRODUCTS ------------------------------------------------
 	
-//	public List<Products> listProductsService() {
-//	    if (prodRepo == null) {
-//	        throw new IllegalStateException("ProductsRepo not autowired correctly");
-//	    }
-//	    return prodRepo.listProductsRepo();
-//	}
 	
 	public Slice<Products> listProductsService(int page, int size) {
 	    Slice<Products> productsSlice = prodRepo.findAll(CassandraPageRequest.of(0, size));
@@ -217,12 +217,16 @@ public class Services {
 	    return productsSlice;
 	}
 	
-	public Products getProductService(UUID productId) {
-	    return prodRepo.getProductRepo(productId);
+	public Products getProductService(Map<String, Object> body)
+	{
+		UUID productId = UUID.fromString((String)body.get("id"));
+		Products returnedProduct = prodRepo.getProductRepo(productId);
+		return returnedProduct;
 	}
 	
-	public List<Pobject> listCategoryProductsService(UUID categoryId)
+	public List<Pobject> listCategoryProductsService(Map<String, Object> body)
 	{
+		UUID categoryId = UUID.fromString((String)body.get("id"));
 		Categories category = catRepo.getCategoryRepo(categoryId);
 		List<Pobject> categoryProducts = new ArrayList<>();
 		
@@ -265,8 +269,9 @@ public class Services {
 		return categoryProducts;
 	}
 	
-	 public void deleteProductService(UUID productId) {
-		 
+	 public void deleteProductService(Map<String, Object> body) {
+		
+		UUID productId = UUID.fromString((String)body.get("id"));
 		Products product = prodRepo.getProductRepo(productId);
 		if(product.getParentCategory() != null)
 		{
@@ -283,7 +288,7 @@ public class Services {
 		}
 		if(product.getBrand() != null)
 		{
-			Brand brand = brandRepo.getBrandRepo(product.getBrand());
+			Brands brand = brandRepo.getBrandRepo(product.getBrand());
 			for(Pobject prod: brand.getBrandProducts())
 			{
 				if(prod.getId().equals(productId))
@@ -300,60 +305,7 @@ public class Services {
 	
 	public void addProductService(Map<String, Object> body)
 	{
-		UUID productId = Uuids.timeBased();
-	    String productName = "";
-	    String productImage = "";
-	    double productPrice = 0.0;
-	    String productDiscount = "";
-	    String productDescription = "";
-	    UUID brandId = null;
-	    String brandName = "";
-	    
-	    if(body.containsKey("name"))
-	    {
-	    	productName = (String)body.get("name");
-	    }
-	    if(body.containsKey("image"))
-	    {
-	    	productImage = (String)body.get("image");
-	    }
-	    if(body.containsKey("price"))
-	    {
-	    	productPrice = (double)body.get("price");
-	    }
-	    if(body.containsKey("discount"))
-	    {
-	    	productDiscount = (String)body.get("discount");
-	    }
-	    if(body.containsKey("description"))
-	    {
-	    	productDescription = (String)body.get("description");
-	    }
-	    if(body.containsKey("brand"))
-	    {
-	    	brandId = UUID.fromString((String)body.get("brand"));
-	    	Brand brand = brandRepo.getBrandRepo(brandId);
-	    	brandName = brand.getName();
-	    	
-	    	Pobject productObject = new Pobject(productId, productName, productImage, brandName, productPrice, productDiscount);
-	    	if(brand.getBrandProducts() == null)
-	    	{
-	    		List<Pobject> brandProducts = new ArrayList<>();
-	    		brandProducts.add(productObject);
-	    		brand.setBrandProducts(brandProducts);
-	    	}
-	    	else
-	    		brand.getBrandProducts().add(productObject);
-	    	
-	    	brandRepo.updateBrandRepo(brand.getId(), brand.getName(), brand.getBrandProducts());
-	    }
-	    
-	    prodRepo.addProductRepo(productId, productName, productImage, productPrice, productDiscount, productDescription, brandId, null);
-		
-    }
-	
-	public void addProductService(UUID categoryId, Map<String, Object> body)
-	{
+		UUID categoryId = null;
 		UUID productId = Uuids.timeBased();
 	    String productName = "";
 	    String productImage = "";
@@ -363,6 +315,11 @@ public class Services {
 	    UUID brandId = null;
 	    String brandName = "";
 	    
+	    
+	    if(body.containsKey("parentcategory"))
+	    {
+	    	categoryId = UUID.fromString((String)body.get("parentcategory"));
+	    }
 	    if(body.containsKey("name"))
 	    {
 	    	productName = (String)body.get("name");
@@ -386,7 +343,7 @@ public class Services {
 	    if(body.containsKey("brand"))
 	    {
 	    	brandId = UUID.fromString((String)body.get("brand"));
-	    	Brand brand = brandRepo.getBrandRepo(brandId);
+	    	Brands brand = brandRepo.getBrandRepo(brandId);
 	    	brandName = brand.getName();
 	    	
 	    	Pobject productObject = new Pobject(productId, productName, productImage, brandName, productPrice, productDiscount);
@@ -420,10 +377,9 @@ public class Services {
 	    }
 	    
 	    prodRepo.addProductRepo(productId, productName, productImage, productPrice, productDiscount, productDescription, brandId, categoryId);
-		
     }
 	
-	public void updateProductService(UUID productId, Map<String, Object> body)
+	public void updateProductService(Map<String, Object> body)
 	{
 		String newProductName;
 		String newProductImage;
@@ -433,6 +389,7 @@ public class Services {
 		UUID newBrandId;
 		UUID newParentCategoryId;
 		
+		UUID productId = UUID.fromString((String)body.get("id"));
 		Products product = prodRepo.getProductRepo(productId);
 		
 		if(body.containsKey("name"))
@@ -457,7 +414,7 @@ public class Services {
 			if(product.getBrand() != null)
 			{
 				UUID currentBrandId = product.getBrand();
-				Brand br = brandRepo.getBrandRepo(currentBrandId);
+				Brands br = brandRepo.getBrandRepo(currentBrandId);
 				
 				for(Pobject productObject: br.getBrandProducts())
 				{
@@ -495,7 +452,7 @@ public class Services {
 			if(product.getBrand() != null)
 			{
 				UUID currentBrandId = product.getBrand();
-				Brand br = brandRepo.getBrandRepo(currentBrandId);
+				Brands br = brandRepo.getBrandRepo(currentBrandId);
 				
 				for(Pobject productObject: br.getBrandProducts())
 				{
@@ -533,7 +490,7 @@ public class Services {
 			if(product.getBrand() != null)
 			{
 				UUID currentBrandId = product.getBrand();
-				Brand br = brandRepo.getBrandRepo(currentBrandId);
+				Brands br = brandRepo.getBrandRepo(currentBrandId);
 				
 				for(Pobject productObject: br.getBrandProducts())
 				{
@@ -571,7 +528,7 @@ public class Services {
 			if(product.getBrand() != null)
 			{
 				UUID currentBrandId = product.getBrand();
-				Brand br = brandRepo.getBrandRepo(currentBrandId);
+				Brands br = brandRepo.getBrandRepo(currentBrandId);
 				
 				for(Pobject productObject: br.getBrandProducts())
 				{
@@ -595,11 +552,11 @@ public class Services {
 		if(body.containsKey("brand"))
 		{
 			newBrandId = UUID.fromString((String)body.get("brand"));
-			Brand newBrand = brandRepo.getBrandRepo(newBrandId);
+			Brands newBrand = brandRepo.getBrandRepo(newBrandId);
 			
 			if(product.getBrand() != null)
 			{
-				Brand oldBrand = brandRepo.getBrandRepo(product.getBrand());
+				Brands oldBrand = brandRepo.getBrandRepo(product.getBrand());
 				
 				for(Pobject productObject: oldBrand.getBrandProducts())
 				{
@@ -692,7 +649,7 @@ public class Services {
 			{
 				if(newBrandId != null)
 				{
-					Brand brand = brandRepo.getBrandRepo(newBrandId);
+					Brands brand = brandRepo.getBrandRepo(newBrandId);
 				    Pobject productObject = new Pobject(productId, newProductName, newProductImage, brand.getName(), newProductPrice, newProductDiscount);
 				    
 				    if(newParentCategory.getCategoryProducts() == null)
@@ -736,82 +693,110 @@ public class Services {
 	 
 	// --------------------------------------------- BRANDS ----------------------------------------------------
 	 
-	 public List<Brand> listBrandService(){
-			return brandRepo.listBrandRepo();
-		}
+	public List<Brands> listBrandService()
+	{
+		List<Brands> returnedBrands = brandRepo.listBrandRepo();
+		return returnedBrands;
+	}
 		
-		public Brand getBrandService(UUID brandID) {
-			return brandRepo.getBrandRepo(brandID);
-		}
+	public Brands getBrandService(Map<String, Object> body)
+	{
+		UUID brandId = UUID.fromString((String)body.get("id"));
+		Brands returnedBrand = brandRepo.getBrandRepo(brandId);
+		return returnedBrand;
+	}
+	
+	public List<Pobject> listBrandProductsService(Map<String, Object> body)
+	{
+		UUID brandId = UUID.fromString((String)body.get("id"));
+		Brands brand = brandRepo.getBrandRepo(brandId);
+		List<Pobject> brandProducts = new ArrayList<>();
 		
-		public List<Pobject> listBrandProductsService(UUID brandId)
+		if(brand.getBrandProducts() != null)
 		{
-			Brand brand = brandRepo.getBrandRepo(brandId);
-			List<Pobject> brandProducts = new ArrayList<>();
-			
-			if(brand.getBrandProducts() != null)
+			for(Pobject product: brand.getBrandProducts())
 			{
-				for(Pobject product: brand.getBrandProducts())
-				{
-					brandProducts.add(product);
-				}
+				brandProducts.add(product);
 			}
-			return brandProducts;
 		}
+		return brandProducts;
+	}
+	
+	public void deleteBrandService(Map<String, Object> body)
+	{
+		UUID brandId = UUID.fromString((String)body.get("id"));
+		Brands brand = brandRepo.getBrandRepo(brandId);
 		
-		public void deleteBrandService(UUID brandID)
+		//Set all products to be null parent category if had products
+		if(brand.getBrandProducts() != null)
 		{
-			Brand brand = brandRepo.getBrandRepo(brandID);
-			//Set all products to be null parent category if had products
-			if(brand.getBrandProducts() != null)
+			for(Pobject prod : brand.getBrandProducts())
 			{
-				for(Pobject prod : brand.getBrandProducts())
+				Products product = prodRepo.getProductRepo(prod.getId());
+				UUID parentCategoryId = product.getParentCategory();
+				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+				for(Pobject categoryProd : parentCategory.getCategoryProducts())
 				{
-					Products product = prodRepo.getProductRepo(prod.getId());
-					UUID parentCategoryId = product.getParentCategory();
-					Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-					for(Pobject categoryProd : parentCategory.getCategoryProducts())
+					if(categoryProd.getId().equals(prod.getId()))
 					{
-						if(categoryProd.getId().equals(prod.getId()))
-						{
-							categoryProd.setBrandName("");
-							catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-							break;
-						}
+						categoryProd.setBrandName("");
+						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+						break;
 					}
-					product.setBrand(null);
-					prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
 				}
+				product.setBrand(null);
+				prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
 			}
-			brandRepo.deleteBrandRepo(brandID);
 		}
+		brandRepo.deleteBrandRepo(brandId);
+	}
+	
+	public void addBrandService(Map<String, Object> body)
+	{
+		UUID brandId = Uuids.timeBased();
+		String brandName = "";
+		ArrayList<Pobject> brandProducts = new ArrayList<>();
 		
-		public void addBrandService(Map<String, Object> body)
+		if(body.containsKey("name"))
+			brandName = (String)body.get("name");
+		
+		brandRepo.addBrandRepo(brandId,brandName,brandProducts);
+	}
+	
+	public void updateBrandService(Map<String, Object> body)
+	{
+		String newBrandName;
+		
+		UUID brandId = UUID.fromString((String)body.get("id"));
+		Brands brand = brandRepo.getBrandRepo(brandId);
+		
+		if(body.containsKey("name"))
 		{
-			UUID brandId = Uuids.timeBased();
-			String brandName = "";
-			ArrayList<Pobject> brandProducts = new ArrayList<>();
+			newBrandName = (String)body.get("name");
 			
-			if(body.containsKey("name"))
-				brandName = (String)body.get("name");
-			
-			brandRepo.addBrandRepo(brandId,brandName,brandProducts);
+			for(Pobject prod : brand.getBrandProducts())
+			{
+				Products product = prodRepo.getProductRepo(prod.getId());
+				UUID parentCategoryId = product.getParentCategory();
+				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+				
+				for(Pobject categoryProd : parentCategory.getCategoryProducts())
+				{
+					if(categoryProd.getId().equals(prod.getId()))
+					{
+						categoryProd.setBrandName(newBrandName);
+						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+						break;
+					}
+				}
+				
+				prod.setBrandName(newBrandName);
+			}
 		}
-		public void updateBrandService(UUID brandId, Map<String, Object> body)
-		{
-			String newBrandName;
-			List<Pobject> newBrandProducts;
-			
-			Brand brand = brandRepo.getBrandRepo(brandId);
-			
-			if(body.containsKey("name"))
-				newBrandName = (String)body.get("name");
-			else
-				newBrandName = brand.getName();
-			
-			newBrandProducts = brand.getBrandProducts();
-			
-			brandRepo.updateBrandRepo(brandId, newBrandName, newBrandProducts);
-		}
+		else
+			newBrandName = brand.getName();
+		
+		brandRepo.updateBrandRepo(brandId, newBrandName, brand.getBrandProducts());
+	}
 		// --------------------------------------------- END BRANDS -------------------------------------------------
 }

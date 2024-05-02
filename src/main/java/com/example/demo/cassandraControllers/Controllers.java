@@ -2,7 +2,6 @@ package com.example.demo.cassandraControllers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,9 +19,9 @@ import com.example.demo.cassandraServices.Services;
 
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 import com.example.demo.cassandraModels.Products;
-import com.example.demo.cassandraModels.Brand;
+import com.example.demo.cassandraCommands.Invoker;
+import com.example.demo.cassandraModels.Brands;
 
 
 @RestController
@@ -30,43 +29,40 @@ public class Controllers {
 	
 	@Autowired
 	private Services service;
+	@Autowired
+	private Invoker invoker;
 	
 	// --------------------------------------------- CATEGORIES ------------------------------------------------
 	
+	@SuppressWarnings("unchecked")
 	@GetMapping("/listCategories")
 	public List<Categories> listCategories()
 	{
-		return service.listCategoriesService();
+		return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null);
 	}
 	
-	@GetMapping("/getCategory/{categoryId}")
-	public Categories getCategory(@PathVariable UUID categoryId)
+	@PostMapping("/getCategory")
+	public Categories getCategory(@RequestBody Map<String, Object> body)
 	{
-		return service.getCategoryService(categoryId);
+		return (Categories) invoker.executeCommand("getCategoryCommand", body);
 	}
 	
-	@DeleteMapping("/deleteCategory/{categoryId}")
-	public void deleteCategory(@PathVariable UUID categoryId)
+	@DeleteMapping("/deleteCategory")
+	public String deleteCategory(@RequestBody Map<String, Object> body)
 	{
-		service.deleteCategoryService(categoryId);
+		return (String) invoker.executeCommand("deleteCategoryCommand", body);
 	}
 	
 	@PostMapping("/addCategory")
-	public void addCategory(@RequestBody Map<String, Object> body)
+	public String addCategory(@RequestBody Map<String, Object> body)
 	{
-		service.addCategoryService(body);
+		return (String) invoker.executeCommand("addCategoryCommand", body);
 	}
 	
-	@PostMapping("/addCategory/{categoryId}")
-	public void addCategory(@PathVariable UUID categoryId, @RequestBody Map<String, Object> body)
+	@PutMapping("/updateCategory")
+	public String updateCategory(@RequestBody Map<String, Object> body)
 	{
-		service.addCategoryService(categoryId, body);
-	}
-	
-	@PutMapping("/updateCategory/{categoryId}")
-	public void updateCategory(@PathVariable UUID categoryId, @RequestBody Map<String, Object> body)
-	{
-		service.updateCategoryService(categoryId, body);
+		return (String) invoker.executeCommand("updateCategoryCommand", body);
 	}
 	
 	// --------------------------------------------- END CATEGORIES ------------------------------------------------
@@ -75,29 +71,26 @@ public class Controllers {
 	
 	// --------------------------------------------- PRODUCTS ------------------------------------------------
 	
-//	@GetMapping("/getAllProducts")
-//	public List<Products> listProducts() {
-//	    return service.listProductsService();
-//	}
 	@GetMapping("/listProducts")
 	public Slice<Products> listProducts(@RequestParam(name = "page", defaultValue = "0") int page,
 	        @RequestParam(name = "size", defaultValue = "10") int size) {
 	    return service.listProductsService(page, size);
 	}
 
-	@GetMapping("/getProduct/{productId}")
-	public Products getProduct(@PathVariable UUID productId) {
-	    return service.getProductService(productId);
+	@PostMapping("/getProduct")
+	public Products getProduct(@RequestBody Map<String, Object> body)
+	{
+		return service.getProductService(body);
 	}
 	
-	@GetMapping("/listCategoryProducts/{categoryId}")
-	public List<Pobject> listCategoryProducts(@PathVariable UUID categoryId) {
-	    return service.listCategoryProductsService(categoryId);
+	@PostMapping("/listCategoryProducts")
+	public List<Pobject> listCategoryProducts(@RequestBody Map<String, Object> body) {
+	    return service.listCategoryProductsService(body);
 	}
 	
-	@DeleteMapping("/deleteProduct/{productId}")
-	public void deleteProduct(@PathVariable UUID productId) {
-	    service.deleteProductService(productId);
+	@DeleteMapping("/deleteProduct")
+	public void deleteProduct(@RequestBody Map<String, Object> body) {
+	    service.deleteProductService(body);
 	}
 	
 	@PostMapping("/addProduct")
@@ -105,51 +98,38 @@ public class Controllers {
         service.addProductService(body);
    	}
 	
-	@PostMapping("/addProduct/{categoryId}")
-    public void addProduct(@PathVariable UUID categoryId, @RequestBody Map<String, Object> body) {
-        service.addProductService(categoryId, body);
-   	}
-	
-	@PutMapping("/updateProduct/{productId}")
-	public void updateProduct(@PathVariable UUID productId, @RequestBody Map<String, Object> body) {
-	    service.updateProductService(productId, body);
+	@PutMapping("/updateProduct")
+	public void updateProduct(@RequestBody Map<String, Object> body) {
+	    service.updateProductService(body);
 	}
 	
-//	@PostMapping("/products")
-//    public void addProduct(@RequestBody Products product) {
-//        service.addProduct(product.getName(), product.getDescription(), product.getPrice(),
-//                product.getDiscount(), product.isSale(), product.getImage(), product.getProductType(),
-//                product.getBrandId(), product.getSizeList(), product.getCustomMessage(), product.isInStore(),
-//                product.isSameDayDelivery(), product.isShipping(), product.getInventory(), product.getPricePerUnit(),
-//                product.getIngredients(), product.getWarnings(), product.getFrequentlyBoughtWith(),
-//                product.isRefundable());
-//   	}
 	
 	// --------------------------------------------- END PRODUCTS ---------------------------------------------
 	
 	// --------------------------------------------- BRANDS ------------------------------------------------
 
 	@GetMapping("/listBrand")
-	public List<Brand> ListBrand()
+	public List<Brands> ListBrand()
 	{
 		return service.listBrandService();
 	}
 	
-	@GetMapping("/getBrand/{brandId}")
-	public Brand getBrand(@PathVariable UUID brandId) 
+	@PostMapping("/getBrand")
+	public Brands getBrand(@RequestBody Map<String, Object> body)
 	{
-		return service.getBrandService(brandId);
+		return service.getBrandService(body);
 	}
 	
-	@GetMapping("/listBrandProducts/{brandId}")
-	public List<Pobject> listBrandProducts(@PathVariable UUID brandId) {
-	    return service.listBrandProductsService(brandId);
+	@PostMapping("/listBrandProducts")
+	public List<Pobject> listBrandProducts(@RequestBody Map<String, Object> body) 
+	{
+	    return service.listBrandProductsService(body);
 	}
 	
-	@DeleteMapping("/deleteBrand/{brandId}")
-	public void deleteBrand(@PathVariable UUID brandId)
+	@DeleteMapping("/deleteBrand")
+	public void deleteBrand(@RequestBody Map<String, Object> body)
 	{
-		service.deleteBrandService(brandId);
+		service.deleteBrandService(body);
 	}
 	@PostMapping("/addBrand")
 	public void addBrand(@RequestBody Map<String, Object> body)
@@ -157,10 +137,10 @@ public class Controllers {
 		service.addBrandService(body);
 	}
 	
-	@PutMapping("/updateBrand/{brandId}")
-	public void updateBrand(@PathVariable UUID brandId, @RequestBody Map<String, Object> body)
+	@PutMapping("/updateBrand")
+	public void updateBrand(@RequestBody Map<String, Object> body)
 	{
-		service.updateBrandService(brandId, body);
+		service.updateBrandService(body);
 	}
 	
 	// --------------------------------------------- END BRANDS ---------------------------------------------

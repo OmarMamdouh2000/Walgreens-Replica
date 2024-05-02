@@ -16,10 +16,10 @@ public interface CategoriesRepo extends CassandraRepository<Categories,UUID> {
 	List<Categories> listCategoriesRepo();
 	
 	@Query("SELECT * FROM categories WHERE id=:categoryId ALLOW FILTERING")
-	Categories getCategoryRepo(@Param("categoryId") UUID categoryId);
+	Categories getCategoryRepo(UUID categoryId);
 	
 	@Query("DELETE FROM categories WHERE id=:categoryId")
-	void deleteCategoryRepo(@Param("categoryId") UUID categoryId);
+	void deleteCategoryRepo(UUID categoryId);
 	
 	@Query("INSERT INTO categories (id,name,image,parentcategory,subcategories,categoryproducts) VALUES (:categoryId,:categoryName,:categoryImage,:parentCategory,:categorySubCategories,:categoryProducts)")
 	void addCategoryRepo(UUID categoryId, String categoryName, String categoryImage, UUID parentCategory, List<UUID> categorySubCategories, List<Pobject> categoryProducts);

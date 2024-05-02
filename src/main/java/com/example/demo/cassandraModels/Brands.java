@@ -14,13 +14,13 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Brand {
+public class Brands {
 	@PrimaryKey
 	public UUID id;
 	public String name;
 	public List<Pobject> brandProducts;
 	
-//	public Brand(UUID id, String name, ArrayList<UUID> categories_id) {
+//	public Brands(UUID id, String name, ArrayList<UUID> categories_id) {
 //		super();
 //		this.id = id;
 //		this.name = name;
@@ -47,8 +47,4 @@ public class Brand {
 	public void setBrandProducts(List<Pobject> brandProducts) {
 		this.brandProducts = brandProducts;
 	}
-	
-	
-	
-	
 }
