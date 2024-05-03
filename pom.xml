@@ -73,6 +73,15 @@
     <version>0.11.2</version>
     <scope>runtime</scope>
 </dependency>
+<dependency>
+    <groupId>com.datastax.cassandra</groupId>
+    <artifactId>cassandra-driver-core</artifactId>
+    <version>3.10.2</version>
+</dependency>
+<dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka</artifactId>
+    </dependency>
 	</dependencies>
 
 	<build>

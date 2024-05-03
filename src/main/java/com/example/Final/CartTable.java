@@ -31,11 +31,13 @@ public class CartTable {
     @Column("total_amount")
     private double total_amount;
 
-    @Column("appliedpromocodeid")
-    private UUID appliedpromocodeid;
+    @Column("appliedPromoCodeId")
+    private String appliedPromoCodeId;
+    
+    private double promoCodeAmount;
 
-    @Column("promocodeamount")
-    private double promocodeamount;
+//    @Column("promocodeamount")
+//    private double promocodeamount;
 
     @Column("ordertype")
     private String ordertype;
@@ -44,7 +46,7 @@ public class CartTable {
 
     }
 
-    public CartTable(UUID id,UUID appliedPromoCodeId, List<CartItem> items, String orderType,
+    public CartTable(UUID id,String appliedPromoCodeId, List<CartItem> items, String orderType,
                      List<CartItem> savedForLaterItems, double totalAmount, UUID userId)
     {
         this.id = id;
@@ -52,7 +54,7 @@ public class CartTable {
         this.items = items;
         this.savedforlateritems = savedForLaterItems;
         this.total_amount = totalAmount;
-        this.appliedpromocodeid = appliedPromoCodeId;
+        this.appliedPromoCodeId = appliedPromoCodeId;
         this.ordertype = orderType;
     }
 
@@ -97,17 +99,17 @@ public class CartTable {
         this.total_amount = totalAmount;
     }
 
-    public UUID getAppliedPromoCodeId() {
-        return appliedpromocodeid;
+    public String getAppliedPromoCodeId() {
+        return appliedPromoCodeId;
     }
 
-    public void setAppliedPromoCodeId(UUID appliedPromoCodeId) {
-        this.appliedpromocodeid = appliedPromoCodeId;
+    public void setAppliedPromoCodeId(String appliedPromoCodeId) {
+        this.appliedPromoCodeId = appliedPromoCodeId;
     }
 
-    public double getPromocodeamount() { return promocodeamount;}
-
-    public void setPromocodeamount(double promocodeamount) {this.promocodeamount = promocodeamount; }
+//    public double getPromocodeamount() { return promocodeamount;}
+//
+//    public void setPromocodeamount(double promocodeamount) {this.promocodeamount = promocodeamount; }
 
     public String getOrderType() {
         return ordertype;
@@ -125,8 +127,17 @@ public class CartTable {
                 ", items=" + items +
                 ", savedForLaterItems=" + savedforlateritems +
                 ", totalAmount=" + total_amount +
-                ", appliedPromoCodeId=" + appliedpromocodeid +
+                ", appliedPromoCodeId=" + appliedPromoCodeId +
                 ", orderType='" + ordertype + '\'' +
                 '}';
     }
+
+	public double getPromoCodeAmount() {
+		return promoCodeAmount;
+	}
+
+	public void setPromoCodeAmount(double promoCodeAmount) {
+		this.promoCodeAmount = promoCodeAmount;
+	}
+    
 }

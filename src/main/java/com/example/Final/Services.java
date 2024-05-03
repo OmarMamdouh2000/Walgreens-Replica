@@ -14,9 +14,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 
-//@Service
+// @Service
 // class JwtDecoderService {
-//
+
 //    public Claims decodeJwtToken(String token, String secretKey) {
 //        try {
 //            Jws<Claims> jws = Jwts.parserBuilder()
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 //            return null;
 //        }
 //    }
-//}
+// }
 @Service
 public class Services {
 	@Autowired
@@ -51,7 +51,7 @@ public class Services {
             if(userCart != null){
                 return userCart;
             }else{
-                return new CartTable(UUID.randomUUID(),userId,new ArrayList<CartItem>(), "online", new ArrayList<CartItem>(), 0.0, UUID.randomUUID());
+                return new CartTable(UUID.randomUUID(),"",new ArrayList<CartItem>(), "online", new ArrayList<CartItem>(), 0.0, userId);
             }
         }catch (Exception e){
             throw new Exception(e.getMessage());
@@ -71,19 +71,36 @@ public class Services {
             List<CartItem> oldItems=oldCart.getItems();
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             for(int i=0;i<oldItems.size();i++) {
             	if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
-            		if(count>0)
+            		if(count>0) {
+            			int oldcount=oldItems.get(i).getItemCount();
             			oldItems.get(i).setItemCount(count);
-            		else {
+            			double increase=(count-oldcount)*oldItems.get(i).getPurchasedPrice();
+            			if(oldCart.getAppliedPromoCodeId() !=null) {
+            				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+            			}
+            			newTotal=oldCart.getTotalAmount()+increase;
+            			System.out.println(newTotal);
+            		}else {
+            			int oldcount=oldItems.get(i).getItemCount();
+            			double increase=(count-oldcount)*oldItems.get(i).getPurchasedPrice();
+            			if(oldCart.getAppliedPromoCodeId() !=null) {
+            				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+            			}
+            			newTotal=oldCart.getTotalAmount()+increase;
+            			
             			oldItems.remove(i);
+            			
+            			
             		}
             		found=true;
             		break;
             	}
             }
             if(found)
-            	cartRepo.updateCartItems(oldItems, cartId);
+            	cartRepo.updateCartItems(oldItems, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -110,15 +127,22 @@ public class Services {
             }
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             for(int i=0;i<oldItems.size();i++) {
             	if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
             		newSaved.add(oldItems.get(i));
+            		int oldcount=oldItems.get(i).getItemCount();
+        			double increase=(0-oldcount)*oldItems.get(i).getPurchasedPrice();
+        			if(oldCart.getAppliedPromoCodeId() !=null) {
+        				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+        			}
+        			newTotal=oldCart.getTotalAmount()+increase;
             		oldItems.remove(i);
             		found=true;
             	}
             }
             if(found)
-            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId);
+            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -142,18 +166,25 @@ public class Services {
             List<CartItem> newSaved=oldCart.getSavedForLaterItems();
             UUID cartId=oldCart.getId();
             boolean found=false;
+            double newTotal=0;
             if(oldItems==null) {
             	oldItems=new ArrayList<CartItem>();
             }
             for(int i=0;i<newSaved.size();i++) {
             	if(newSaved.get(i).getItemId().equals(UUID.fromString(itemId))) {
             		oldItems.add(newSaved.get(i));
+            		int oldcount=newSaved.get(i).getItemCount();
+        			double increase=(oldcount)*newSaved.get(i).getPurchasedPrice();
+        			if(oldCart.getAppliedPromoCodeId() !=null) {
+        				increase=increase - increase*oldCart.getPromoCodeAmount()/100.0;
+        			}
+        			newTotal=oldCart.getTotalAmount()+increase;
             		newSaved.remove(i);
             		found=true;
             	}
             }
             if(found)
-            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId);
+            	cartRepo.updateCartItemsAndSaved(oldItems,newSaved, cartId,newTotal);
             else {
             	return "invalid item id";
             }
@@ -225,21 +256,19 @@ public class Services {
         UUID userID = UUID.fromString(user);
 
         try {
-            //get promo from userPromos --> if not found return invalid
-//            PromoCodeTable promo = promoRepo.getPromoCodeByCode(promoCode);
-            UUID promoID = promoRepo.getPromoCodeByCode(promoCode);
+            //get promo from promos --> if not found return invalid
+            PromoCodeTable promo = promoRepo.getPromoCodeByCode(promoCode);
 
-            if (promoID == null) {
+            if (promo == null) {
                 throw new Exception("Promo not found");
             }else {
-                PromoCodeTable promo = promoRepo.getPromoCode(promoID);
 
                 CartTable userCart = cartRepo.getCart(userID);
                 if (userCart == null) {
                     throw new Exception("Cart not found");
                 }
                 //check if promo is in userUsedPromos --> if so return invalid
-                UserUsedPromo isUsed = userUsedPromoRepo.findUserPromo(userID, promoID);
+                UserUsedPromo isUsed = userUsedPromoRepo.findUserPromo(userID, promoCode);
 
                 if (isUsed != null) {
                     throw new Exception("Promo already used");
@@ -256,9 +285,11 @@ public class Services {
                     userCart.setTotalAmount(newAmount);
 
                     //apply promo to cart
-                    userCart.setAppliedPromoCodeId(promoID);
+                    userCart.setAppliedPromoCodeId(promoCode);
+                    userCart.setPromoCodeAmount(promo.getDiscountValue());
+
                     //add promo to userUsedPromos
-                    userUsedPromoRepo.insertUserPromo(userID, promoID);
+                    userUsedPromoRepo.insertUserPromo(userID, promoCode);
 
                     return cartRepo.save(userCart);
                 }
@@ -268,4 +299,7 @@ public class Services {
             throw new Exception(e.getMessage());
         }
     }
+    public List<UserUsedPromo> getAllUsedPromo(){
+		return userUsedPromoRepo.getAll();
+	}
 }

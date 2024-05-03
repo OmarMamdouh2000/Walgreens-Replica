@@ -10,6 +10,6 @@ public interface PromoRepo extends CassandraRepository<PromoCodeTable, UUID> {
     @Query("select * from promocodes where id=:promoId ALLOW FILTERING")
     PromoCodeTable getPromoCode(@Param("promoId") UUID promoId);
 
-    @Query("select id from promocodes where code=:code ALLOW FILTERING")
-    UUID getPromoCodeByCode(@Param("code") String code);
+    @Query("select * from promocodes where code=:code ALLOW FILTERING")
+    PromoCodeTable getPromoCodeByCode(@Param("code") String code);
 }

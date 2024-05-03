@@ -14,11 +14,19 @@ public class UserUsedPromo {
 
     @PrimaryKeyColumn( ordinal = 1, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.ASCENDING)
 
-    private UUID promoCodeId;
+    private String promoCodeId;
 
-    public UserUsedPromo(UUID userId, UUID promoCodeId) {
+    public UserUsedPromo(UUID userId, String promoCodeId) {
         this.userId = userId;
         this.promoCodeId = promoCodeId;
+    }
+
+    @Override
+    public String toString() {
+        return "UserUsedPromoKey{" +
+                "userId=" + userId +
+                ", promoCodeId=" + promoCodeId +
+                '}';
     }
 
     public UUID getUserId() {
@@ -29,11 +37,11 @@ public class UserUsedPromo {
         this.userId = userId;
     }
 
-    public UUID getPromoCodeId() {
+    public String getPromoCodeId() {
         return promoCodeId;
     }
 
-    public void setPromoCodeId(UUID promoCodeId) {
+    public void setPromoCodeId(String promoCodeId) {
         this.promoCodeId = promoCodeId;
     }
 }

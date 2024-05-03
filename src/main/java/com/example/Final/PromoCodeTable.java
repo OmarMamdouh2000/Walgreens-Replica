@@ -12,10 +12,7 @@ import java.util.UUID;
 @Table("PromoCodes")
 public class PromoCodeTable {
 
-    @PrimaryKeyColumn
-    private UUID id;
-
-    @PrimaryKeyColumn
+    @PrimaryKey
     private String code;
 
     @Column("discountvalue")
@@ -30,8 +27,8 @@ public class PromoCodeTable {
     public PromoCodeTable() {
     }
 
-    public PromoCodeTable(UUID id, String code, double discountValue, boolean valid, LocalDate expiryDate) {
-        this.id = id;
+    public PromoCodeTable(String code, double discountValue, boolean valid, LocalDate expiryDate) {
+//        this.id = id;
         this.code = code;
         this.discountValue = discountValue;
         this.valid = valid;
@@ -41,7 +38,6 @@ public class PromoCodeTable {
     @Override
     public String toString() {
         return "PromoCode{" +
-                "id=" + id +
                 ", code='" + code + '\'' +
                 ", discountValue=" + discountValue +
                 ", valid=" + valid +
@@ -49,13 +45,7 @@ public class PromoCodeTable {
                 '}';
     }
 
-    public UUID getId() {
-        return id;
-    }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getCode() {
         return code;
