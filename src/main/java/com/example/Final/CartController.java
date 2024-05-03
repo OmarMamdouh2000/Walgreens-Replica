@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Commands.Invoker;
+import com.example.Commands.JwtDecoderService;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,8 @@ public class CartController {
 	private JwtDecoderService jwtDecoderService;
 	@Autowired
 	public Services cartService;
+	@Autowired
+	public Invoker invoker=new Invoker();
 
 	@GetMapping("/hello")
 	public String hello() {
@@ -46,15 +50,15 @@ public class CartController {
 
 	@PostMapping("/editItemCount")
 	public String editItemCount(@RequestBody Map<String,Object> data) {
-		return cartService.updateItemCount((String)data.get("itemId"), (String)data.get("token"), (int)data.get("itemCount"));
+		return invoker.executeCommand("UpdateItemCountCommand", data).toString();
 	}
 	@PostMapping("/addItemToSavedLater")
 	public String addItemToSavedLater(@RequestBody Map<String, Object> data) {
-		return cartService.addToSavedForLater((String)data.get("itemId"), (String)data.get("token"));
+		return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
 	public String returnItemFromSavedLater(@RequestBody Map<String, Object> data) {
-		return cartService.returnFromSavedForLater((String)data.get("itemId"), (String)data.get("token"));
+		return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
 	}
 
 	@PostMapping("/removeItem")
