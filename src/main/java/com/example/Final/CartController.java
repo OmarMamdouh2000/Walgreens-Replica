@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.jsonwebtoken.Claims;
+
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.example.Commands.Invoker;
 import com.example.Commands.JwtDecoderService;
-
 import org.springframework.web.bind.annotation.*;
+import com.example.Kafka.KafkaProducer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class CartController {
@@ -27,6 +31,13 @@ public class CartController {
 	public Services cartService;
 	@Autowired
 	public Invoker invoker=new Invoker();
+
+	// @Autowired
+	// private ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
+	@Autowired
+	KafkaProducer kafkaProducerResponse;
+	@Autowired
+	KafkaProducer kafkaProducerRequest;
 
 	@GetMapping("/hello")
 	public String hello() {
@@ -44,16 +55,54 @@ public class CartController {
 	}
 
 	@PostMapping("/editItemCount")
-	public String editItemCount(@RequestBody Map<String,Object> data) {
-		return invoker.executeCommand("UpdateItemCountCommand", data).toString();
+	public String editItemCount(@RequestParam String token,@RequestBody Map<String,Object> data) {
+
+
+		data.put("token", token);
+		data.put("commandName", "UpdateItemCountCommand");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+		//return invoker.executeCommand("UpdateItemCountCommand", data).toString();
+
 	}
 	@PostMapping("/addItemToSavedLater")
-	public String addItemToSavedLater(@RequestBody Map<String, Object> data) {
-		return invoker.executeCommand("AddToSavedForLater", data).toString();
+	public String addItemToSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
+		data.put("token", token);
+		data.put("commandName", "AddToSavedForLater");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+
+		return "success";
+		//return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
-	public String returnItemFromSavedLater(@RequestBody Map<String, Object> data) {
-		return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
+	public String returnItemFromSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
+		data.put("token", token);
+		data.put("commandName", "ReturnFromSavedForLater");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+
+		return "success";
+		//return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
 	}
 
 	@PostMapping("/removeItem")

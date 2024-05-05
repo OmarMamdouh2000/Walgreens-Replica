@@ -6,11 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.UUID;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.data.cassandra.repository.CassandraRepository;
-import org.springframework.data.cassandra.repository.Query;
-import org.springframework.stereotype.Repository;
 
 public interface UserUsedPromoRepo  extends CassandraRepository<UserUsedPromo, UUID> {
     @Query("select * from userusedpromo where userid=:userId and promocodeid=:promoCodeId ALLOW FILTERING")
