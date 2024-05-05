@@ -14,4 +14,17 @@ public interface AdminRepository extends JpaRepository<Admin, String>{
     @Query(value = "SELECT admin_id AS admin_id, status AS status, message AS message FROM login_admin(:username, :password)", nativeQuery = true)
     Tuple loginAdmin(@Param("username") String username,
                      @Param("password") String password);
+
+    @Query(value = "SELECT * FROM ban_account(:p_user_id)", nativeQuery = true)
+    Tuple banAccount(@Param("p_id") UUID id);
+
+    @Query(value = "SELECT * FROM add_admin(:v_username,v_password)", nativeQuery = true)
+    Tuple addAdmin(@Param("v_username") String username,
+                   @Param("v_password") String password);
+
+    @Query(value = "SELECT * FROM add_pharmacist(:p_first_name,p_last_name,p_email,p_password)", nativeQuery = true)
+    Tuple addPharmacist(@Param("p_first_name") String firstName,
+                   @Param("p_last_name") String lastName,
+                   @Param("p_email") String email,
+                   @Param("p_password") String password);
 }

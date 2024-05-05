@@ -44,6 +44,10 @@ public interface UserRepository extends JpaRepository<User, String> {
                   @Param("p_phone_number") String phoneNumber,
                   @Param("p_extension") String extension);
 
+    @Query(value = "SELECT * FROM update_2fa_status(:p_id, :p_enabled)", nativeQuery = true)
+    Tuple update2FAStatus(@Param("p_id") UUID id,
+                         @Param("p_enabled") boolean twoFAEnabled);
+
 
 
 

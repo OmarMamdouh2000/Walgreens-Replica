@@ -1,9 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserRegistrationRequest;
+import com.agmadnasfelguc.walgreensreplica.user.service.requests.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +22,10 @@ public class UserController {
     private final Command logoutCommand;
     private final Command verifyOTPCommand;
 
+    private final Command update2FAStatusCommand;
+
     @Autowired
-    public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command sendMailCommand, Command logoutCommand, Command verifyOTPCommand) {
+    public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command sendMailCommand, Command logoutCommand, Command verifyOTPCommand ,Command update2FAStatusCommand) {
         this.registerCommand = registerCommand;
         this.changeEmailCommand = changeEmailCommand;
         this.changePasswordCommand = changePasswordCommand;
@@ -35,6 +34,7 @@ public class UserController {
         this.sendMailCommand = sendMailCommand;
         this.logoutCommand = logoutCommand;
         this.verifyOTPCommand = verifyOTPCommand;
+        this.update2FAStatusCommand = update2FAStatusCommand;
     }
 
     @PostMapping("/registerUser")
@@ -138,6 +138,14 @@ public class UserController {
         ((SendMailCommand)sendMailCommand).setOTP(OTP);
         sendMailCommand.execute();
         return formulateResponse(sendMailCommand);
+    }
+
+    @PostMapping("/update2FA")
+    public ResponseEntity<Object> update2FA(@RequestParam String userId ,@RequestParam boolean twoFAEnabled) {
+        ((update2FAStatusCommand)update2FAStatusCommand).setUserId(userId);
+        ((update2FAStatusCommand)update2FAStatusCommand).setTwoFAEnabled(twoFAEnabled);
+        update2FAStatusCommand.execute();
+        return formulateResponse(update2FAStatusCommand);
     }
 
     private ResponseEntity<Object> formulateResponse(Command command){
