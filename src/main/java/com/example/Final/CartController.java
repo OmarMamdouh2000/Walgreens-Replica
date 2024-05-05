@@ -34,17 +34,12 @@ public class CartController {
 	}
 
 	@GetMapping("/getCart")
-	public ResponseEntity<Object> getCart(@RequestParam String token) throws Exception {
+	public Object getCart(@RequestParam String token) {
 		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 		if (claims == null) {
 			return new ResponseEntity<>("Invalid Token", HttpStatus.UNAUTHORIZED);
 		} else {
-			try {
-				CartTable cart = cartService.getUserCart((String) claims.get("userId"));
-				return new ResponseEntity<>(cart, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			return invoker.executeCommand("GetUserCart", Map.of("User", claims.get("userId")));
 		}
 	}
 
@@ -62,55 +57,35 @@ public class CartController {
 	}
 
 	@PostMapping("/removeItem")
-	public ResponseEntity<Object> removeItemFromCart(@RequestBody  Map<String, Object> data) throws Exception{
-		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-		String item = (String) data.get("itemId");
-		UUID itemID = UUID.fromString(item);
+	public Object removeItemFromCart(@RequestParam String token ,@RequestBody Map<String, Object> data) throws Exception {
+		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 
-		if (claims == null) {
-			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+		if (claims == null) return new ResponseEntity<>("Invalid Token", HttpStatus.UNAUTHORIZED);
+		else {
+			return invoker.executeCommand("RemoveItem", Map.of("User", claims.get("userId"), "Item", data.get("itemId")));
 		}
-		else{
-			try {
-				CartTable cart = cartService.removeItemFromCart((String) claims.get("userId"), itemID);
-				return new ResponseEntity<>(cart, HttpStatus.OK);
-			} catch (Exception e) {
-				throw new Exception(e.getMessage());
-			}
-		}
-
 	}
 
 	@PostMapping("/changeOrderType")
-	public ResponseEntity<String> setOrderType(@RequestBody Map<String, Object> data) throws Exception {
-		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
+	public Object setOrderType(@RequestParam String token, @RequestBody Map<String, Object> data) throws Exception{
+		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 
-		if (claims == null) {
-			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-		}
+		if (claims == null) return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 		else{
-			try {
-				cartService.setOrderType((String) claims.get("userId"), (String) data.get("orderType"), (String) data.get("itemId"));
-				return new ResponseEntity<>("Order type changed successfully", HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			return invoker.executeCommand("ChangeOrderType", Map.of("User", claims.get("userId"), "Data", data));
 		}
 	}
+
 	@PostMapping("/applyPromo")
-	public ResponseEntity<Object> applyPromo(@RequestBody Map<String, Object> data) {
-		Claims claims = jwtDecoderService.decodeJwtToken((String) data.get("token"), "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-		if (claims == null) {
-			return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-		} else {
-			try {
-				CartTable cart = cartService.applyPromo((String) claims.get("userId"), (String) data.get("promoCode"));
-				return new ResponseEntity<>(cart, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+	public Object applyPromo(@RequestParam String token, @RequestBody Map<String, Object> data){
+		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
+
+		if (claims == null) return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+		else{
+			return invoker.executeCommand("ApplyPromo", Map.of("User", claims.get("userId"), "Data", data));
 		}
 	}
+
 	@GetMapping("/getAllUsedPromo")
 	public List<UserUsedPromo> getAllPromoUsed(){
 		return cartService.getAllUsedPromo();

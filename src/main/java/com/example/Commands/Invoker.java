@@ -5,7 +5,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.Final.PromoRepo;
+import com.example.Final.UserUsedPromo;
+import com.example.Final.UserUsedPromoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.Final.CartRepo;
@@ -17,31 +22,42 @@ public class Invoker {
     @Autowired
     private CartRepo cartRepo;
     @Autowired
+    private PromoRepo promoRepo;
+    @Autowired
+    private UserUsedPromoRepo userUsedPromoRepo;
+    @Autowired
     private JwtDecoderService jwtDecoderService;
+
     public Invoker() {
         commandMap = new HashMap<>();
         commandMap.put("UpdateItemCountCommand","com.example.Commands.UpdateItemCountCommand");
         commandMap.put("AddToSavedForLater", "com.example.Commands.AddToSavedForLaterCommand");
         commandMap.put("ReturnFromSavedForLater", "com.example.Commands.ReturnFromSavedForLaterCommand");
+        commandMap.put("GetUserCart", "com.example.Commands.GetUserCart");
+        commandMap.put("RemoveItem", "com.example.Commands.RemoveItem");
+        commandMap.put("ChangeOrderType", "com.example.Commands.ChangeOrderType");
+        commandMap.put("ApplyPromo", "com.example.Commands.ApplyPromo");
 
 
     }
+
     public Object executeCommand(String commandName,Map<String,Object> data) {
-        System.out.println(commandMap);
+//        System.out.println(commandMap);
         if (commandMap.containsKey(commandName)) {
             try{
                 String className = commandMap.get(commandName);
-            Class<?> class1 = Class.forName(className);
-            Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class); // replace with your parameter types
-            Object instance = constructor.newInstance(cartRepo, jwtDecoderService); // replace with your actual parameters
+                Class<?> class1 = Class.forName(className);
+                Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class , PromoRepo.class, UserUsedPromoRepo.class); // replace with your parameter types
+                Object instance = constructor.newInstance(cartRepo, jwtDecoderService, promoRepo, userUsedPromoRepo); // replace with your actual parameters
 
-            // If your class has a method you want to invoke, you can do so like this:
-            String methodName = "execute"; // replace with your method name
-            Method method = class1.getDeclaredMethod(methodName,  Map.class); // replace with your method parameters
-            System.out.println(data);
-            return method.invoke(instance, data);
+                // If your class has a method you want to invoke, you can do so like this:
+                String methodName = "execute"; // replace with your method name
+                Method method = class1.getDeclaredMethod(methodName,  Map.class); // replace with your method parameters
+//                System.out.println(data);
+                return method.invoke(instance, data);
             }catch(Exception e){
-                e.printStackTrace();
+                return new ResponseEntity<>(e.getCause().getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//                return e.getCause().getMessage() + "  Invoker Exception";
             }
             
         } 

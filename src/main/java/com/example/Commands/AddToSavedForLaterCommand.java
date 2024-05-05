@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.example.Final.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.example.Final.CartItem;
-import com.example.Final.CartRepo;
-import com.example.Final.CartTable;
 
 import io.jsonwebtoken.Claims;
 
@@ -22,7 +19,7 @@ public class AddToSavedForLaterCommand implements Command {
     private CartRepo cartRepo;
     
     @Autowired
-    public AddToSavedForLaterCommand(CartRepo cartRepo,JwtDecoderService jwtDecoderService) {
+    public AddToSavedForLaterCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
     }
