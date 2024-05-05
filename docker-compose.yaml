@@ -10,16 +10,25 @@ services:
       - "walgreens_user_managmenet_postgres:/var/lib/postgresql/data:rw"
     ports:
       - "5432:5432"
+
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
-    - PGADMIN_DEFAULT_EMAIL=root@root.com
-    - PGADMIN_DEFAULT_PASSWORD=root
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+      - PGADMIN_DEFAULT_PASSWORD=root
     ports:
-    - "8081:80"
+      - "8081:80"
     volumes:
-    - walgreens_user_managmenet_pgadmin:/var/lib/pgadmin
+      - walgreens_user_managmenet_pgadmin:/var/lib/pgadmin
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=root
+    command: ["redis-server", "--requirepass", "root"]
+    ports:
+      - "6379:6379"
+
 volumes:
   walgreens_user_managmenet_postgres:
   walgreens_user_managmenet_pgadmin:
-

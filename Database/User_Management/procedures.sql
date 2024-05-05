@@ -18,7 +18,7 @@ RETURNS VARCHAR
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_user_id VARCHAR;
+    v_user_id UUID;
 BEGIN
     INSERT INTO "User" ("id", "email", "password", "status", "role")
     VALUES (gen_random_uuid(), p_email, p_password, 'Active','Customer')
@@ -41,7 +41,7 @@ Parameters:
 Returns: Status message indicating successful update (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION edit_personal_details(
-    p_user_id VARCHAR,
+    p_user_id UUID,
     p_address VARCHAR DEFAULT NULL,
     p_date_of_birth DATE DEFAULT NULL,
     p_gender "Gender" DEFAULT NULL,
@@ -165,7 +165,7 @@ Parameters:
 Returns: Status message indicating the result of the operation (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION change_password(
-    p_user_id VARCHAR,
+    p_user_id UUID,
     p_old_password VARCHAR,
     p_new_password VARCHAR,
     OUT status VARCHAR,
@@ -208,7 +208,7 @@ Parameters:
 Returns: Status message indicating the result of the operation (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION change_email(
-    p_user_id VARCHAR,
+    p_user_id UUID,
     p_password VARCHAR,
     p_new_email VARCHAR,
     OUT status VARCHAR,
@@ -242,7 +242,7 @@ END;
 $$;
 
 
--- Function: update_2fa_enabled
+-- Function: update_TwoFactorAuth_Enabled
 /*
 Description: Updates the two-factor authentication status for a user.
 Parameters:
@@ -250,13 +250,13 @@ Parameters:
 - _enabled: Boolean indicating whether 2FA is enabled or not (BOOLEAN).
 Returns: Status message indicating the result of the operation (VARCHAR).
 */
-CREATE OR REPLACE FUNCTION update_2fa_status(p_id VARCHAR, p_enabled BOOLEAN)
+CREATE OR REPLACE FUNCTION update_2fa_status(p_id UUID, p_enabled BOOLEAN)
 RETURNS VARCHAR
 LANGUAGE plpgsql
 AS $$
 BEGIN
     UPDATE "User"
-    SET "2FA_Enabled" = p_enabled
+    SET "TwoFactorAuth_Enabled" = p_enabled
     WHERE "id" = p_id;
     RETURN '2FA status updated successfully';
 END;
@@ -323,7 +323,7 @@ Parameters:
 Returns: Status message indicating successful account ban (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION ban_account(
-    p_user_id VARCHAR
+    p_user_id UUID
 )
 RETURNS VARCHAR
 LANGUAGE plpgsql
@@ -335,7 +335,6 @@ BEGIN
     RETURN 'Account banned successfully';
 END;
 $$;
-
 
 -- Function: Login
 
@@ -354,36 +353,65 @@ Notes:
 CREATE OR REPLACE FUNCTION login(
     p_email VARCHAR,
     p_password VARCHAR,
+    OUT user_id UUID,
     OUT status VARCHAR,
     OUT message VARCHAR,
-    OUT role VARCHAR
+    OUT role VARCHAR,
+    OUT first_name VARCHAR,
+    OUT last_name VARCHAR,
+    OUT email VARCHAR
 )
 RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_2fa_enabled BOOLEAN;
+    v_TwoFactorAuth_Enabled BOOLEAN;
 BEGIN
-    SELECT U.status, U.role, U."2FA_Enabled"
-    INTO status, role, v_2fa_enabled
+    -- Initial user check
+    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled"
+    INTO user_id, status, role, v_TwoFactorAuth_Enabled
     FROM "User" U
     WHERE U.email = p_email AND U.password = p_password;
 
+    -- Check if user was found
     IF NOT FOUND THEN
         status := 'Failure';
         message := 'Wrong Email or Password';
+        user_id := NULL;
+        first_name := NULL;
+        last_name := NULL;
+        email := NULL;
     ELSE
-        IF v_2fa_enabled THEN
+     -- Depending on the role, fetch additional data from different tables
+        IF role = 'Pharmacist' THEN
+            SELECT P.first_name, P.last_name
+            INTO first_name, last_name
+            FROM "Pharmacist" P
+            WHERE P.id = user_id;
+        ELSIF role = 'Customer' THEN
+            SELECT C.first_name, C.last_name
+            INTO first_name, last_name
+            FROM "Customer" C
+            WHERE C.id = user_id;
+        ELSE
+            first_name := NULL;
+            last_name := NULL;
+        END IF;
+
+        IF v_TwoFactorAuth_Enabled THEN
             status := 'Pending';
             message := '2FA pending. Please complete the authentication.';
+            email := p_email;
         ELSE
             status := 'Success';
             message := 'Logged in successfully';
+            email := p_email;
         END IF;
     END IF;
-
 END;
 $$;
+
+
 
 
 -- Function: Login_Admin
@@ -397,6 +425,7 @@ Returns: Status message indicating the outcome of the login attempt (VARCHAR).
 CREATE OR REPLACE FUNCTION login_admin(
     p_username VARCHAR,
     p_password VARCHAR,
+    OUT admin_id UUID,
     OUT status VARCHAR,
     OUT message VARCHAR
 )
@@ -404,13 +433,15 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    SELECT *
+    SELECT A.id
+    INTO admin_id
     FROM "Administrator" A
     WHERE A.username = p_username AND A.password = p_password;
 
     IF NOT FOUND THEN
         status := 'Failure';
         message := 'Wrong Email or Password';
+        admin_id := NULL;
     ELSE
         status := 'Success';
         message := 'Logged in successfully';
@@ -418,5 +449,6 @@ BEGIN
 
 END;
 $$;
+
 
 

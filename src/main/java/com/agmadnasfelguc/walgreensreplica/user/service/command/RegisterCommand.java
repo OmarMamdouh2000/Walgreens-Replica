@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class RegisterCommand extends Command {
 
     @Autowired

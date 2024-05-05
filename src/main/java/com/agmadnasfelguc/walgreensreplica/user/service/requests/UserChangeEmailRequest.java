@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserChangeEmailRequest {
-    private String userID;
+    private String sessionId;
     private String email;
     private String password;
 }

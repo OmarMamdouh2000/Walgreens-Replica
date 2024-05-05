@@ -3,17 +3,15 @@ package com.agmadnasfelguc.walgreensreplica.user.model;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-
 import java.util.Date;
+import java.util.UUID;
+
 @Data
 @Entity
 @Table(name = "\"Customer\"")
 public class Customer {
     @Id
-    private String id;
+    private UUID id;
 
     @OneToOne
     @MapsId
@@ -40,5 +38,4 @@ public class Customer {
     @JoinColumn(name = "phone_id")
     private PhoneNumber phoneNumber;
 
-    // getters and setters
 }

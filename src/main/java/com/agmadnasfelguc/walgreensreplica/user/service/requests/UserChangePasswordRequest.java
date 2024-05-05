@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserChangePasswordRequest {
-    private String userID;
+    private String sessionId;
     private String oldPassword;
     private String newPassword;
 }

@@ -1,16 +1,23 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.command;
 
 import com.agmadnasfelguc.walgreensreplica.user.repository.AdminRepository;
+import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.AdminLoginResultConverter;
+import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.LoginResultConverter;
+import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.AdminLoginResult;
+import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.LoginResult;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
-import lombok.Builder;
+import jakarta.persistence.Tuple;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Builder
+@Service
+@Data
 public class LoginAdminCommand extends Command {
-    private String email;
+    private String username;
     private String password;
     @Autowired
     AdminRepository adminRepository;
@@ -22,8 +29,12 @@ public class LoginAdminCommand extends Command {
 
         //call stored procedure from postgres to check if user exists and password is correct
         try{
-            List<String> response = adminRepository.loginAdmin(email, password);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.get(0)), response.get(1)));
+            Tuple result = adminRepository.loginAdmin(username, password);
+            AdminLoginResult response = AdminLoginResultConverter.convertTupleToLoginResult(result);
+            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus().toUpperCase()), response.getMessage()));
+            if(this.getState().getStatus().equals(ResponseState.FAILURE)){
+                return;
+            }
 
         }catch(Exception e){
             this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));

@@ -1,28 +1,30 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
 
-import com.agmadnasfelguc.walgreensreplica.user.repository.AdminRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.LoginAdminCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-
-    private final AdminRepository adminRepository;
+    private final Command loginAdminCommand;
 
     @Autowired
-    public AdminController(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
+    public AdminController(Command loginAdminCommand) {
+        this.loginAdminCommand = loginAdminCommand;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
         try {
-            List<String> loginResult = adminRepository.loginAdmin(username, password);
-            return ResponseEntity.ok(loginResult);
+            ((LoginAdminCommand) loginAdminCommand).setUsername(username);
+            ((LoginAdminCommand) loginAdminCommand).setPassword(password);
+            loginAdminCommand.execute();
+            if (loginAdminCommand.getState().toString().equals("FAILURE"))
+                return ResponseEntity.badRequest().body(loginAdminCommand.getState().getMessage());
+            return ResponseEntity.ok(loginAdminCommand.getState().getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
         }

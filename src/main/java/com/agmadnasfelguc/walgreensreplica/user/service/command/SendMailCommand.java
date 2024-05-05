@@ -23,37 +23,32 @@ import java.util.stream.Collectors;
 
 @Service
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class SendMailCommand extends Command{
 
     private String subject;
     private String OTP;
-
     private boolean emailSent = false;
+    private String email;
+    private String firstName;
+    private String lastName;
 
-    private Customer customerInfo;
 
     @Autowired
     private JavaMailSender mailSender;
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @Override
     public void execute() {
-        try {
-            Optional<Customer> customer = customerRepository.findById("81c9cba4-f044-463e-b412-5ae7fb357b5a");
-            customerInfo =  customer.orElseThrow(() -> new RuntimeException("Customer not found" ));
+//        try {
             sendMail();
             if(emailSent) {
                 this.setState(new ResponseStatus(ResponseState.SUCCESS, "Email sent successfully"));
+                System.out.println("Email sent successfully");
             } else {
                 this.setState(new ResponseStatus(ResponseState.FAILURE, "Could not open HTML file"));
             }
-        } catch (Exception e) {
-            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
-        }
+//        } catch (Exception e) {
+//            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
+//        }
     }
 
     private void sendMail(){
@@ -61,15 +56,15 @@ public class SendMailCommand extends Command{
         if(htmlBody == null) {
             return;
         }
-        htmlBody = htmlBody.replace("${firstName}", customerInfo.getFirstName());
-        htmlBody = htmlBody.replace("${lastName}", customerInfo.getLastName());
+        htmlBody = htmlBody.replace("${firstName}", firstName);
+        htmlBody = htmlBody.replace("${lastName}", lastName);
         htmlBody = htmlBody.replace("${otpPurpose}", subject.toLowerCase());
         htmlBody = htmlBody.replace("${otp}", OTP);
         String finalHtmlBody = htmlBody;
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom("walgreensmailer@gmail.com");
-            messageHelper.setTo(customerInfo.getUser().getEmail());
+            messageHelper.setTo(email);
             messageHelper.setSubject(subject);
             messageHelper.setText(finalHtmlBody, true);
         };

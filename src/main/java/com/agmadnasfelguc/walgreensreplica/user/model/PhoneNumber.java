@@ -4,20 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.UUID;
 
 @Entity
 @Data
 @Table(name = "\"Phone_Number\"")
 public class PhoneNumber {
     @Id
-    private String id;
+    private UUID id;
 
     @Column(unique = true, nullable = false)
-    private int number;
+    private String number;
 
     @Column(nullable = false)
     private String extension;

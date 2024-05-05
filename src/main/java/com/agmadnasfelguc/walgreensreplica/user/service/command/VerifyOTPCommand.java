@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Data
-public class CheckOTPCommand extends Command{
+public class VerifyOTPCommand extends Command{
     private String email;
     private String otp;
     private String userId;
