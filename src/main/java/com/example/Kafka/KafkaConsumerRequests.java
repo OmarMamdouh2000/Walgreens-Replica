@@ -16,7 +16,7 @@ public class KafkaConsumerRequests {
 	@Autowired
 	KafkaProducer kafkaProducer;
 	
-	@KafkaListener(topics="cartRequests2",groupId = "KafkaGroupRequest")
+	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequest")
 	public void consumeMessage(String message) {
 		System.out.println("Request: "+message);
 		try {
@@ -25,7 +25,7 @@ public class KafkaConsumerRequests {
         switch (jsonObject.getString("commandName")) {
             case "UpdateItemCountCommand":
 				String result= (String) invoker.executeCommand("UpdateItemCountCommand", map);
-				kafkaProducer.publishToTopic("cartResponses2",result);
+				kafkaProducer.publishToTopic("cartResponses",result);
                 
                 break;
         
