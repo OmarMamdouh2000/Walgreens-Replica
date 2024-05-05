@@ -24,7 +24,6 @@ public class Invoker {
         commandMap = new HashMap<>();
         commandMap.put("GetOrdersCommand","com.example.Commands.GetOrdersCommand");
         commandMap.put("GetActiveOrdersCommand", "com.example.Commands.GetActiveOrdersCommand");
-        commandMap.put("ReturnFromSavedForLater", "com.example.Commands.ReturnFromSavedForLaterCommand");
 
 
     }

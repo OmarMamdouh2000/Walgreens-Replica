@@ -1,5 +1,7 @@
 package com.example.Kafka;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -8,6 +10,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.example.Commands.Invoker;
+import com.example.Final.OrderTable;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class KafkaConsumerRequests {
@@ -16,19 +20,30 @@ public class KafkaConsumerRequests {
 	@Autowired
 	KafkaProducer kafkaProducer;
 	
-	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequest")
+	@KafkaListener(topics="orderRequests",groupId = "KafkaGroupRequest")
 	public void consumeMessage(String message) {
-		System.out.println("Request: "+message);
+		
 		try {
-			JSONObject jsonObject = new JSONObject("{\"itemId\":\"436d22c6-fe21-4ca9-83f4-d3ae9e98c0b0\",\"commandName\":\"UpdateItemCountCommand\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NzAzM2U3NC1kYzJmLTQ2NzItODdiYS02ZmRkMDAyNGQ0ZDEiLCJpYXQiOjE3MTQ4NTE1NjcsImV4cCI6MTcxNDkzNzk2N30.TBp6TRj2Fmcj-Hr1GGH02SQ55XP7gutHetgXtaIeXyY\",\"itemCount\":1}");
-			Map<String, Object> map = jsonObject.toMap();
-        switch (jsonObject.getString("commandName")) {
-            case "UpdateItemCountCommand":
-				String result= (String) invoker.executeCommand("UpdateItemCountCommand", map);
-				kafkaProducer.publishToTopic("cartResponses",result);
+			ObjectMapper objectMapper = new ObjectMapper();
+			message=message.replace("\\", "");
+			message=message.substring(1, message.length()-1);
+			@SuppressWarnings("unchecked")
+			Map<String ,Object>data = objectMapper.readValue(message, HashMap.class);
+
+        switch (data.get("commandName").toString()) {
+            case "GetOrdersCommand":
+				List<OrderTable> orders = (List<OrderTable>) invoker.executeCommand("GetOrdersCommand", data);
+				kafkaProducer.publishToTopic("orderResponses","orders successfully fetched");
+				System.out.println(orders);
+				
                 
                 break;
-        
+			case "GetActiveOrdersCommand":
+				List<OrderTable> activeOrders = (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
+				kafkaProducer.publishToTopic("orderResponses","active orders successfully fetched");
+				System.out.println(activeOrders);
+				break;
+				
             default:
                 break;
         }

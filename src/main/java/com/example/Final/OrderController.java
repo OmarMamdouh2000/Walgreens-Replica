@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +58,12 @@ public class OrderController {
 	}
 	
 	@GetMapping("/getOrders")
-	public List<OrderTable> getOrders(@RequestParam String token,@RequestBody Map<String,Object> data) {
+	public List<OrderTable> getOrders(@RequestParam String token) {
+		
+		Map<String,Object> data = new HashMap<String, Object>();
+		
 		data.put("token", token);
+		data.put("commandName", "GetOrdersCommand");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -75,9 +80,23 @@ public class OrderController {
 		
 	}
 	@GetMapping("/getActiveOrders")
-	public List<OrderTable> getActiveOrders(@RequestParam String token,@RequestBody Map<String,Object> data) {
+	public List<OrderTable> getActiveOrders(@RequestParam String token) {
+		Map<String,Object> data = new HashMap<String, Object>();
+
 		data.put("token", token);
-		return (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
+		data.put("commandName", "GetActiveOrdersCommand");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducer.publishToTopic("orderRequests", jsonString);
+
+
+		return new ArrayList<OrderTable>();
+		//return (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
 		
 		
 	}
