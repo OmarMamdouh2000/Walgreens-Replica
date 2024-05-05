@@ -64,7 +64,7 @@ public class CartController {
 	
 
 	@PostMapping("/editItemCount")
-	public String editItemCount(@RequestBody Map<String,Object> data) {
+	public String editItemCount(@RequestParam String token,@RequestBody Map<String,Object> data) {
 		// JSONObject jsonObject = new JSONObject();
 		// jsonObject.put("commandName", "UpdateItemCountCommand");
 		// for(String key : data.keySet()) {
@@ -88,15 +88,18 @@ public class CartController {
 		// kafkaProducerRequest.publishToTopic("cartRequests2",jsonString);
 
 		// return "success";
+		data.put("token", token);
 		return invoker.executeCommand("UpdateItemCountCommand", data).toString();
 		
 	}
 	@PostMapping("/addItemToSavedLater")
-	public String addItemToSavedLater(@RequestBody Map<String, Object> data) {
+	public String addItemToSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
+		data.put("token", token);
 		return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
-	public String returnItemFromSavedLater(@RequestBody Map<String, Object> data) {
+	public String returnItemFromSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
+		data.put("token", token);
 		return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
 	}
 
