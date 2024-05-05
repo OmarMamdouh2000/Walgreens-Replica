@@ -3,22 +3,17 @@ package com.example.Final;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-
 import io.jsonwebtoken.Claims;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
-import org.springframework.kafka.requestreply.RequestReplyFuture;
+
 
 import com.example.Commands.Invoker;
 import com.example.Commands.JwtDecoderService;
-import java.time.Duration;
 import org.springframework.web.bind.annotation.*;
 import com.example.Kafka.KafkaProducer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class CartController {
@@ -65,42 +60,53 @@ public class CartController {
 
 	@PostMapping("/editItemCount")
 	public String editItemCount(@RequestParam String token,@RequestBody Map<String,Object> data) {
-		// JSONObject jsonObject = new JSONObject();
-		// jsonObject.put("commandName", "UpdateItemCountCommand");
-		// for(String key : data.keySet()) {
-		// 	jsonObject.put(key, data.get(key));
-		// }
-		// String jsonString = jsonObject.toString();
-		// // ProducerRecord<String, String> record = new ProducerRecord<>("cartRequests", jsonString);
-		// // RequestReplyFuture<String, String, String> future = replyingKafkaTemplate.sendAndReceive(record);
-		// // System.out.println();
-		// // // Get the reply
-		// // ConsumerRecord<String, String> reply;
-		// // try {
-		// // 	reply = future.get();
-		// // } catch (InterruptedException | ExecutionException e) {
-		// // 	e.printStackTrace();
-		// // 	throw new RuntimeException("Error processing request", e);
-		// // }
-
-		// // return reply.value();
-		// //kafkaProducerResponse.publishToTopic("cartResponses",jsonString);
-		// kafkaProducerRequest.publishToTopic("cartRequests2",jsonString);
-
-		// return "success";
+		
+		
 		data.put("token", token);
-		return invoker.executeCommand("UpdateItemCountCommand", data).toString();
+		data.put("commandName", "UpdateItemCountCommand");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+		//return invoker.executeCommand("UpdateItemCountCommand", data).toString();
 		
 	}
 	@PostMapping("/addItemToSavedLater")
 	public String addItemToSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
 		data.put("token", token);
-		return invoker.executeCommand("AddToSavedForLater", data).toString();
+		data.put("commandName", "AddToSavedForLater");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		
+		return "success";
+		//return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
 	public String returnItemFromSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
 		data.put("token", token);
-		return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
+		data.put("commandName", "ReturnFromSavedForLater");
+		ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		
+		return "success";
+		//return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
 	}
 
 	@PostMapping("/removeItem")
