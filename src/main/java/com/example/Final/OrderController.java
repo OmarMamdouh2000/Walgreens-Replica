@@ -50,15 +50,15 @@ public class OrderController {
 	}
 	
 	@GetMapping("/getOrders")
-	public List<OrderTable> getOrders(@RequestBody Map<String,Object> data) {
-		
+	public List<OrderTable> getOrders(@RequestParam String token,@RequestBody Map<String,Object> data) {
+		data.put("token", token);
 		return (List<OrderTable>) invoker.executeCommand("GetOrdersCommand", data);
 		
 		
 	}
 	@GetMapping("/getActiveOrders")
-	public List<OrderTable> getActiveOrders(@RequestBody Map<String,Object> data) {
-		
+	public List<OrderTable> getActiveOrders(@RequestParam String token,@RequestBody Map<String,Object> data) {
+		data.put("token", token);
 		return (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
 		
 		
