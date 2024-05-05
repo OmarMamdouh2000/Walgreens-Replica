@@ -5,34 +5,57 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
+import java.util.HashMap;
 
 @Component
-public class RedisService {
+public class SessionCache {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    // Store session with additional details
-    public void storeSessionWithDetails(String sessionId, Map<String, String> sessionDetails, long timeout, TimeUnit unit) {
+    private void storeSessionWithDetails(String sessionId, Map<String, String> sessionDetails, long timeout, TimeUnit unit) {
         sessionDetails.forEach((key, value) ->
-                redisTemplate.opsForHash().put("session:" + sessionId, key, value));
-        redisTemplate.expire("session:" + sessionId, timeout, unit);
+                redisTemplate.opsForHash().put(sessionId, key, value));
+        redisTemplate.expire(sessionId, timeout, unit);
     }
 
-    // Retrieve session details
-    public Map<Object, Object> getSessionDetails(String sessionId) {
-        return redisTemplate.opsForHash().entries("session:" + sessionId);
+    public Map<String, String> getSessionDetails(String sessionId) {
+        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries( sessionId);
+        Map<String, String> sessionDetails = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : rawMap.entrySet()) {
+            sessionDetails.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
+        return sessionDetails;
     }
 
-    // Store an OTP within a session
-    public void storeOtp(String sessionId, String otpType, String otpValue, long timeout, TimeUnit unit) {
-        redisTemplate.opsForHash().put("session:" + sessionId, otpType, otpValue);
-        redisTemplate.expire("session:" + sessionId, timeout, unit);  // Update expiration time upon new OTP insertion
+    public void storeOtp(String email, OTPTypes otpType, String otpValue, long timeout, TimeUnit unit) {
+        String otpKey = String.format("otp:%s:%s", email, otpType);
+        redisTemplate.opsForValue().set(otpKey, otpValue, timeout, unit);
     }
 
-    // Get a specific OTP from a session
-    public String getOtp(String sessionId, String otpType) {
-        return (String) redisTemplate.opsForHash().get("session:" + sessionId, otpType);
+    public String getOtp(String email, OTPTypes otpType) {
+        String otpKey = String.format("otp:%s:%s", email, otpType);
+        return redisTemplate.opsForValue().get(otpKey);
+    }
+
+    public void createSession(String sessionId, String userId, String role, String email, String firstName, String lastName) {
+        HashMap<String, String> sessionDetails = new HashMap<>();
+        sessionDetails.put("userId", userId);
+        sessionDetails.put("role", role);
+        sessionDetails.put("email", email);
+        sessionDetails.put("firstName", firstName);
+        sessionDetails.put("lastName", lastName);
+        storeSessionWithDetails(sessionId, sessionDetails, 10, TimeUnit.HOURS);
+    }
+
+    public void deleteSession(String sessionId) {
+        redisTemplate.delete(sessionId);
+    }
+
+    public void deleteOtp(String email, OTPTypes otpType) {
+        String otpKey = String.format("otp:%s:%s", email, otpType);
+        redisTemplate.delete(otpKey);
     }
 }
+
 

@@ -9,5 +9,6 @@ import lombok.Setter;
 public abstract class Command {
     private Formulator formulator;
     private ResponseStatus state;
+
     public abstract void execute();
 }

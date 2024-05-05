@@ -1,11 +1,5 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.RegisterCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.ChangeEmailCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.ChangePasswordCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.EditDetailsCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.LoginUserCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.SendMailCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
@@ -28,15 +22,19 @@ public class UserController {
 
     private final Command loginUserCommand;
     private final Command sendMailCommand;
+    private final Command logoutCommand;
+    private final Command verifyOTPCommand;
 
     @Autowired
-    public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command sendMailCommand) {
+    public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command sendMailCommand, Command logoutCommand, Command verifyOTPCommand) {
         this.registerCommand = registerCommand;
         this.changeEmailCommand = changeEmailCommand;
         this.changePasswordCommand = changePasswordCommand;
         this.editDetailsCommand = editDetailsCommand;
         this.loginUserCommand = loginUserCommand;
         this.sendMailCommand = sendMailCommand;
+        this.logoutCommand = logoutCommand;
+        this.verifyOTPCommand = verifyOTPCommand;
     }
 
     @PostMapping("/registerUser")
@@ -59,7 +57,7 @@ public class UserController {
         // Assuming the request contains User Id ,and email.
 
         // Set the user registration details in the command class
-        ((ChangeEmailCommand)changeEmailCommand).setUserID(request.getUserID());
+        ((ChangeEmailCommand)changeEmailCommand).setSessionID(request.getSessionId());
         ((ChangeEmailCommand)changeEmailCommand).setEmail(request.getEmail());
         ((ChangeEmailCommand)changeEmailCommand).setPassword(request.getPassword());
 
@@ -72,7 +70,7 @@ public class UserController {
         // Assuming the request contains UserId ,and password.
 
         // Set the user registration details in the command class
-        ((ChangePasswordCommand)changePasswordCommand).setUserID(request.getUserID());
+        ((ChangePasswordCommand)changePasswordCommand).setSessionID(request.getSessionId());
         ((ChangePasswordCommand)changePasswordCommand).setOldPassword(request.getOldPassword());
         ((ChangePasswordCommand)changePasswordCommand).setNewPassword(request.getNewPassword());
 
@@ -88,7 +86,7 @@ public class UserController {
         //check that the request contains all the required fields
 
         // Set the user registration details in the command class
-        ((EditDetailsCommand)editDetailsCommand).setUserID(request.getUserID());
+        ((EditDetailsCommand)editDetailsCommand).setSessionID(request.getSessionId());
         ((EditDetailsCommand)editDetailsCommand).setDateOfBirth(request.getDateOfBirth());
         ((EditDetailsCommand)editDetailsCommand).setGender(request.getGender());
         ((EditDetailsCommand)editDetailsCommand).setPhoneNumber(request.getPhoneNumber());
@@ -111,8 +109,31 @@ public class UserController {
 
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(@RequestParam String sessionId) {
+        // Assuming the request contains sessionId
+
+        // Set the user registration details in the command class
+        ((LogoutCommand)logoutCommand).setSessionId(sessionId);
+
+        logoutCommand.execute();
+        return formulateResponse(logoutCommand);
+    }
+
+    @PostMapping("/verifyOTP")
+    public ResponseEntity<Object> verifyOTP(@RequestParam String email, @RequestParam String OTP, @RequestParam String userId, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String role) {
+        ((VerifyOTPCommand)verifyOTPCommand).setEmail(email);
+        ((VerifyOTPCommand)verifyOTPCommand).setOtp(OTP);
+        ((VerifyOTPCommand)verifyOTPCommand).setUserId(userId);
+        ((VerifyOTPCommand)verifyOTPCommand).setFirstName(firstName);
+        ((VerifyOTPCommand)verifyOTPCommand).setLastName(lastName);
+        ((VerifyOTPCommand)verifyOTPCommand).setRole(role);
+        verifyOTPCommand.execute();
+        return formulateResponse(verifyOTPCommand);
+    }
+
     @PostMapping("/sendMail")
-    public ResponseEntity<Object> sendMail(@RequestParam String subject, @RequestParam String OTP) {
+    public ResponseEntity<Object> sendMail(@RequestParam String subject, @RequestParam String OTP ) {
         ((SendMailCommand)sendMailCommand).setSubject(subject);
         ((SendMailCommand)sendMailCommand).setOTP(OTP);
         sendMailCommand.execute();

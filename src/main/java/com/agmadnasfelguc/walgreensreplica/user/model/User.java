@@ -2,9 +2,26 @@ package com.agmadnasfelguc.walgreensreplica.user.model;
 
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Role;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Status;
+import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.LoginResult;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
+@SqlResultSetMapping(
+        name = "LoginResultMapping",
+        classes = {
+                @ConstructorResult(
+                        targetClass = LoginResult.class,
+                        columns = {
+                                @ColumnResult(name = "user_id", type = UUID.class),
+                                @ColumnResult(name = "status", type = String.class),
+                                @ColumnResult(name = "message", type = String.class),
+                                @ColumnResult(name = "role", type = String.class)
+                        }
+                )
+        }
+)
 @Entity
 @Data
 @Table(name = "\"User\"")

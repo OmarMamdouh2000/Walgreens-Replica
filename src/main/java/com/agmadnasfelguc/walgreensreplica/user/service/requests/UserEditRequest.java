@@ -9,9 +9,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class UserEditRequest {
-    private String userID;
-    private String email;
-    private String password;
+    private String sessionId;
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
