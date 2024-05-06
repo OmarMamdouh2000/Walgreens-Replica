@@ -1,21 +1,21 @@
-package com.agmadnasfelguc.walgreensreplica.user.service.command;
+package com.agmadnasfelguc.walgreensreplica.user.service.command.user;
 import com.agmadnasfelguc.walgreensreplica.user.cache.OTPTypes;
-import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
 import com.agmadnasfelguc.walgreensreplica.user.repository.CustomerRepository;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.LoginResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.LoginResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.user.helpers.CreateSessionCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.user.helpers.GenerateOTPCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 public class LoginUserCommand extends Command {
@@ -45,13 +45,13 @@ public class LoginUserCommand extends Command {
 //        try{
             Tuple result = userRepository.loginUser(email, password);
             LoginResult response = LoginResultConverter.convertTupleToLoginResult(result);
-            System.out.println(response);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus().toUpperCase()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.FAILURE)){
+
+            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
+            if(this.getState().getStatus().equals(ResponseState.Failure)){
                 return;
             }
             this.userId = response.getUserId().toString();
-            if(this.getState().getStatus().equals(ResponseState.PENDING)){
+            if(this.getState().getStatus().equals(ResponseState.Pending)){
                 //block 1
                 ((GenerateOTPCommand)generateOTPCommand).setEmail(email);
                 ((GenerateOTPCommand)generateOTPCommand).setOtpType(OTPTypes.TWOFACTORAUTH);

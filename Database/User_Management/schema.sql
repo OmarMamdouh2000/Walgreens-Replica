@@ -51,6 +51,6 @@ CREATE TABLE "Pharmacist" (
 
 CREATE TABLE "Administrator" (
   "id" UUID PRIMARY KEY,
-  "username" varchar NOT NULL,
+  "username" varchar UNIQUE NOT NULL,
   "password" varchar NOT NULL
 );

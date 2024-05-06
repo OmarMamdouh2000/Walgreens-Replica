@@ -54,7 +54,7 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_phone_id VARCHAR;
+    v_phone_id UUID;
     v_old_phone_number VARCHAR;
     v_old_phone_extension VARCHAR;
     v_message VARCHAR := 'Details updated successfully for: ';
@@ -63,83 +63,78 @@ BEGIN
     IF p_address IS NULL AND p_date_of_birth IS NULL AND p_gender IS NULL AND p_phone_number IS NULL AND p_extension IS NULL THEN
         status := 'Failure';
         message := 'No details provided for update';
-    END IF;
+    ELSE
+       IF (p_phone_number IS NULL AND p_extension IS NOT NULL) OR (p_phone_number IS NOT NULL AND p_extension IS NULL) THEN
+            status := 'Failure';
+            message := 'Phone number and extension must be provided together or not at all.';
+            RETURN;
+       ELSE
+            IF p_phone_number IS NOT NULL AND p_extension IS NOT NULL THEN
+                SELECT "id", "number", "extension"
+                INTO v_phone_id, v_old_phone_number, v_old_phone_extension
+                FROM "Phone_Number"
+                WHERE "id" = (SELECT "phone_id" FROM "Customer" WHERE "id" = p_user_id);
 
-    -- Check if phone number and extension are provided together the first time
-        IF v_old_phone_number IS NULL AND v_old_phone_extension IS NULL THEN
-          IF p_phone_number IS NOT NULL AND p_extension IS NULL OR p_phone_number IS NULL AND p_extension IS NOT NULL THEN
-                  status := 'Failure';
-                  message := 'Phone number and extension must be provided together the first time';
-          END IF;
-        END IF;
-      IF p_phone_number IS NOT NULL OR p_extension IS NOT NULL THEN
-        SELECT v_phone_id = "phone_id", v_old_phone_number = "number", v_old_phone_extension = "extension"
-        FROM "Customer"
-        WHERE "id" = p_user_id;
-          IF v_phone_id IS NOT NULL THEN
-              UPDATE "Customer"
-              SET "phone_id" = NULL
-              WHERE "id" = p_user_id;
+                IF v_phone_id IS NOT NULL THEN
+                    UPDATE "Customer"
+                    SET "phone_id" = NULL WHERE "id" = p_user_id;
+                    DELETE FROM "Phone_Number" WHERE "id" = v_phone_id;
+                END IF;
 
-              DELETE FROM "Phone_Number"
-              WHERE "id" = v_phone_id;
-          END IF;
+                INSERT INTO "Phone_Number" ("id", "number", "extension")
+                VALUES (gen_random_uuid(), p_phone_number, p_extension)
+                RETURNING "id" INTO v_phone_id;
 
-          -- Insert new phone number with the extension (handling possible NULLs in extension)
-          INSERT INTO "Phone_Number" ("id", "number", "extension")
-          VALUES (gen_random_uuid(), p_phone_number, p_extension)
-          RETURNING "id" INTO v_phone_id;
+                UPDATE "Customer"
+                SET "phone_id" = v_phone_id
+                WHERE "id" = p_user_id;
+            END IF;
 
-          -- Update Customer with new phone_id
-          UPDATE "Customer"
-          SET "phone_id" = v_phone_id
-          WHERE "id" = p_user_id;
+            IF p_phone_number IS NOT NULL THEN
+                IF v_first THEN
+                    v_message := v_message || 'phone number';
+                    v_first := FALSE;
+                ELSE
+                    v_message := v_message || ', phone number';
+                END IF;
+            END IF;
 
-          -- Append to message if phone number or extension was updated
-          IF p_phone_number IS NOT NULL THEN
-              IF v_first THEN
-                  v_message := v_message || 'phone number';
-                  v_first := FALSE;
-              ELSE
-                  v_message := v_message || ', phone number';
-              END IF;
-          END IF;
-
-          IF p_extension IS NOT NULL THEN
+            IF p_extension IS NOT NULL THEN
               IF v_first THEN
                   v_message := v_message || 'extension';
                   v_first := FALSE;
               ELSE
                   v_message := v_message || ', extension';
               END IF;
-          END IF;
-      END IF;
+            END IF;
 
-    IF p_address IS NOT NULL THEN
-        IF v_first THEN
-            v_message := v_message || 'address';
-            v_first := FALSE;
-        ELSE
-            v_message := v_message || ', address';
-        END IF;
-    END IF;
+            IF p_address IS NOT NULL THEN
+                IF v_first THEN
+                    v_message := v_message || 'address';
+                    v_first := FALSE;
+                ELSE
+                    v_message := v_message || ', address';
+                END IF;
+            END IF;
 
-    IF p_date_of_birth IS NOT NULL THEN
-        IF v_first THEN
-            v_message := v_message || 'date of birth';
-            v_first := FALSE;
-        ELSE
-            v_message := v_message || ', date of birth';
-        END IF;
-    END IF;
+            IF p_date_of_birth IS NOT NULL THEN
+                IF v_first THEN
+                    v_message := v_message || 'date of birth';
+                    v_first := FALSE;
+                ELSE
+                    v_message := v_message || ', date of birth';
+                END IF;
+            END IF;
 
-    IF p_gender IS NOT NULL THEN
-        IF v_first THEN
-            v_message := v_message || 'gender';
-            v_first := FALSE;
-        ELSE
-            v_message := v_message || ', gender';
-        END IF;
+            IF p_gender IS NOT NULL THEN
+                IF v_first THEN
+                    v_message := v_message || 'gender';
+                    v_first := FALSE;
+                ELSE
+                    v_message := v_message || ', gender';
+                END IF;
+            END IF;
+       END IF;
     END IF;
 
     IF NOT v_first THEN
@@ -198,6 +193,66 @@ BEGIN
 END;
 $$;
 
+-- Function: update_password
+/*
+Description: Updates the password of a user based on their email address.
+Parameters:
+- p_email: Email address of the user whose password is being updated (VARCHAR).
+- p_new_password: New password to set (VARCHAR).
+Returns: Status message indicating the result of the operation (VARCHAR).
+*/
+CREATE OR REPLACE FUNCTION update_password(
+    p_email VARCHAR,
+    p_new_password VARCHAR,
+    OUT status VARCHAR,
+    OUT message VARCHAR
+)
+RETURNS RECORD
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE "User"
+    SET password = p_new_password
+    WHERE email = p_email;
+    IF FOUND THEN
+        status := 'Success';
+        message := 'Password Updated successfully';
+    ELSE
+        status := 'Failure';
+        message := 'User not found';
+    END IF;
+END;
+$$;
+
+-- Function: verify_email
+/*
+Description: Verifies the email address of a user by setting the 'email_verified' flag to TRUE.
+Parameters:
+- p_user_id: User ID of the user whose email is being verified (VARCHAR).
+Returns: Status message indicating the result of the operation (VARCHAR).
+*/
+CREATE OR REPLACE FUNCTION verify_email(
+    p_user_id UUID,
+    OUT status VARCHAR,
+    OUT message VARCHAR
+)
+RETURNS record
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE "User"
+    SET "email_verified" = TRUE
+    WHERE "id" = p_user_id;
+    IF FOUND THEN
+        status := 'Success';
+        message := 'Email verified successfully';
+    ELSE
+        status := 'Failure';
+        message := 'User not found';
+    END IF;
+END;
+$$;
+
 -- Function: ChangeEmail
 /*
 Description: Changes the email of an existing user after validating the current password.
@@ -226,7 +281,7 @@ BEGIN
     IF v_current_password = p_password THEN
         IF p_new_email IS NOT NULL THEN
             UPDATE "User"
-            SET email = p_new_email
+            SET email = p_new_email, "email_verified" = FALSE
             WHERE id = p_user_id;
             status := 'Success';
             message := 'Email updated successfully.';
@@ -250,17 +305,49 @@ Parameters:
 - _enabled: Boolean indicating whether 2FA is enabled or not (BOOLEAN).
 Returns: Status message indicating the result of the operation (VARCHAR).
 */
-CREATE OR REPLACE FUNCTION update_2fa_status(p_id UUID, p_enabled BOOLEAN)
-RETURNS VARCHAR
+CREATE OR REPLACE FUNCTION update_2fa_status(
+    p_id UUID,
+    p_enabled BOOLEAN,
+    OUT status VARCHAR,
+    OUT message VARCHAR
+)
+RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_email_verified BOOLEAN;
 BEGIN
+    SELECT "email_verified" INTO v_email_verified
+    FROM "User"
+    WHERE "id" = p_id;
+
+    IF NOT FOUND THEN
+        status := 'Failure';
+        message := 'User not found';
+        RETURN;
+    END IF;
+
+    IF NOT v_email_verified THEN
+        status := 'Failure';
+        message := 'Email not verified';
+        RETURN;
+    END IF;
+
     UPDATE "User"
     SET "TwoFactorAuth_Enabled" = p_enabled
     WHERE "id" = p_id;
-    RETURN '2FA status updated successfully';
+
+    IF FOUND THEN
+        status := 'Success';
+        message := '2FA status updated successfully';
+    ELSE
+        status := 'Failure';
+        message := 'Update failed unexpectedly';
+    END IF;
 END;
 $$;
+
+
 
 -- Function: add_admin
 /*
@@ -304,7 +391,7 @@ RETURNS VARCHAR
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    user_id VARCHAR;
+    user_id UUID;
 BEGIN
     INSERT INTO "User" ("id", "email", "password", "status", "role")
     VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Pharmacist')
@@ -323,18 +410,56 @@ Parameters:
 Returns: Status message indicating successful account ban (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION ban_account(
-    p_user_id UUID
+    p_user_id UUID,
+    OUT status VARCHAR,
+    OUT message VARCHAR
 )
-RETURNS VARCHAR
+RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
 BEGIN
     UPDATE "User"
     SET "status" = 'Banned'
     WHERE "id" = p_user_id;
-    RETURN 'Account banned successfully';
+    if found then
+        status := 'Success';
+        message := 'Account banned successfully';
+    else
+        status := 'Failure';
+        message := 'Account not found';
+    end if;
 END;
 $$;
+
+-- Function: unban_account
+/*
+Description: Unbans a user's account by setting its status to 'Active'.
+Parameters:
+- user_id: User ID of the account to be unbanned (VARCHAR).
+Returns: Status message indicating successful account unban (VARCHAR).
+*/
+CREATE OR REPLACE FUNCTION unban_account(
+    p_user_id UUID,
+    OUT status VARCHAR,
+    OUT message VARCHAR
+)
+RETURNS RECORD
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE "User"
+    SET "status" = 'Active'
+    WHERE "id" = p_user_id;
+    if found then
+        status := 'Success';
+        message := 'Account unbanned successfully';
+    else
+        status := 'Failure';
+        message := 'Account not found';
+    end if;
+END;
+$$;
+
 
 -- Function: Login
 
@@ -382,30 +507,40 @@ BEGIN
         last_name := NULL;
         email := NULL;
     ELSE
-     -- Depending on the role, fetch additional data from different tables
-        IF role = 'Pharmacist' THEN
-            SELECT P.first_name, P.last_name
-            INTO first_name, last_name
-            FROM "Pharmacist" P
-            WHERE P.id = user_id;
-        ELSIF role = 'Customer' THEN
-            SELECT C.first_name, C.last_name
-            INTO first_name, last_name
-            FROM "Customer" C
-            WHERE C.id = user_id;
-        ELSE
+        IF status = 'Banned' THEN
+            status := 'Failure';
+            message := 'Account is banned';
+            user_id := NULL;
             first_name := NULL;
             last_name := NULL;
-        END IF;
-
-        IF v_TwoFactorAuth_Enabled THEN
-            status := 'Pending';
-            message := '2FA pending. Please complete the authentication.';
-            email := p_email;
+            email := NULL;
+            RETURN;
         ELSE
-            status := 'Success';
-            message := 'Logged in successfully';
-            email := p_email;
+            -- Depending on the role, fetch additional data from different tables
+            IF role = 'Pharmacist' THEN
+                SELECT P.first_name, P.last_name
+                INTO first_name, last_name
+                FROM "Pharmacist" P
+                WHERE P.id = user_id;
+            ELSIF role = 'Customer' THEN
+                SELECT C.first_name, C.last_name
+                INTO first_name, last_name
+                FROM "Customer" C
+                WHERE C.id = user_id;
+            ELSE
+                first_name := NULL;
+                last_name := NULL;
+            END IF;
+
+            IF v_TwoFactorAuth_Enabled THEN
+                status := 'Pending';
+                message := '2FA pending. Please complete the authentication.';
+                email := p_email;
+            ELSE
+                status := 'Success';
+                message := 'Logged in successfully';
+                email := p_email;
+            END IF;
         END IF;
     END IF;
 END;
