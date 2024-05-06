@@ -8,20 +8,6 @@ import lombok.*;
 
 import java.util.UUID;
 
-@SqlResultSetMapping(
-        name = "LoginResultMapping",
-        classes = {
-                @ConstructorResult(
-                        targetClass = LoginResult.class,
-                        columns = {
-                                @ColumnResult(name = "user_id", type = UUID.class),
-                                @ColumnResult(name = "status", type = String.class),
-                                @ColumnResult(name = "message", type = String.class),
-                                @ColumnResult(name = "role", type = String.class)
-                        }
-                )
-        }
-)
 @Entity
 @Data
 @Table(name = "\"User\"")
@@ -36,14 +22,17 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"Role\"", nullable = false)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"Status\"", nullable = false)
+    @Column(name = "status", nullable = false)
     private Status status;
 
-    @Column(name = "2FA_Enabled", nullable = false)
+    @Column(name ="\"TwoFactorAuth_Enabled\"", nullable = false)
     private boolean twoFAEnabled = false;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
 
 }

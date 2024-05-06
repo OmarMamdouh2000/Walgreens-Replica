@@ -1,13 +1,9 @@
-package com.agmadnasfelguc.walgreensreplica.user.service.command;
+package com.agmadnasfelguc.walgreensreplica.user.service.command.user.helpers;
 
-import com.agmadnasfelguc.walgreensreplica.user.model.Customer;
-import com.agmadnasfelguc.walgreensreplica.user.repository.CustomerRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,12 +14,12 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
-public class SendMailCommand extends Command{
+public class SendMailCommand extends Command {
 
     private String subject;
     private String OTP;
@@ -41,10 +37,10 @@ public class SendMailCommand extends Command{
 //        try {
             sendMail();
             if(emailSent) {
-                this.setState(new ResponseStatus(ResponseState.SUCCESS, "Email sent successfully"));
+                this.setState(new ResponseStatus(ResponseState.Success, "Email sent successfully"));
                 System.out.println("Email sent successfully");
             } else {
-                this.setState(new ResponseStatus(ResponseState.FAILURE, "Could not open HTML file"));
+                this.setState(new ResponseStatus(ResponseState.Failure, "Could not open HTML file"));
             }
 //        } catch (Exception e) {
 //            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));

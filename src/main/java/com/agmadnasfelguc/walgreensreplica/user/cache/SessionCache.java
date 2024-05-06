@@ -20,7 +20,7 @@ public class SessionCache {
     }
 
     public Map<String, String> getSessionDetails(String sessionId) {
-        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries( sessionId);
+        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries(sessionId);
         Map<String, String> sessionDetails = new HashMap<>();
         for (Map.Entry<Object, Object> entry : rawMap.entrySet()) {
             sessionDetails.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
@@ -45,6 +45,14 @@ public class SessionCache {
         sessionDetails.put("email", email);
         sessionDetails.put("firstName", firstName);
         sessionDetails.put("lastName", lastName);
+        storeSessionWithDetails(sessionId, sessionDetails, 10, TimeUnit.HOURS);
+    }
+
+    public void createAdminSession(String sessionId, String userId, String username) {
+        HashMap<String, String> sessionDetails = new HashMap<>();
+        sessionDetails.put("userId", userId);
+        sessionDetails.put("role", "admin");
+        sessionDetails.put("username", username);
         storeSessionWithDetails(sessionId, sessionDetails, 10, TimeUnit.HOURS);
     }
 
