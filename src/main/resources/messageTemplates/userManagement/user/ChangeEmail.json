@@ -1,0 +1,9 @@
+{
+  "params": {
+    "sessionId": "placeholder"
+  },
+  "body": {
+    "password": "placeholder",
+    "newEmail": "placeholder"
+  }
+}

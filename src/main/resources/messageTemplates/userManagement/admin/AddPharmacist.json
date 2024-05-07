@@ -1,0 +1,11 @@
+{
+  "params": {
+    "sessionId": "placeholder"
+  },
+  "body": {
+    "firstName": "placeholder",
+    "lastName": "placeholder",
+    "email": "placeholder",
+    "password": "placeholder"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "params": {
+
+  },
+  "body": {
+    "firstName": "placeholder",
+    "lastName": "placeholder",
+    "email": "placeholder",
+    "password": "placeholder"
+  }
+}

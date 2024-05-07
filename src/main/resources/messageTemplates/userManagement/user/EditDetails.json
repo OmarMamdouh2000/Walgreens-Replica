@@ -1,0 +1,12 @@
+{
+  "params": {
+    "sessionId": "placeholder"
+  },
+  "body": {
+    "dateOfBirth": "placeholder",
+    "gender": "placeholder",
+    "phoneNumber": "placeholder",
+    "extension": "placeholder",
+    "address": "placeholder"
+  }
+}

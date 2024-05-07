@@ -81,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<Object> changeEmail(@RequestBody UserChangePasswordRequest request) {
+    public ResponseEntity<Object> changePassword(@RequestBody UserChangePasswordRequest request) {
         // Assuming the request contains UserId ,and password.
 
         // Set the user registration details in the command class
