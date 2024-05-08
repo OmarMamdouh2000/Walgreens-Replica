@@ -22,21 +22,33 @@ import org.hibernate.annotations.CreationTimestamp;
 public class TransactionsDto {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID transaction_id;
+    private UUID transaction_uuid;
 
-    private UUID account_id;
-    private UUID payment_method_id;
-    private UUID order_id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_customer_uuid", referencedColumnName = "customer_uuid")
+    private CustomerDto customer_uuid;
+
+
+    private UUID cart_uuid;
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_payment_method_uuid", referencedColumnName = "payment_method_uuid")
+    private PaymentMethodsDto payment_method_id;
+
+
+    private String session_id;
+
+
     @CreationTimestamp
-    private LocalDateTime transaction_date;
+    private LocalDateTime transaction_time;
+
     private double amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private Status status;
 
-    private double card_money;
-    private double wallet_money;
+
+
 
 
 

@@ -22,6 +22,8 @@ spring:
       show-sql: true
   main:
     web-application-type: servlet
+  kafka:
+    bootstrap-servers: localhost:9092
 
 api:
   stripe:
@@ -34,3 +36,4 @@ encryption:
 stripe:
   endpoint:
     secret: whsec_8978440acc3fda64ff18a4f6dcfb0a445962eb7db8e88875dd58fe797c16766b
+

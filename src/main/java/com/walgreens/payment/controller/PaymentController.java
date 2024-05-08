@@ -1,6 +1,7 @@
 package com.walgreens.payment.controller;
 
 import com.stripe.Stripe;
+import com.walgreens.payment.model.Enums.Duration;
 import com.walgreens.payment.service.command.*;
 
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 
@@ -18,13 +20,16 @@ import java.util.UUID;
 public class PaymentController {
 
 
-
     private final CreateCustomerCommand createCustomerCommand;
     private final AddPaymentMethodCommand addPaymentMethodCommand;
     private final ViewPaymentMethodsCommand viewPaymentMethodsCommand;
     private final ViewBalanceCommand viewBalanceCommand;
     private final ViewLoyaltyPointsCommand viewLoyaltyPointsCommand;
     private final CreateCheckoutCommand createCheckoutCommand;
+    private final PayUsingPaymentMethodsCommand payUsingPaymentMethodsCommand;
+    private final CreateCouponCommand createCouponCommand;
+
+
     private final WebhookService webhookService;
 
     @Autowired
@@ -34,6 +39,9 @@ public class PaymentController {
                              ViewBalanceCommand viewBalanceCommand,
                              ViewLoyaltyPointsCommand viewLoyaltyPointsCommand,
                              CreateCheckoutCommand createCheckoutCommand,
+                             CreateCouponCommand createCouponCommand,
+                             PayUsingPaymentMethodsCommand payUsingPaymentMethodsCommand,
+
                              WebhookService webhookService
                              ) {
         this.createCustomerCommand = createCustomerCommand;
@@ -42,6 +50,8 @@ public class PaymentController {
         this.viewBalanceCommand = viewBalanceCommand;
         this.viewLoyaltyPointsCommand = viewLoyaltyPointsCommand;
         this.createCheckoutCommand = createCheckoutCommand;
+        this.createCouponCommand = createCouponCommand;
+        this.payUsingPaymentMethodsCommand = payUsingPaymentMethodsCommand;
         this.webhookService = webhookService;
     }
 
@@ -94,10 +104,31 @@ public class PaymentController {
     }
 
     @PostMapping("/createCheckout")
-    public void createCheckout(UUID customerUuid){
+    public void createCheckout(UUID customerUuid, UUID couponUuid){
         createCheckoutCommand.setCustomerUuid(customerUuid);
+        createCheckoutCommand.setCouponUuid(couponUuid);
         createCheckoutCommand.execute();
     }
+
+    @PostMapping("/createCoupon")
+    public void createCoupon(String name, BigDecimal percentOff, Duration duration, Long duration_in_months){
+        createCouponCommand.setName(name);
+        createCouponCommand.setPercentOff(percentOff);
+        createCouponCommand.setDuration(duration);
+        createCouponCommand.setDuration_in_months(duration_in_months);
+        createCouponCommand.execute();
+    }
+
+    @PostMapping("/payUsingPaymentMethod")
+    public void payUsingPaymentMethod(UUID customerUuid, UUID cartUuid, UUID paymentMethodUuid, Double amount){
+        payUsingPaymentMethodsCommand.setCustomerUuid(customerUuid);
+        payUsingPaymentMethodsCommand.setCartUuid(cartUuid);
+        payUsingPaymentMethodsCommand.setPaymentMethodUuid(paymentMethodUuid);
+        payUsingPaymentMethodsCommand.setAmount(amount);
+        payUsingPaymentMethodsCommand.execute();
+    }
+
+
 
     @PostMapping("/webhook")
     public void handleStripeEvent(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {

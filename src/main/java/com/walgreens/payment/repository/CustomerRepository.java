@@ -17,13 +17,13 @@ public interface CustomerRepository extends JpaRepository<CustomerDto, UUID> {
 //    void createAccount(@Param("p_user_id") UUID user_id);
 
     @Procedure(name = "create_customer")
-    void create_customer(@Param("p_customer_uuid") UUID customer_uuid, @Param("p_customer_id") String userId);
+    void create_customer(@Param("p_customer_uuid") UUID customerUuid, @Param("p_customer_id") String userId);
 
     @Procedure(name = "get_customer")
-    String get_customer(@Param("p_customer_uuid") UUID customer_uuid);
+    String get_customer(@Param("p_customer_uuid") UUID customerUuid);
 
     @Procedure(name = "get_loyalty_points")
-    int get_loyalty_points(@Param("p_customer_uuid") UUID customer_uuid);
+    int get_loyalty_points(@Param("p_customer_uuid") UUID customerUuid);
 
 
 

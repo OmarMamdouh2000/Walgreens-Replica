@@ -1,10 +1,12 @@
 package com.walgreens.payment.service.command;
 
 import com.stripe.exception.StripeException;
+import com.stripe.model.Coupon;
 import com.stripe.model.Customer;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.walgreens.payment.model.ProductsDto;
+import com.walgreens.payment.repository.CouponRepository;
 import com.walgreens.payment.repository.CustomerRepository;
 import com.walgreens.payment.responses.CheckoutSessionResponse;
 import lombok.AllArgsConstructor;
@@ -28,17 +30,29 @@ import java.util.UUID;
 public class CreateCheckoutCommand implements Command{
     private UUID customerUuid;
 
+    private UUID couponUuid;
+
+    private UUID cartUuid;
+
+
+
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
 
 
     @Override
     public void execute() {
         try{
             String customerId = customerRepository.get_customer(this.customerUuid);
-            UUID orderUuid = UUID.randomUUID();
-
+            cartUuid = UUID.randomUUID();
+            String couponId = null;
+            if(couponUuid != null){
+               couponId =  couponRepository.get_coupon(couponUuid);
+            }
             String clientUrl = "https://localhost:4200";
             SessionCreateParams.Builder sessionCreateParamsBuilder =
                     SessionCreateParams.builder()
@@ -85,13 +99,23 @@ public class CreateCheckoutCommand implements Command{
 
             sessionCreateParamsBuilder.setPaymentIntentData(
                     SessionCreateParams.PaymentIntentData.builder()
-                            .putMetadata("order_uuid", String.valueOf(orderUuid))
+                            .putMetadata("cart_uuid", String.valueOf(cartUuid))
                             .putMetadata("customer_uuid", this.customerUuid.toString())
                             .build()
             );
 
+            if(couponId != null){
+                sessionCreateParamsBuilder.addDiscount(
+                        SessionCreateParams.Discount.builder()
+                                .setCoupon(couponId)
+                                .build()
+                );
+            }
+
+
+
             System.out.println("CUSTOMER UUID: " + this.customerUuid);
-            System.out.println("ORDER UUID: " + orderUuid);
+            System.out.println("ORDER UUID: " + cartUuid);
 
 
             Session session = Session.create(sessionCreateParamsBuilder.build());

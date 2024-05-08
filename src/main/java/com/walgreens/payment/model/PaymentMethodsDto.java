@@ -20,7 +20,7 @@ public class PaymentMethodsDto {
     private UUID payment_method_uuid ;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_customer_id", referencedColumnName = "customer_uuid")
+    @JoinColumn(name = "fk_customer_uuid", referencedColumnName = "customer_uuid")
     private CustomerDto customer_uuid;
 
     private String card_number;
@@ -28,6 +28,7 @@ public class PaymentMethodsDto {
     private String expiry_year;
     private String cvv;
     private String cardholder_name;
+    private Boolean has_funds;
     private Boolean is_default;
 
 }
