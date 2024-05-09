@@ -24,13 +24,21 @@ public class Invoker {
 	@Autowired
 	private BrandsRepo brandRepo;
 	
-	public Invoker() {
+	public Invoker() { 
         commandMap = new HashMap<>();
         commandMap.put("listCategoriesCommand","com.example.demo.cassandraCommands.listCategoriesCommand");
         commandMap.put("getCategoryCommand", "com.example.demo.cassandraCommands.getCategoryCommand");
         commandMap.put("deleteCategoryCommand", "com.example.demo.cassandraCommands.deleteCategoryCommand");
         commandMap.put("addCategoryCommand", "com.example.demo.cassandraCommands.addCategoryCommand");
         commandMap.put("updateCategoryCommand", "com.example.demo.cassandraCommands.updateCategoryCommand");
+        
+        // Products
+        commandMap.put("listProductsCommand", "com.example.demo.cassandraCommands.listProductsCommand");
+        commandMap.put("getProductCommand", "com.example.demo.cassandraCommands.getProductCommand");
+        commandMap.put("deleteProductCommand", "com.example.demo.cassandraCommands.deleteProductCommand");
+        commandMap.put("addProductCommand", "com.example.demo.cassandraCommands.addProductCommand");
+        commandMap.put("updateProductCommand", "com.example.demo.cassandraCommands.updateProductCommand");
+        commandMap.put("listCategoryProductsCommand", "com.example.demo.cassandraCommands.listCategoryProductsCommand");
 	}
 	
 	public Object executeCommand(String commandName, Object parameter, Map<String,Object> body) {
@@ -38,6 +46,9 @@ public class Invoker {
         {
             try
             {
+            	if(body == null) {
+            		body = new HashMap<String,Object>();
+            	}
             	if(parameter != null)
             	{
             		body.put("parameter", parameter);
