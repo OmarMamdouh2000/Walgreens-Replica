@@ -51,10 +51,23 @@ public class OrderController {
 	}
 
 	
-	@GetMapping("/filterOrders")
-	public List<OrderTable> filterOrders(@RequestBody Map<String,Object> data) {
-		String dateString = (String) data.get("date");
-		return OrderService.filterOrders((String) data.get("token"), (String) data.get("date"), (String) data.get("status"));
+	@PostMapping("/filterOrders")
+	public Object filterOrders(@RequestParam String token, @RequestBody Map<String,Object> data) {
+
+		data.put("token", token);
+		data.put("commandName", "FilterOrders");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		kafkaProducer.publishToTopic("orderRequests",jsonString);
+
+		return "success";
+//		String dateString = (String) data.get("date");
+//		return OrderService.filterOrders((String) data.get("token"), (String) data.get("date"), (String) data.get("status"));
 	}
 	
 	@GetMapping("/getOrders")

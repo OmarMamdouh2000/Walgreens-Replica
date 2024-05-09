@@ -35,15 +35,18 @@ public class KafkaConsumerRequests {
 				List<OrderTable> orders = (List<OrderTable>) invoker.executeCommand("GetOrdersCommand", data);
 				kafkaProducer.publishToTopic("orderResponses","orders successfully fetched");
 				System.out.println(orders);
-				
-                
                 break;
 			case "GetActiveOrdersCommand":
 				List<OrderTable> activeOrders = (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
 				kafkaProducer.publishToTopic("orderResponses","active orders successfully fetched");
 				System.out.println(activeOrders);
 				break;
-				
+
+			case "FilterOrders":
+				String filteredOrders = (String)invoker.executeCommand("FilterOrders", data);
+//				System.out.println(filteredOrders);
+				kafkaProducer.publishToTopic("orderResponses",filteredOrders);
+				break;
             default:
                 break;
         }

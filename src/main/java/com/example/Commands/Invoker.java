@@ -24,6 +24,7 @@ public class Invoker {
         commandMap = new HashMap<>();
         commandMap.put("GetOrdersCommand","com.example.Commands.GetOrdersCommand");
         commandMap.put("GetActiveOrdersCommand", "com.example.Commands.GetActiveOrdersCommand");
+        commandMap.put("FilterOrders", "com.example.Commands.FilterOrders");
 
 
     }
@@ -39,10 +40,11 @@ public class Invoker {
             // If your class has a method you want to invoke, you can do so like this:
             String methodName = "execute"; // replace with your method name
             Method method = class1.getDeclaredMethod(methodName,  Map.class); // replace with your method parameters
-            System.out.println(data);
+//            System.out.println(data);
             return method.invoke(instance, data);
             }catch(Exception e){
                 e.printStackTrace();
+                return e.getCause().getMessage();
             }
             
         } 
