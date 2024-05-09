@@ -1,7 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.common.LogoutCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.user.*;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;

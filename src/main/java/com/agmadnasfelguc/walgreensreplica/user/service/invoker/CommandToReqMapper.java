@@ -1,5 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.invoker;
 
+import com.agmadnasfelguc.walgreensreplica.user.service.Utils.JsonReader;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -24,18 +25,7 @@ public class CommandToReqMapper {
     private void init()  {
         try {
 
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            InputStream inputStream = CommandToReqMapper.class.getClassLoader().getResourceAsStream("static/user_command_map.json");
-            Map jsonMap;
-            if (inputStream == null) {
-                throw new IllegalArgumentException("file not found! user_command_map.json");
-            } else {
-                // Directly parse InputStream to Map
-                 jsonMap = objectMapper.readValue(inputStream, Map.class);
-
-            }
-
+            Map jsonMap = JsonReader.readJsonFromResourcesAsMap("static/user_command_map.json");
             Reflections reflections = new Reflections("com.agmadnasfelguc.walgreensreplica.user.service.command");
             Set<Class<? extends Command>> commands = reflections.getSubTypesOf(Command.class);
 
