@@ -1,0 +1,7 @@
+{
+    "params": {
+        "sessionId": "placeholder"
+    },
+    "body": {},
+    "request": "VerifyMail"
+}

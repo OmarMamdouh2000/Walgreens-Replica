@@ -1,0 +1,21 @@
+{
+  "loginAdminCommand": "AdminLogin",
+  "addPharmacistCommand": "AddPharmacist",
+  "viewUsersCommand": "ViewUsers",
+  "addAdminCommand": "AddAdmin",
+  "banAccountCommand": "BanAccount",
+  "unbanAccountCommand": "UnbanAccount",
+
+  "registerCommand": "Register",
+  "changeEmailCommand": "ChangeEmail",
+  "changePasswordCommand": "ChangePassword",
+  "editDetailsCommand": "EditDetails",
+  "loginUserCommand": "UserLogin",
+  "logoutCommand": "Logout",
+  "twoFactorAuthLoginCommand": "TwoFactorAuthLogin",
+  "resetPasswordCommand": "ResetPassword",
+  "verifyMailCommand": "VerifyMail",
+  "update2FAStatusCommand": "Update2FAStatus",
+  "verifyMailCheckOTPCommand": "VerifyMailCheckOtp",
+  "updatePasswordResetCommand": "ResetPasswordCheckOtp"
+}

@@ -1,7 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.common.LogoutCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.user.*;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
@@ -81,7 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<Object> changeEmail(@RequestBody UserChangePasswordRequest request) {
+    public ResponseEntity<Object> changePassword(@RequestBody UserChangePasswordRequest request) {
         // Assuming the request contains UserId ,and password.
 
         // Set the user registration details in the command class
