@@ -2,33 +2,30 @@ package com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator;
 
 public class TemplatePaths {
     public static final String basePath = "messageTemplates/userManagement/";
-    public static final String adminPath = basePath + "admin/";
-    public static final String userPath = basePath + "user/";
-    public static final String commonPath = basePath + "common/";
-
+    
     // Admin JSON paths
-    public static final String addAdminPath = adminPath + "AddAdmin.json";
-    public static final String addPharmacistPath = adminPath + "AddPharmacist.json";
-    public static final String adminLoginPath = adminPath + "AdminLogin.json";
-    public static final String banAccountPath = adminPath + "BanAccount.json";
-    public static final String unbanAccountPath = adminPath + "UnbanAccount.json";
-    public static final String viewUsersPath = adminPath + "ViewUsers.json";
+    public static final String addAdminPath = basePath + "AddAdmin.json";
+    public static final String addPharmacistPath = basePath + "AddPharmacist.json";
+    public static final String adminLoginPath = basePath + "AdminLogin.json";
+    public static final String banAccountPath = basePath + "BanAccount.json";
+    public static final String unbanAccountPath = basePath + "UnbanAccount.json";
+    public static final String viewUsersPath = basePath + "ViewUsers.json";
 
     // Common JSON paths
-    public static final String logoutPath = commonPath + "Logout.json";
+    public static final String logoutPath = basePath + "Logout.json";
 
     // User JSON paths
-    public static final String changeEmailPath = userPath + "ChangeEmail.json";
-    public static final String changePasswordPath = userPath + "ChangePassword.json";
-    public static final String editDetailsPath = userPath + "EditDetails.json";
-    public static final String registerPath = userPath + "Register.json";
-    public static final String resetPasswordPath = userPath + "ResetPassword.json";
-    public static final String resetPasswordCheckOtpPath = userPath + "ResetPasswordCheckOtp.json";
-    public static final String twoFactorAuthLoginPath = userPath + "TwoFactorAuthLogin.json";
-    public static final String update2FAStatusPath = userPath + "Update2FAStatus.json";
-    public static final String userLoginPath = userPath + "UserLogin.json";
-    public static final String verifyMailPath = userPath + "VerifyMail.json";
-    public static final String verifyMailCheckOtpPath = userPath + "VerifyMailCheckOtp.json";
+    public static final String changeEmailPath = basePath + "ChangeEmail.json";
+    public static final String changePasswordPath = basePath + "ChangePassword.json";
+    public static final String editDetailsPath = basePath + "EditDetails.json";
+    public static final String registerPath = basePath + "Register.json";
+    public static final String resetPasswordPath = basePath + "ResetPassword.json";
+    public static final String resetPasswordCheckOtpPath = basePath + "ResetPasswordCheckOtp.json";
+    public static final String twoFactorAuthLoginPath = basePath + "TwoFactorAuthLogin.json";
+    public static final String update2FAStatusPath = basePath + "Update2FAStatus.json";
+    public static final String userLoginPath = basePath + "UserLogin.json";
+    public static final String verifyMailPath = basePath + "VerifyMail.json";
+    public static final String verifyMailCheckOtpPath = basePath + "VerifyMailCheckOtp.json";
 
 
 }

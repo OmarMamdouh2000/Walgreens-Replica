@@ -17,30 +17,30 @@ import org.springframework.stereotype.Service;
 @EqualsAndHashCode(callSuper = true)
 @Service
 @Data
+@NoArgsConstructor
 public class LoginUserCommand extends Command {
     private String email;
     private String password;
     private String userId;
     private String sessionId;
 
-    @Autowired
-    UserRepository userRepository;
-
-    //this will be removed later
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
+    private UserRepository userRepository;
     private Command createSessionCommand;
+    private Command generateOTPCommand;
 
     @Autowired
-    private Command generateOTPCommand;
+    public LoginUserCommand(UserRepository userRepository, Command createSessionCommand, Command generateOTPCommand) {
+        this.userRepository = userRepository;
+        this.createSessionCommand = createSessionCommand;
+        this.generateOTPCommand = generateOTPCommand;
+    }
 
     @Override
     public void execute() {
         System.out.println("LoginUserCommand.execute");
         System.out.println(email);
         System.out.println(password);
+        System.out.println("testRun");
         //add logic to check if user is logged in, i.e. data already available in redis
 
         //call stored procedure from postgres to check if user exists and password is correct

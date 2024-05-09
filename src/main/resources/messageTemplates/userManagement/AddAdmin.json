@@ -1,0 +1,10 @@
+{
+    "params": {
+        "sessionId": "placeholder"
+    },
+    "body": {
+        "username": "placeholder",
+        "password": "placeholder"
+    },
+    "request": "AddAdmin"
+}

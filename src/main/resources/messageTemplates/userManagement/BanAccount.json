@@ -1,0 +1,9 @@
+{
+    "params": {
+        "sessionId": "placeholder"
+    },
+    "body": {
+        "userId": "placeholder"
+    },
+    "request": "BanAccount"
+}

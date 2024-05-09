@@ -31,7 +31,11 @@ public class CommandToReqMapper {
 
             for (Class<? extends Command> commandClass : commands) {
                 if (!Modifier.isAbstract(commandClass.getModifiers())) {
-                    String className = commandClass.getSimpleName();
+                    // get command class.getSimpleName()  and make the first letter lowercase and add it to the map
+                    StringBuilder sb =new StringBuilder(commandClass.getSimpleName());
+                    sb.setCharAt(0, Character.toLowerCase(commandClass.getSimpleName().charAt(0)));
+                    String className = sb.toString();
+                    System.out.println(className);
                     String requestName = (String) jsonMap.get(className);
                     if(requestName != null)
                         commandsMap.put(requestName, className);
