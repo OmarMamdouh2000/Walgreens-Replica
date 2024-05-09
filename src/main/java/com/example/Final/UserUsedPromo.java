@@ -6,7 +6,7 @@ import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 
 import java.util.UUID;
 
-@Table("UserUsedPromo")
+@Table("UserUsedPromos")
 public class UserUsedPromo {
 
     @PrimaryKeyColumn( ordinal = 0, type = PrimaryKeyType.PARTITIONED)

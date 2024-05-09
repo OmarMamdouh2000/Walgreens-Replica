@@ -1,6 +1,7 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +25,22 @@ public class ChangeOrderType implements Command{
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
+        String token = (String)data.get("token");
+        Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 
-        String user = (String)data.get("User");
-        String itemString = (String) ((Map<String, Object>)data.get("Data")).get("itemId");
-        String orderType = (String) ((Map<String, Object>)data.get("Data")).get("orderType");
+        if(claims == null) return "Invalid Token";
 
+        String user = (String)claims.get("userId");
         UUID userID = UUID.fromString(user);
+
+        String itemString = (String) data.get("itemId");
         UUID itemID = UUID.fromString(itemString);
 
+        String orderType = (String) data.get("orderType");
+
+
         CartTable userCart = cartRepo.getCart(userID);
-        System.out.println("USERCART:  " + userCart);
+
         if(userCart != null){
             if(orderType.equals("shipping")){
                 CartItem cartItem = userCart.getItems().stream()
@@ -44,9 +51,9 @@ public class ChangeOrderType implements Command{
                 userCart.getItems().forEach(item -> item.setDeliveryType(orderType));
             }
             cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
-            return  new ResponseEntity<> (cartRepo.getCart(userID), HttpStatus.OK);
+            return cartRepo.getCart(userID).toString();
         }else{
-            throw new Exception("Cart not found");
+            return "Cart not found";
         }
 
     }

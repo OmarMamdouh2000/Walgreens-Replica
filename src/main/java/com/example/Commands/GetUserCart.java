@@ -1,6 +1,7 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +26,21 @@ public class GetUserCart implements Command {
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
-        String user = (String)data.get("User");
+        String token = (String)data.get("token");
+        Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
+
+        if(claims == null) return "Invalid Token";
+
+        String user = (String)claims.get("userId");
         UUID userId = UUID.fromString(user);
         try{
             CartTable userCart = cartRepo.getCart(userId);
             if(userCart == null){
-                userCart = new CartTable(UUID.randomUUID(),"",new ArrayList<CartItem>(), "online", new ArrayList<CartItem>(), 0.0, userId);
+                userCart = cartRepo.createNewCart(userId);
             }
-            return new ResponseEntity<>(userCart, HttpStatus.OK);
+            return userCart.toString();
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            return e.getMessage();
         }
     }
 }

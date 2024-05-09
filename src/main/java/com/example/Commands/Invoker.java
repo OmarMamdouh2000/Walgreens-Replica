@@ -1,7 +1,9 @@
 package com.example.Commands;
 
+import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,8 +58,9 @@ public class Invoker {
 //                System.out.println(data);
                 return method.invoke(instance, data);
             }catch(Exception e){
-                return new ResponseEntity<>(e.getCause().getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//                return e.getCause().getMessage() + "  Invoker Exception";
+//                e.printStackTrace();
+//                return new ResponseEntity<>(e.getCause().getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return e.getCause().getMessage();
             }
             
         } 

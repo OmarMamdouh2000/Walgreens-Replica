@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
             return jws.getBody();
         } catch (Exception e) {
             // Handle exception (e.g., invalid token)
-            e.printStackTrace();
+//            e.printStackTrace();
             return null;
             
             

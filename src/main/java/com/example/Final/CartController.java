@@ -46,12 +46,17 @@ public class CartController {
 
 	@GetMapping("/getCart")
 	public Object getCart(@RequestParam String token) {
-		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-		if (claims == null) {
-			return new ResponseEntity<>("Invalid Token", HttpStatus.UNAUTHORIZED);
-		} else {
-			return invoker.executeCommand("GetUserCart", Map.of("User", claims.get("userId")));
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString( Map.of("token", token, "commandName", "GetUserCart"));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+		//return invoker.executeCommand("GetUserCart", Map.of("User", claims.get("userId")));
 	}
 
 	@PostMapping("/editItemCount")
@@ -107,32 +112,52 @@ public class CartController {
 
 	@PostMapping("/removeItem")
 	public Object removeItemFromCart(@RequestParam String token ,@RequestBody Map<String, Object> data) throws Exception {
-		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-
-		if (claims == null) return new ResponseEntity<>("Invalid Token", HttpStatus.UNAUTHORIZED);
-		else {
-			return invoker.executeCommand("RemoveItem", Map.of("User", claims.get("userId"), "Item", data.get("itemId")));
+		data.put("token", token);
+		data.put("commandName", "RemoveItem");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
 	}
 
 	@PostMapping("/changeOrderType")
 	public Object setOrderType(@RequestParam String token, @RequestBody Map<String, Object> data) throws Exception{
-		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-
-		if (claims == null) return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-		else{
-			return invoker.executeCommand("ChangeOrderType", Map.of("User", claims.get("userId"), "Data", data));
+		data.put("token", token);
+		data.put("commandName", "ChangeOrderType");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+
 	}
 
 	@PostMapping("/applyPromo")
 	public Object applyPromo(@RequestParam String token, @RequestBody Map<String, Object> data){
-		Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-
-		if (claims == null) return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-		else{
-			return invoker.executeCommand("ApplyPromo", Map.of("User", claims.get("userId"), "Data", data));
+		data.put("token", token);
+		data.put("commandName", "ApplyPromo");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+
 	}
 
 	@GetMapping("/getAllUsedPromo")

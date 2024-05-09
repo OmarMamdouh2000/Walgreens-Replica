@@ -1,6 +1,7 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,15 @@ public class RemoveItem implements Command{
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
-        String user = (String)data.get("User");
-        String itemString = (String)data.get("Item");
+        String token = (String)data.get("token");
+        Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
+
+        if(claims == null) return "Invalid Token";
+
+        String user = (String)claims.get("userId");
         UUID userId = UUID.fromString(user);
+
+        String itemString = (String)data.get("itemId");
         UUID itemId = UUID.fromString(itemString);
 
         CartTable userCart = cartRepo.getCart(userId);
@@ -50,9 +57,9 @@ public class RemoveItem implements Command{
             userCart.setTotalAmount(userCart.getTotalAmount() - priceRemove);
             cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
 
-            return new ResponseEntity<>(cartRepo.getCart(userId), HttpStatus.OK);
+            return cartRepo.getCart(userId).toString();
         }else{
-            throw new Exception("Cart not found");
+            return "Cart not found";
         }
 
     }

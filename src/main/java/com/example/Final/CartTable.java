@@ -25,7 +25,7 @@ public class CartTable {
     @Column("total_amount")
     private double total_amount;
 
-    @Column("appliedPromoCodeId")
+    @Column("appliedpromocodeid")
     private String appliedPromoCodeId;
     
     private double promoCodeAmount;
