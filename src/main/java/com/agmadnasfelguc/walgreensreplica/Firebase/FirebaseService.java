@@ -11,7 +11,7 @@ public class FirebaseService {
     private final Storage storage;
 
     public FirebaseService() {
-        this.storage = StorageOptions.getDefaultInstance().getService();
+        this.storage = FirebaseConfig.initializeFirebaseApp();
     }
 
     public String uploadPhoto(String id, MultipartFile file) throws IOException {
