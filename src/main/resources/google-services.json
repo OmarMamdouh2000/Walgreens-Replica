@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845211508550",
+    "project_id": "walgreens-replica",
+    "storage_bucket": "walgreens-replica.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845211508550:android:994d4d20c0554d3a0d4f47",
+        "android_client_info": {
+          "package_name": "com.walgreens.replica"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0UsWqoJ9AZQ8YYhYap3KHALI7HH8tWx4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
