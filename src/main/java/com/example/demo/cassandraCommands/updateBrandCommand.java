@@ -1,10 +1,10 @@
 package com.example.demo.cassandraCommands;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Categories;
@@ -14,16 +14,14 @@ import com.example.demo.cassandraRepositories.BrandsRepo;
 import com.example.demo.cassandraRepositories.CategoriesRepo;
 import com.example.demo.cassandraRepositories.ProductsRepo;
 
-@Service
-public class deleteCategoryCommand implements Command{
-	
+public class updateBrandCommand implements Command {
 	private CategoriesRepo catRepo;
 	private ProductsRepo prodRepo;
 	private BrandsRepo brandRepo;
 	
 	
 	@Autowired
-	public deleteCategoryCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
+	public updateBrandCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
 	{
 		this.catRepo=catRepo;
 		this.prodRepo = prodRepo;
@@ -33,35 +31,42 @@ public class deleteCategoryCommand implements Command{
 	@Override
 	public Object execute(Map<String,Object> body) 
 	{
-		if(body.containsKey("parameter"))
+		if(body.containsKey("parameter")) 
 		{
+			String newBrandName;
+			
 			UUID brandId = UUID.fromString((String)body.get("id"));
 			Brands brand = brandRepo.getBrandRepo(brandId);
 			
-			//Set all products to be null parent category if had products
-			if(brand.getBrandProducts() != null)
+			if(body.containsKey("name"))
 			{
+				newBrandName = (String)body.get("name");
+				
 				for(Pobject prod : brand.getBrandProducts())
 				{
 					Products product = prodRepo.getProductRepo(prod.getId());
 					UUID parentCategoryId = product.getParentCategory();
 					Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+					
 					for(Pobject categoryProd : parentCategory.getCategoryProducts())
 					{
 						if(categoryProd.getId().equals(prod.getId()))
 						{
-							categoryProd.setBrandName("");
+							categoryProd.setBrandName(newBrandName);
 							catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
 							break;
 						}
 					}
-					product.setBrand(null);
-					prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
+					
+					prod.setBrandName(newBrandName);
 				}
 			}
-			brandRepo.deleteBrandRepo(brandId);
+			else
+				newBrandName = brand.getName();
+			
+			brandRepo.updateBrandRepo(brandId, newBrandName, brand.getBrandProducts());
+			return("Success");
 		}
-		return "Failed";
+		return("Failed");
 	}
-
 }

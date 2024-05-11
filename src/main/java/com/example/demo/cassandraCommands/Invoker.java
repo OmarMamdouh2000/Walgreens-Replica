@@ -31,6 +31,12 @@ public class Invoker {
         commandMap.put("deleteCategoryCommand", "com.example.demo.cassandraCommands.deleteCategoryCommand");
         commandMap.put("addCategoryCommand", "com.example.demo.cassandraCommands.addCategoryCommand");
         commandMap.put("updateCategoryCommand", "com.example.demo.cassandraCommands.updateCategoryCommand");
+        commandMap.put("listBrandCommand", "com.example.demo.cassandraCommands.listBrandCommand");
+        commandMap.put("getBrandCommand", "com.example.demo.cassandraCommands.getBrandCommand");
+        commandMap.put("getBrandProductsCommand", "com.example.demo.cassandraCommands.getBrandProductsCommand");
+        commandMap.put("deleteBrandCommand", "com.example.demo.cassandraCommands.deleteBrandCommand");
+        commandMap.put("addBrandCommand", "com.example.demo.cassandraCommands.addBrandCommand");
+        commandMap.put("updateBrandCommand", "com.example.demo.cassandraCommands.updateBrandCommand");
 	}
 	
 	public Object executeCommand(String commandName, Object parameter, Map<String,Object> body) {

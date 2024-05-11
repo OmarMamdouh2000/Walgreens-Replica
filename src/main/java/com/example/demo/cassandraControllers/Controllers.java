@@ -109,39 +109,41 @@ public class Controllers {
 	
 	// --------------------------------------------- BRANDS ------------------------------------------------
 
+	@SuppressWarnings("unchecked")
 	@GetMapping("/listBrand")
 	public List<Brands> ListBrand()
 	{
-		return service.listBrandService();
+		return (List<Brands>) invoker.executeCommand("listBrandsCommand", null, null);
 	}
 	
-	@GetMapping("/getBrand")
-	public Brands getBrand(@RequestBody Map<String, Object> body)
+	@GetMapping("/getBrand/{brandId}")
+	public Brands getBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
 	{
-		return service.getBrandService(body);
+		return (Brands) invoker.executeCommand("getBrandCommand", brandId, body);
 	}
 	
-	@GetMapping("/listBrandProducts")
-	public List<Pobject> listBrandProducts(@RequestBody Map<String, Object> body) 
+	@SuppressWarnings("unchecked")
+	@GetMapping("/listBrandProducts/{brandId}")
+	public List<Pobject> listBrandProducts(@PathVariable Object brandId, @RequestBody Map<String, Object> body) 
 	{
-	    return service.listBrandProductsService(body);
+	    return (List<Pobject>) invoker.executeCommand("listBrandProducts", brandId, body);
 	}
 	
-	@DeleteMapping("/deleteBrand")
-	public void deleteBrand(@RequestBody Map<String, Object> body)
+	@DeleteMapping("/deleteBrand/{brandId}")
+	public void deleteBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
 	{
-		service.deleteBrandService(body);
+		 invoker.executeCommand("deleteBrandCommand", brandId, body);
 	}
 	@PostMapping("/addBrand")
 	public void addBrand(@RequestBody Map<String, Object> body)
 	{
-		service.addBrandService(body);
+		invoker.executeCommand("addBrandCommand", null, body);
 	}
 	
-	@PutMapping("/updateBrand")
-	public void updateBrand(@RequestBody Map<String, Object> body)
+	@PutMapping("/updateBrand/{brandId}")
+	public void updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
 	{
-		service.updateBrandService(body);
+		invoker.executeCommand("updateBrandCommand", brandId, body);
 	}
 	
 	// --------------------------------------------- END BRANDS ---------------------------------------------
