@@ -72,36 +72,42 @@ public class Controllers {
 	
 	// --------------------------------------------- PRODUCTS ------------------------------------------------
 	
+	@SuppressWarnings("unchecked")
 	@GetMapping("/listProducts")
-	public Slice<Products> listProducts(@RequestParam(name = "page", defaultValue = "0") int page,
+	public List<Products> listProducts(@RequestParam(name = "page", defaultValue = "0") int page,
 	        @RequestParam(name = "size", defaultValue = "10") int size) {
-	    return service.listProductsService(page, size);
+			int [] params = new int [2];
+			params[0] = page;
+			params[1] = size; //(List<Products>)
+	    return (List<Products>) invoker.executeCommand("listProductsCommand", params , null);
 	}
 
-	@GetMapping("/getProduct")
-	public Products getProduct(@RequestBody Map<String, Object> body)
+	@GetMapping("/getProduct/{productId}")
+	public Products getProduct(@PathVariable Object productId)
 	{
-		return service.getProductService(body);
+		return (Products) invoker.executeCommand("getProductCommand", productId , null);
 	}
 	
-	@GetMapping("/listCategoryProducts")
-	public List<Pobject> listCategoryProducts(@RequestBody Map<String, Object> body) {
-	    return service.listCategoryProductsService(body);
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping("/listCategoryProducts/{categoryId}")
+	public List<Pobject> listCategoryProducts(@PathVariable Object categoryId) { 
+		return (List<Pobject>) invoker.executeCommand("listCategoryProductsCommand", categoryId , null);
 	}
 	
-	@DeleteMapping("/deleteProduct")
-	public void deleteProduct(@RequestBody Map<String, Object> body) {
-	    service.deleteProductService(body);
+	@DeleteMapping("/deleteProduct/{productId}")
+	public String deleteProduct(@PathVariable Object productId) {
+		return (String)invoker.executeCommand("deleteProductCommand", productId , null);
 	}
 	
 	@PostMapping("/addProduct")
-    public void addProduct(@RequestBody Map<String, Object> body) {
-        service.addProductService(body);
+    public String addProduct(@RequestBody Map<String, Object> body) {
+		return (String) invoker.executeCommand("addProductCommand", null , body);
    	}
 	
-	@PutMapping("/updateProduct")
-	public void updateProduct(@RequestBody Map<String, Object> body) {
-	    service.updateProductService(body);
+	@PutMapping("/updateProduct/{productId}")
+	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) {
+		return (String) invoker.executeCommand("updateProductCommand", productId , body);
 	}
 	
 	
