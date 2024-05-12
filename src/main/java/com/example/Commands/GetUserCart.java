@@ -38,7 +38,7 @@ public class GetUserCart implements Command {
             if(userCart == null){
                 userCart = cartRepo.createNewCart(userId);
             }
-            return userCart.toString();
+            return userCart;
         }catch (Exception e){
             return e.getMessage();
         }

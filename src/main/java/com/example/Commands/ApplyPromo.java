@@ -87,7 +87,7 @@ public class ApplyPromo implements Command{
 
                 CartTable newCart = cartRepo.getCart(userID);
 
-                return newCart.toString();
+                return newCart;
             }
         }
 

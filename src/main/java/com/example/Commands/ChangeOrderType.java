@@ -51,7 +51,7 @@ public class ChangeOrderType implements Command{
                 userCart.getItems().forEach(item -> item.setDeliveryType(orderType));
             }
             cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
-            return cartRepo.getCart(userID).toString();
+            return cartRepo.getCart(userID);
         }else{
             return "Cart not found";
         }

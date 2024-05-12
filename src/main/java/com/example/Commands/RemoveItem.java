@@ -57,7 +57,7 @@ public class RemoveItem implements Command{
             userCart.setTotalAmount(userCart.getTotalAmount() - priceRemove);
             cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
 
-            return cartRepo.getCart(userId).toString();
+            return cartRepo.getCart(userId);
         }else{
             return "Cart not found";
         }

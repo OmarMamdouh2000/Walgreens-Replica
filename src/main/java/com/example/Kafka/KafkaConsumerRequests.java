@@ -8,6 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.example.Commands.Invoker;
+import com.example.Final.CartTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -26,41 +27,40 @@ public class KafkaConsumerRequests {
 			ObjectMapper objectMapper = new ObjectMapper();
 			@SuppressWarnings("unchecked")
 			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);
-
+			Map<String,Object> result = new HashMap<>();
+			result.put("commandName", data.get("commandName").toString());
+			Object finalData="";
 			switch (data.get("commandName").toString()) {
+				
+
 				case "UpdateItemCountCommand":
-					String result= (String) invoker.executeCommand("UpdateItemCountCommand", data);
-					kafkaProducer.publishToTopic("cartResponses",result);
-					
+					finalData= (String) invoker.executeCommand("UpdateItemCountCommand", data);
 					break;
 				case "AddToSavedForLater":
-					String result1= (String) invoker.executeCommand("AddToSavedForLater", data);
-					kafkaProducer.publishToTopic("cartResponses",result1);
+					finalData= (String) invoker.executeCommand("AddToSavedForLater", data);
 					break;
 				case "ReturnFromSavedForLater":
-					String result2= (String) invoker.executeCommand("ReturnFromSavedForLater", data);
-					kafkaProducer.publishToTopic("cartResponses",result2);
+					finalData= (String) invoker.executeCommand("ReturnFromSavedForLater", data);
 					break;
 				case "GetUserCart":
-					String result3 = (String) invoker.executeCommand("GetUserCart", data);
-					kafkaProducer.publishToTopic("cartResponses",result3);
+					finalData = (Object) invoker.executeCommand("GetUserCart", data);
 					break;
 				case "RemoveItem":
-					String result4 = (String) invoker.executeCommand("RemoveItem", data);
-					kafkaProducer.publishToTopic("cartResponses",result4);
+					finalData = (Object) invoker.executeCommand("RemoveItem", data);
 					break;
 				case "ChangeOrderType":
-					String result5 = (String) invoker.executeCommand("ChangeOrderType", data);
-					kafkaProducer.publishToTopic("cartResponses",result5);
+					finalData = (Object) invoker.executeCommand("ChangeOrderType", data);
 					break;
 				case "ApplyPromo":
-					String result6 = (String) invoker.executeCommand("ApplyPromo", data);
-					kafkaProducer.publishToTopic("cartResponses",result6);
+					finalData = (Object) invoker.executeCommand("ApplyPromo", data);
 					break;
 			
 				default:
 					break;
 			}
+			result.put("data", finalData);
+			String response = objectMapper.writeValueAsString(result);
+			kafkaProducer.publishToTopic("cartResponses", response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
