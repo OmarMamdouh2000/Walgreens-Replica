@@ -1,29 +1,13 @@
 {
-  "project_info": {
-    "project_number": "845211508550",
-    "project_id": "walgreens-replica",
-    "storage_bucket": "walgreens-replica.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:845211508550:android:994d4d20c0554d3a0d4f47",
-        "android_client_info": {
-          "package_name": "com.walgreens.replica"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA0UsWqoJ9AZQ8YYhYap3KHALI7HH8tWx4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+  "type": "service_account",
+  "project_id": "walgreens-replica",
+  "private_key_id": "3d18c2368362e6705a25ee6ed7a94832e2863ed8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCT4vFPuZVsVdm9\ntvgB3wisTvM73/ywEaWKwHiSq8B1wIeAfbuYe2PKneTNcmPXmxGaVMsfePwSsVjt\nAHcjfNhq+9NaISc4uAuS6qPfOY0hVi44nKhNQOxQkNZ+4Sxe865grNd67Rg4oO33\nhFFdY21hVjjP19T+5/u9EmpV4glBFA4fMD9ItA/rcrHpvYd6DR8vuZhyb4yRhsix\nWwNA2nkQkqPFm741zNj+yVVULszWk8/mjVRGtfIT21dWaDHp+W4paIPj8QaSb6IH\npnqqwnWR9amtxD11o5seqoVZobIYHEYlpjJjl7DsJ7sCWAJddagd+wmUwjn2ffr5\nL3lATRGfAgMBAAECggEAA3dOMJAo8GESuV+QcHrJuUAgc0bMpVPEjXv1V3qvCBN7\nGYfY3boGnLkWo7oKnQMFZpiWKiarwcRmUSexoyNJ7zf3vCUKxkmJ++eD77dpl15t\ntuX1C9p5r2m1nUOpxo/vhlSGuFrWNn2PFj4DqiyqY52htz1XwKGvRL8pvtmNXfkR\nN2mSawa6h6DvPkAXjKSdYdPPITlQKOvjXWu4IkBU3nY8G9oalJj737RLSv+pVz+h\nxkboxiuooMP1ms4sifmjJ0x3A4kV2tePY7iTOrgwM9B6vuiVPtHPEhI+JQrQDxna\n18ZDhAopr2HB5j5X9Hq3dQDhfEJDpgIsr5rTVX5AAQKBgQDQOG3JrJNz8MCGzxRz\nL4uY6TeApfBlAR2V5XCL8ydSDDAee2W1lqm1dMVGxvX5ry294mmO1AI7cLTQcSLa\nfi/7UWsGZBgrLG6SrC0QdJBwTnzguRM7RXl34PapmOhfBJKSRsSDZknqK/Hz/957\ngywBHrmbxe/FV9ZgCmnu1vIMLwKBgQC10kt81++u63OwksVyKyUv3k9ESxbshmcm\nlBGKTvSh4ojCRoJLgTW6F1I5VhAaAJHmXVvt70vp5mLMb07IusHtWrhwKn9Kvm9a\nz3rsVErd7gZbuXhQ9FJ9QtEn3zskFzgLmV0imwYn06LlrRnTtyz/CzMDnjJ4kwR9\nTYUNBmzFkQKBgE4HB2VO7YbCDnO2QDSV+ZsYsjrcdER1cY/Nhip7uR1vAc06crfk\nuL4N/ytxvZWOhvakVOg4HIoHx0phSy1Toklsjk27zq7HHLyMFusWs1XSo8tWr5VD\niKxaujR9335T6VU1fci72TEOvMGx/b6NPj1BNU7hkuOB8gzVejMNi3DzAoGBAKpL\nStSlUyJb+MFa1n92FaBd8ZQfWFs0Dwy9BiiqhsnQ6RI9A/BAFtgy25pEF1SjUAOZ\nUW7rAAkU9VhQsFOlR9lNbQ3xX8Pb1WQSjCkpUe3G8EGc1ynLjC8yE7/qfvPwo1eJ\nzweIdx16RUok9Nms6QH/tUogM1lnKX9KyeFHMT1hAoGAUHriFzhHdfR/QwUnWsbk\n/jrE0hU/FE7WLQJXQgZEcq46PXbbTlkrIa3dIAcRVXMU9HoCB7Lu/2iaT/uxGu6b\nQSbDVAVmTtWZBkcB4TD9Jq1oxYDoxq8rDhVG5RP6vlw0MJ4QArSBgV5vS44wC4GX\nwa0IBuagueXCaZPKsvMPl+M=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-iemb9@walgreens-replica.iam.gserviceaccount.com",
+  "client_id": "100086019909955551885",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-iemb9%40walgreens-replica.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
 }

@@ -28,17 +28,17 @@ public class AddAdminCommand extends Command {
     @Override
     public void execute() {
 //        try{
-            String role = sessionCache.getSessionDetails(sessionId).get("role");
-            if (role == null) {
-                this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
-                return;
-            }
-            if (!role.equals("admin")) {
-                this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session Type"));
-                return;
-            }
-            String response = adminRepository.addAdmin(username,password);
-            this.setState(new ResponseStatus(ResponseState.Success, response));
+        String role = sessionCache.getSessionDetails(sessionId).get("role");
+        if (role == null) {
+            this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
+            return;
+        }
+        if (!role.equals("admin")) {
+            this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session Type"));
+            return;
+        }
+        String response = adminRepository.addAdmin(username,password);
+        this.setState(new ResponseStatus(ResponseState.Success, response));
 //        } catch (Exception e) {
 //            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getStackTrace()));
 //        }

@@ -1,6 +1,7 @@
-package com.agmadnasfelguc.walgreensreplica.Firebase;
+package com.agmadnasfelguc.walgreensreplica.user.firebase;
 
 import com.google.cloud.storage.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -9,19 +10,21 @@ import java.io.IOException;
 @Service
 public class FirebaseService {
 
-    private final Storage storage;
-    private final FirebaseConfig firebaseConfig;
+    @Autowired
+    private Storage storage;
+    //private final FirebaseConfig firebaseConfig;
 
     public FirebaseService(FirebaseConfig firebaseConfig) {
-        this.firebaseConfig = firebaseConfig;
+        /*this.firebaseConfig = firebaseConfig;
         try {
 
             this.storage = firebaseConfig.initializeStorage();
         } catch (IOException e) {
             // Handle the exception, e.g., logging or throwing a runtime exception
-            e.printStackTrace(); // Or log it
+            e.printStackTrace();
+            //System.out.println("Haneen?");// Or log it
             throw new RuntimeException("Failed to initialize Firebase Storage", e);
-        }
+        }*/
     }
 
     /*public String uploadPhoto(String id, MultipartFile file) throws IOException {

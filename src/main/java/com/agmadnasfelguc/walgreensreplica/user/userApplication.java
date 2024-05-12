@@ -19,8 +19,8 @@ import java.util.Map;
 
 @SpringBootApplication
 public class userApplication {
-	@Bean
-	CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
+	//@Bean
+	/*CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
 		System.out.println("NOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 		return args -> {
@@ -38,7 +38,7 @@ public class userApplication {
 			);
 
 		};
-	}
+	}*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(userApplication.class, args);
