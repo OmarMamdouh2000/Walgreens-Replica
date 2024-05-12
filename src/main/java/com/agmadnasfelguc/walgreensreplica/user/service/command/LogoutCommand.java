@@ -1,16 +1,17 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.command;
 
 import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
+import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
-public class LogoutCommand extends Command{
+public class LogoutCommand extends Command {
     private String sessionId;
 
     @Autowired
@@ -18,6 +19,7 @@ public class LogoutCommand extends Command{
     @Override
     public void execute() {
         sessionCache.deleteSession(sessionId);
+        this.setState(new ResponseStatus(ResponseState.Success, "Logged Out"));
     }
 
 }

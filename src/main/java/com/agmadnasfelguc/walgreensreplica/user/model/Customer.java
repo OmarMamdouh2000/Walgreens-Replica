@@ -31,7 +31,7 @@ public class Customer {
     private Date dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"Gender\"")
+    @Column(name = "gender")
     private Gender gender;
 
     @OneToOne

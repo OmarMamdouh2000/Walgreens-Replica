@@ -1,0 +1,8 @@
+{
+    "params": {},
+    "body": {
+        "username": "placeholder",
+        "password": "placeholder"
+    },
+    "request": "AdminLogin"
+}

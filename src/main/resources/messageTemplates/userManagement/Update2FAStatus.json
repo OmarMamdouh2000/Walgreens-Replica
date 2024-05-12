@@ -1,0 +1,9 @@
+{
+    "params": {
+        "sessionId": "placeholder"
+    },
+    "body": {
+        "status": "placeholder"
+    },
+    "request": "Update2FAStatus"
+}

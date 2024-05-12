@@ -1,12 +1,15 @@
-package com.agmadnasfelguc.walgreensreplica.user.service.command;
+package com.agmadnasfelguc.walgreensreplica.user.service.command.helpers;
 
 import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
 import com.agmadnasfelguc.walgreensreplica.user.service.Utils.JwtUtil;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 public class CreateSessionCommand extends Command {
