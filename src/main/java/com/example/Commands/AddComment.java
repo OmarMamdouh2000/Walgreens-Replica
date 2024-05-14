@@ -1,6 +1,7 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import com.example.Kafka.KafkaProducer;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class AddComment implements Command{
     private UserUsedPromoRepo userUsedPromoRepo;
 
     @Autowired
-    public AddComment(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo) {
+    public AddComment(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer) {
         this.cartRepo=cartRepo;
         this.jwtDecoderService=jwtDecoderService;
         this.promoRepo=promoRepo;
