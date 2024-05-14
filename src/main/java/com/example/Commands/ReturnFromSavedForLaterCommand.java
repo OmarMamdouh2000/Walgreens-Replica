@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.example.Final.*;
+import com.example.Kafka.KafkaProducer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,13 @@ public class ReturnFromSavedForLaterCommand implements Command {
     
     private CartRepo cartRepo;
     
+     private KafkaProducer kafkaProducer;
+    
     @Autowired
-    public ReturnFromSavedForLaterCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService , PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo) {
+    public ReturnFromSavedForLaterCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override

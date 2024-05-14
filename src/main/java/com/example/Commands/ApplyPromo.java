@@ -1,6 +1,8 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import com.example.Kafka.KafkaProducer;
+
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,13 @@ public class ApplyPromo implements Command{
 
     private UserUsedPromoRepo userUsedPromoRepo;
 
+    private KafkaProducer kafkaProducer;
+    
     @Autowired
-    public ApplyPromo(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo) {
-        this.cartRepo=cartRepo;
-        this.jwtDecoderService=jwtDecoderService;
-        this.promoRepo=promoRepo;
-        this.userUsedPromoRepo=userUsedPromoRepo;
+    public ApplyPromo(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    	this.cartRepo=cartRepo;
+    	this.jwtDecoderService=jwtDecoderService;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override

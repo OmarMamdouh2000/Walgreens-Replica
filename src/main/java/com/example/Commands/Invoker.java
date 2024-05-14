@@ -10,6 +10,8 @@ import java.util.Map;
 import com.example.Final.PromoRepo;
 import com.example.Final.UserUsedPromo;
 import com.example.Final.UserUsedPromoRepo;
+import com.example.Kafka.KafkaProducer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ public class Invoker {
     private UserUsedPromoRepo userUsedPromoRepo;
     @Autowired
     private JwtDecoderService jwtDecoderService;
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     public Invoker() {
         commandMap = new HashMap<>();
@@ -41,6 +45,8 @@ public class Invoker {
         commandMap.put("ApplyPromo", "com.example.Commands.ApplyPromo");
         commandMap.put("AddItem", "com.example.Commands.AddItem");
         commandMap.put("AddComment", "com.example.Commands.AddComment");
+        commandMap.put("ProceedToCheckOutCommand", "com.example.Commands.ProceedToCheckOutCommand");
+        commandMap.put("ConfirmCheckoutCommand", "com.example.Commands.ConfirmCheckoutCommand");
 
 
     }
@@ -51,8 +57,8 @@ public class Invoker {
             try{
                 String className = commandMap.get(commandName);
                 Class<?> class1 = Class.forName(className);
-                Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class , PromoRepo.class, UserUsedPromoRepo.class); // replace with your parameter types
-                Object instance = constructor.newInstance(cartRepo, jwtDecoderService, promoRepo, userUsedPromoRepo); // replace with your actual parameters
+                Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class , PromoRepo.class, UserUsedPromoRepo.class,KafkaProducer.class); // replace with your parameter types
+                Object instance = constructor.newInstance(cartRepo, jwtDecoderService, promoRepo, userUsedPromoRepo,kafkaProducer); // replace with your actual parameters
 
                 // If your class has a method you want to invoke, you can do so like this:
                 String methodName = "execute"; // replace with your method name
