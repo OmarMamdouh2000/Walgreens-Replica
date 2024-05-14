@@ -160,6 +160,41 @@ public class CartController {
 
 	}
 
+
+	@PostMapping("/addItem")
+	public Object addItem(@RequestParam String token, @RequestBody Map<String, Object> data){
+		data.put("token", token);
+		data.put("commandName", "AddItem");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		kafkaProducerRequest.publishToTopic("productRequest",jsonString);
+		return "success";
+
+	}
+
+	@PostMapping("/addComment")
+	public Object addComment(@RequestParam String token, @RequestBody Map<String, Object> data){
+		data.put("token", token);
+		data.put("commandName", "AddComment");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+
+	}
+
 	@GetMapping("/getAllUsedPromo")
 	public List<UserUsedPromo> getAllPromoUsed(){
 		return cartService.getAllUsedPromo();

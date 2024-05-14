@@ -39,6 +39,8 @@ public class Invoker {
         commandMap.put("RemoveItem", "com.example.Commands.RemoveItem");
         commandMap.put("ChangeOrderType", "com.example.Commands.ChangeOrderType");
         commandMap.put("ApplyPromo", "com.example.Commands.ApplyPromo");
+        commandMap.put("AddItem", "com.example.Commands.AddItem");
+        commandMap.put("AddComment", "com.example.Commands.AddComment");
 
 
     }

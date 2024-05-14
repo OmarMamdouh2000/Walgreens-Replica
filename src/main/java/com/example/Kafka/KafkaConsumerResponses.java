@@ -68,6 +68,24 @@ public class KafkaConsumerResponses {
 						System.out.println("Response: "+error);
 					}
 					break;
+				case "AddItem":
+					try{
+						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
+						System.out.println("Response: "+cart.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
+					break;
+				case "AddComment":
+					try{
+						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
+						System.out.println("Response: "+cart.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
+					break;
 				
 			
 				default:

@@ -54,6 +54,12 @@ public class KafkaConsumerRequests {
 				case "ApplyPromo":
 					finalData = (Object) invoker.executeCommand("ApplyPromo", data);
 					break;
+				case "AddItem":
+					finalData = (Object) invoker.executeCommand("AddItem", data);
+					break;
+				case "AddComment":
+					finalData = (Object) invoker.executeCommand("AddComment", data);
+					break;
 			
 				default:
 					break;
