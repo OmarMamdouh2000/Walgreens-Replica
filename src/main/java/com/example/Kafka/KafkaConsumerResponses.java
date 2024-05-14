@@ -68,8 +68,12 @@ public class KafkaConsumerResponses {
 						System.out.println("Response: "+error);
 					}
 					break;
-				
-			
+				case "ProceedToCheckOutCommand":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "ConfirmCheckoutCommand":
+					System.out.println("Response: "+data.get("data"));
+					break;
 				default:
 					break;
 			}

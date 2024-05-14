@@ -54,7 +54,12 @@ public class KafkaConsumerRequests {
 				case "ApplyPromo":
 					finalData = (Object) invoker.executeCommand("ApplyPromo", data);
 					break;
-			
+				case "ProceedToCheckOutCommand":
+					finalData = (Object) invoker.executeCommand("ProceedToCheckOutCommand", data);
+					break;
+				case "ConfirmCheckoutCommand":
+					finalData = (Object) invoker.executeCommand("ConfirmCheckoutCommand", data);
+					break;
 				default:
 					break;
 			}

@@ -1,6 +1,8 @@
 package com.example.Commands;
 
 import com.example.Final.*;
+import com.example.Kafka.KafkaProducer;
+
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,10 +19,13 @@ public class ChangeOrderType implements Command{
 
     private CartRepo cartRepo;
 
+    private KafkaProducer kafkaProducer;
+    
     @Autowired
-    public ChangeOrderType(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo) {
-        this.cartRepo=cartRepo;
-        this.jwtDecoderService=jwtDecoderService;
+    public ChangeOrderType(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    	this.cartRepo=cartRepo;
+    	this.jwtDecoderService=jwtDecoderService;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override

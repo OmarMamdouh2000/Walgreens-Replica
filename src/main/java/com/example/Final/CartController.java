@@ -164,5 +164,33 @@ public class CartController {
 	public List<UserUsedPromo> getAllPromoUsed(){
 		return cartService.getAllUsedPromo();
 	}
+	@PostMapping("/proceedToCheckOut")
+	public Object proceedToCheckOut(@RequestParam String token){
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString( Map.of("token", token, "commandName", "ProceedToCheckOutCommand"));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+	}
+	@PostMapping("/confirmCheckout")
+	public Object confirmCheckout(@RequestParam String token, @RequestBody Map<String, Object> data){
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		data.put("token", token);
+		data.put("commandName", "ConfirmCheckoutCommand");
+		try {
+			jsonString = objectMapper.writeValueAsString( data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		return "success";
+	}
 
 }
