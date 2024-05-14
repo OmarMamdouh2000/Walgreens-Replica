@@ -113,9 +113,20 @@ public class OrderController {
 		
 		
 	}
-//	@GetMapping("/getOrderByDate")
-//	public OrderTable getOrderByDate(@RequestParam String date) {
-//		System.out.println(date+"-----------------");
-//		return service.getOrderByDate(date);
-//	}
+
+	@PostMapping("/refund")
+	public void requestRefund(@RequestParam String token, @RequestBody Map<String,Object> data) {
+		data.put("token", token);
+		data.put("commandName", "RefundCommand");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		//TODO: Publish to Payment Service Kafka
+		kafkaProducer.publishToTopic("paymentRequests", jsonString);
+	}
+
 }

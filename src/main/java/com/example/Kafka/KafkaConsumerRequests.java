@@ -43,9 +43,13 @@ public class KafkaConsumerRequests {
 				break;
 
 			case "FilterOrders":
-				String filteredOrders = (String)invoker.executeCommand("FilterOrders", data);
-//				System.out.println(filteredOrders);
-				kafkaProducer.publishToTopic("orderResponses",filteredOrders);
+				List<OrderTable> filteredOrders = (List<OrderTable>) invoker.executeCommand("FilterOrders", data);
+				kafkaProducer.publishToTopic("orderResponses","orders successfully filtered");
+				System.out.println(filteredOrders);
+				break;
+			case "ConfirmRefund":
+				String refund = (String)invoker.executeCommand("ConfirmRefund", data);
+				kafkaProducer.publishToTopic("orderResponses",refund);
 				break;
             default:
                 break;
