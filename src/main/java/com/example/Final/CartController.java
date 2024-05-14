@@ -163,6 +163,7 @@ public class CartController {
 
 	@PostMapping("/addItem")
 	public Object addItem(@RequestParam String token, @RequestBody Map<String, Object> data){
+		//TODO: Publish To Product Service Kafka
 		data.put("token", token);
 		data.put("commandName", "AddItem");
 		ObjectMapper objectMapper = new ObjectMapper();

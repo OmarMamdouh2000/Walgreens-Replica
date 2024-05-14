@@ -31,7 +31,7 @@ public class KafkaConsumerResponses {
 				case "ReturnFromSavedForLater":
 					System.out.println("Response: "+data.get("data"));
 					break;
-				case "GetUserCart":
+				case "GetUserCart", "RemoveItem", "ChangeOrderType", "ApplyPromo", "AddItem", "AddComment":
 
 					try{
 						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
@@ -41,54 +41,7 @@ public class KafkaConsumerResponses {
 						System.out.println("Response: "+error);
 					}
 					break;
-				case "RemoveItem":
-					try{
-						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
-					}catch(Exception e){
-						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
-					}
-					break;
-				case "ChangeOrderType":
-					try{
-						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
-					}catch(Exception e){
-						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
-					}
-					break;
-				case "ApplyPromo":
-					try{
-						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
-					}catch(Exception e){
-						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
-					}
-					break;
-				case "AddItem":
-					try{
-						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
-					}catch(Exception e){
-						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
-					}
-					break;
-				case "AddComment":
-					try{
-						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
-					}catch(Exception e){
-						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
-					}
-					break;
-				
-			
-				case "ProceedToCheckOutCommand":
+                case "ProceedToCheckOutCommand":
 					System.out.println("Response: "+data.get("data"));
 					break;
 				case "ConfirmCheckoutCommand":

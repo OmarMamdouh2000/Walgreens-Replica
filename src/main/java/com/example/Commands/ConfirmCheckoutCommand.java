@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.common.Uuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,19 @@ public class ConfirmCheckoutCommand implements Command {
 
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
+        data.put("commandName", "CreateOrder");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+
+        kafkaProducer.publishToTopic("orderRequests",jsonString);
+
         String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa"; 
         String token=(String)data.get("token");
         String transactionNumber=(String)data.get("transactionNumber");
@@ -44,7 +58,7 @@ public class ConfirmCheckoutCommand implements Command {
             // call createOrderAPi or publish to kafka orders with items and transaction
             userCart.getItems().clear();
             userCart.setTotalAmount(0);
-            userCart.setAppliedPromoCodeId(null);
+            userCart.setAppliedPromoCodeId("");
             userCart.setPromoCodeAmount(0);
             cartRepo.save(userCart);
 
