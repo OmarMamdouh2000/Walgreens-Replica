@@ -693,110 +693,110 @@ public class Services {
 	 
 	// --------------------------------------------- BRANDS ----------------------------------------------------
 	 
-	public List<Brands> listBrandService()
-	{
-		List<Brands> returnedBrands = brandRepo.listBrandRepo();
-		return returnedBrands;
-	}
-		
-	public Brands getBrandService(Map<String, Object> body)
-	{
-		UUID brandId = UUID.fromString((String)body.get("id"));
-		Brands returnedBrand = brandRepo.getBrandRepo(brandId);
-		return returnedBrand;
-	}
-	
-	public List<Pobject> listBrandProductsService(Map<String, Object> body)
-	{
-		UUID brandId = UUID.fromString((String)body.get("id"));
-		Brands brand = brandRepo.getBrandRepo(brandId);
-		List<Pobject> brandProducts = new ArrayList<>();
-		
-		if(brand.getBrandProducts() != null)
-		{
-			for(Pobject product: brand.getBrandProducts())
-			{
-				brandProducts.add(product);
-			}
-		}
-		return brandProducts;
-	}
-	
-	public void deleteBrandService(Map<String, Object> body)
-	{
-		UUID brandId = UUID.fromString((String)body.get("id"));
-		Brands brand = brandRepo.getBrandRepo(brandId);
-		
-		//Set all products to be null parent category if had products
-		if(brand.getBrandProducts() != null)
-		{
-			for(Pobject prod : brand.getBrandProducts())
-			{
-				Products product = prodRepo.getProductRepo(prod.getId());
-				UUID parentCategoryId = product.getParentCategory();
-				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-				for(Pobject categoryProd : parentCategory.getCategoryProducts())
-				{
-					if(categoryProd.getId().equals(prod.getId()))
-					{
-						categoryProd.setBrandName("");
-						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-						break;
-					}
-				}
-				product.setBrand(null);
-				prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
-			}
-		}
-		brandRepo.deleteBrandRepo(brandId);
-	}
-	
-	public void addBrandService(Map<String, Object> body)
-	{
-		UUID brandId = Uuids.timeBased();
-		String brandName = "";
-		ArrayList<Pobject> brandProducts = new ArrayList<>();
-		
-		if(body.containsKey("name"))
-			brandName = (String)body.get("name");
-		
-		brandRepo.addBrandRepo(brandId,brandName,brandProducts);
-	}
-	
-	public void updateBrandService(Map<String, Object> body)
-	{
-		String newBrandName;
-		
-		UUID brandId = UUID.fromString((String)body.get("id"));
-		Brands brand = brandRepo.getBrandRepo(brandId);
-		
-		if(body.containsKey("name"))
-		{
-			newBrandName = (String)body.get("name");
-			
-			for(Pobject prod : brand.getBrandProducts())
-			{
-				Products product = prodRepo.getProductRepo(prod.getId());
-				UUID parentCategoryId = product.getParentCategory();
-				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-				
-				for(Pobject categoryProd : parentCategory.getCategoryProducts())
-				{
-					if(categoryProd.getId().equals(prod.getId()))
-					{
-						categoryProd.setBrandName(newBrandName);
-						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-						break;
-					}
-				}
-				
-				prod.setBrandName(newBrandName);
-			}
-		}
-		else
-			newBrandName = brand.getName();
-		
-		brandRepo.updateBrandRepo(brandId, newBrandName, brand.getBrandProducts());
-	}
+//	public List<Brands> listBrandService()
+//	{
+//		List<Brands> returnedBrands = brandRepo.listBrandRepo();
+//		return returnedBrands;
+//	}
+//		
+//	public Brands getBrandService(Map<String, Object> body)
+//	{
+//		UUID brandId = UUID.fromString((String)body.get("id"));
+//		Brands returnedBrand = brandRepo.getBrandRepo(brandId);
+//		return returnedBrand;
+//	}
+//	
+//	public List<Pobject> listBrandProductsService(Map<String, Object> body)
+//	{
+//		UUID brandId = UUID.fromString((String)body.get("id"));
+//		Brands brand = brandRepo.getBrandRepo(brandId);
+//		List<Pobject> brandProducts = new ArrayList<>();
+//		
+//		if(brand.getBrandProducts() != null)
+//		{
+//			for(Pobject product: brand.getBrandProducts())
+//			{
+//				brandProducts.add(product);
+//			}
+//		}
+//		return brandProducts;
+//	}
+//	
+//	public void deleteBrandService(Map<String, Object> body)
+//	{
+//		UUID brandId = UUID.fromString((String)body.get("id"));
+//		Brands brand = brandRepo.getBrandRepo(brandId);
+//		
+//		//Set all products to be null parent category if had products
+//		if(brand.getBrandProducts() != null)
+//		{
+//			for(Pobject prod : brand.getBrandProducts())
+//			{
+//				Products product = prodRepo.getProductRepo(prod.getId());
+//				UUID parentCategoryId = product.getParentCategory();
+//				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+//				for(Pobject categoryProd : parentCategory.getCategoryProducts())
+//				{
+//					if(categoryProd.getId().equals(prod.getId()))
+//					{
+//						categoryProd.setBrandName("");
+//						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+//						break;
+//					}
+//				}
+//				product.setBrand(null);
+//				prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
+//			}
+//		}
+//		brandRepo.deleteBrandRepo(brandId);
+//	}
+//	
+//	public void addBrandService(Map<String, Object> body)
+//	{
+//		UUID brandId = Uuids.timeBased();
+//		String brandName = "";
+//		ArrayList<Pobject> brandProducts = new ArrayList<>();
+//		
+//		if(body.containsKey("name"))
+//			brandName = (String)body.get("name");
+//		
+//		brandRepo.addBrandRepo(brandId,brandName,brandProducts);
+//	}
+//	
+//	public void updateBrandService(Map<String, Object> body)
+//	{
+//		String newBrandName;
+//		
+//		UUID brandId = UUID.fromString((String)body.get("id"));
+//		Brands brand = brandRepo.getBrandRepo(brandId);
+//		
+//		if(body.containsKey("name"))
+//		{
+//			newBrandName = (String)body.get("name");
+//			
+//			for(Pobject prod : brand.getBrandProducts())
+//			{
+//				Products product = prodRepo.getProductRepo(prod.getId());
+//				UUID parentCategoryId = product.getParentCategory();
+//				Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+//				
+//				for(Pobject categoryProd : parentCategory.getCategoryProducts())
+//				{
+//					if(categoryProd.getId().equals(prod.getId()))
+//					{
+//						categoryProd.setBrandName(newBrandName);
+//						catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+//						break;
+//					}
+//				}
+//				
+//				prod.setBrandName(newBrandName);
+//			}
+//		}
+//		else
+//			newBrandName = brand.getName();
+//		
+//		brandRepo.updateBrandRepo(brandId, newBrandName, brand.getBrandProducts());
+//	}
 		// --------------------------------------------- END BRANDS -------------------------------------------------
 }

@@ -1,5 +1,6 @@
 package com.example.demo.cassandraControllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.cassandraModels.Categories;
 import com.example.demo.cassandraModels.Pobject;
-import com.example.demo.cassandraServices.Services;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-
-import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.cassandraModels.Products;
 import com.example.demo.cassandraCommands.Invoker;
+import com.example.demo.cassandraKafka.KafkaProducer;
 import com.example.demo.cassandraModels.Brands;
 
 
@@ -29,23 +28,39 @@ import com.example.demo.cassandraModels.Brands;
 public class Controllers {
 	
 	@Autowired
-	private Services service;
-	@Autowired
 	private Invoker invoker;
+	@Autowired
+	private KafkaProducer kafkaProducerRequest;
 	
 	// --------------------------------------------- CATEGORIES ------------------------------------------------
 	
-	@SuppressWarnings("unchecked")
 	@GetMapping("/listCategories")
-	public List<Categories> listCategories()
+	public void listCategories()
 	{
-		return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null, null);
+		//return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null, null);
+		
+		Map<String,String> body = new HashMap<>();
+		body.put("commandName", "listCategories");
+		kafkaProducerRequest.publishToTopic("productsRequests",null);
 	}
 	
 	@GetMapping("/getCategory/{categoryId}")
-	public Categories getCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public void getCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
-		return (Categories) invoker.executeCommand("getCategoryCommand", categoryId, body);
+		//return (Categories) invoker.executeCommand("getCategoryCommand", categoryId, body);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		body.put("parameter", categoryId);
+		body.put("commandName", "getCategory");
+		
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("productsRequests",jsonString);
 	}
 	
 	@DeleteMapping("/deleteCategory/{categoryId}")
@@ -55,9 +70,20 @@ public class Controllers {
 	}
 	
 	@PostMapping("/addCategory")
-	public String addCategory(@RequestBody Map<String, Object> body)
+	public void addCategory(@RequestBody Map<String, Object> body)
 	{
-		return (String) invoker.executeCommand("addCategoryCommand", null,  body);
+		//return (String) invoker.executeCommand("addCategoryCommand", null,  body);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		body.put("commandName", "getCategory");
+		
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("productsRequests",jsonString);
 	}
 	
 	@PutMapping("/updateCategory/{categoryId}")

@@ -38,8 +38,7 @@ public class Invoker {
                 commandMap.put("deleteProductCommand", "com.example.demo.cassandraCommands.deleteProductCommand");
                 commandMap.put("addProductCommand", "com.example.demo.cassandraCommands.addProductCommand");
                 commandMap.put("updateProductCommand", "com.example.demo.cassandraCommands.updateProductCommand");
-                commandMap.put("listCategoryProductsCommand",
-                                "com.example.demo.cassandraCommands.listCategoryProductsCommand");
+                commandMap.put("listCategoryProductsCommand", "com.example.demo.cassandraCommands.listCategoryProductsCommand");
                 commandMap.put("listBrandCommand", "com.example.demo.cassandraCommands.listBrandCommand");
                 commandMap.put("getBrandCommand", "com.example.demo.cassandraCommands.getBrandCommand");
                 commandMap.put("getBrandProductsCommand", "com.example.demo.cassandraCommands.getBrandProductsCommand");
