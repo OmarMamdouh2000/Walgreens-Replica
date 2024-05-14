@@ -39,16 +39,26 @@ public class Controllers {
 	{
 		//return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null, null);
 		
-		Map<String,String> body = new HashMap<>();
+		Map<String,Object> body = new HashMap<>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
 		body.put("commandName", "listCategories");
-		kafkaProducerRequest.publishToTopic("productsRequests",null);
+		
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		
+		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	
 	@GetMapping("/getCategory/{categoryId}")
-	public void getCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public void getCategory(@PathVariable Object categoryId)
 	{
 		//return (Categories) invoker.executeCommand("getCategoryCommand", categoryId, body);
-		
+		Map<String,Object> body = new HashMap<>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		body.put("parameter", categoryId);
@@ -60,7 +70,7 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("productsRequests",jsonString);
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	@DeleteMapping("/deleteCategory/{categoryId}")
@@ -75,7 +85,7 @@ public class Controllers {
 		//return (String) invoker.executeCommand("addCategoryCommand", null,  body);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "getCategory");
+		body.put("commandName", "addCategory");
 		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
@@ -83,7 +93,7 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("productsRequests",jsonString);
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	@PutMapping("/updateCategory/{categoryId}")

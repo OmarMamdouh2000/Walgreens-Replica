@@ -17,7 +17,7 @@ public class KafkaConsumerRequests {
 	@Autowired
 	KafkaProducer kafkaProducer;
 	
-	@KafkaListener(topics="productsRequests",groupId = "KafkaGroupRequest")
+	@KafkaListener(topics="ProductsRequests",groupId = "KafkaGroupRequest")
 	public void consumeMessage(String message) {
 		try {
 			System.out.println("Request: "+message);
@@ -46,7 +46,7 @@ public class KafkaConsumerRequests {
 			}
 			result.put("data", finalData);
 			String response = objectMapper.writeValueAsString(result);
-			kafkaProducer.publishToTopic("productsResponses", response);
+			kafkaProducer.publishToTopic("ProductsResponses", response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
