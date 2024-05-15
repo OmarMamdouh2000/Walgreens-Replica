@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.Cache.SessionCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,9 @@ import jakarta.annotation.PostConstruct;
 
 @RestController
 public class OrderController {
-	
+	@Autowired
+	private SessionCache sessionCache;
+
 	@GetMapping("/error")
 	public String error() {
 		return "error";
@@ -52,9 +55,9 @@ public class OrderController {
 
 	
 	@PostMapping("/filterOrders")
-	public Object filterOrders(@RequestParam String token, @RequestBody Map<String,Object> data) {
-
-		data.put("token", token);
+	public Object filterOrders(@RequestParam String sessionId, @RequestBody Map<String,Object> data) {
+		String userId= sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "FilterOrders");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -71,11 +74,12 @@ public class OrderController {
 	}
 	
 	@GetMapping("/getOrders")
-	public List<OrderTable> getOrders(@RequestParam String token) {
+	public List<OrderTable> getOrders(@RequestParam String sessionId) {
 		
 		Map<String,Object> data = new HashMap<String, Object>();
-		
-		data.put("token", token);
+
+		String userId= sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "GetOrdersCommand");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -93,10 +97,11 @@ public class OrderController {
 		
 	}
 	@GetMapping("/getActiveOrders")
-	public List<OrderTable> getActiveOrders(@RequestParam String token) {
+	public List<OrderTable> getActiveOrders(@RequestParam String sessionId) {
 		Map<String,Object> data = new HashMap<String, Object>();
 
-		data.put("token", token);
+		String userId= sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "GetActiveOrdersCommand");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -115,8 +120,9 @@ public class OrderController {
 	}
 
 	@PostMapping("/refund")
-	public void requestRefund(@RequestParam String token, @RequestBody Map<String,Object> data) {
-		data.put("token", token);
+	public void requestRefund(@RequestParam String sessionId, @RequestBody Map<String,Object> data) {
+		String userId= sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "RefundCommand");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;

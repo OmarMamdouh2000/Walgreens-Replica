@@ -29,31 +29,39 @@ public class KafkaConsumerRequests {
 			message=message.substring(1, message.length()-1);
 			@SuppressWarnings("unchecked")
 			Map<String ,Object>data = objectMapper.readValue(message, HashMap.class);
+			Object finalData =null;
+			Map<String,Object> result=new HashMap<>();
+			result.put("commandName",data.get("commandName").toString());
+
 
         switch (data.get("commandName").toString()) {
+			case "CreateOrder":
+				finalData = (String) invoker.executeCommand("CreateOrder", data);
+
+				break;
             case "GetOrdersCommand":
-				List<OrderTable> orders = (List<OrderTable>) invoker.executeCommand("GetOrdersCommand", data);
-				kafkaProducer.publishToTopic("orderResponses","orders successfully fetched");
-				System.out.println(orders);
+				finalData = invoker.executeCommand("GetOrdersCommand", data);
+
                 break;
 			case "GetActiveOrdersCommand":
-				List<OrderTable> activeOrders = (List<OrderTable>) invoker.executeCommand("GetActiveOrdersCommand", data);
-				kafkaProducer.publishToTopic("orderResponses","active orders successfully fetched");
-				System.out.println(activeOrders);
+				finalData = invoker.executeCommand("GetActiveOrdersCommand", data);
+
 				break;
 
 			case "FilterOrders":
-				List<OrderTable> filteredOrders = (List<OrderTable>) invoker.executeCommand("FilterOrders", data);
-				kafkaProducer.publishToTopic("orderResponses","orders successfully filtered");
-				System.out.println(filteredOrders);
+				finalData= invoker.executeCommand("FilterOrders", data);
+
 				break;
 			case "ConfirmRefund":
-				String refund = (String)invoker.executeCommand("ConfirmRefund", data);
-				kafkaProducer.publishToTopic("orderResponses",refund);
+				finalData = (String)invoker.executeCommand("ConfirmRefund", data);
+
 				break;
             default:
                 break;
         }
+		result.put("data",finalData);
+		String response = objectMapper.writeValueAsString(result);
+		kafkaProducer.publishToTopic("orderResponses", response);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

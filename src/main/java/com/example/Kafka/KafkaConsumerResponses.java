@@ -1,6 +1,7 @@
 package com.example.Kafka;
 
 
+import com.example.Final.CartTable;
 import com.example.Final.OrderController;
 import com.example.Final.OrderTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,13 +27,17 @@ public class KafkaConsumerResponses {
 			switch (data.get("commandName").toString()) {
 				case "FilterOrders", "GetOrdersCommand", "GetActiveOrdersCommand":
 					try{
-						List<OrderTable> filteredOrders = Collections.singletonList(objectMapper.convertValue(data.get("data"), OrderTable.class));
+						List<OrderTable> filteredOrders = objectMapper.convertValue(data.get("data"), List.class);
 						System.out.println("Response: "+filteredOrders);
 					}catch(Exception e){
 						String error = (String)data.get("data");
 						System.out.println("Response: "+error);
 					}
 					break;
+				case "CreateOrder":
+					String result=(String) data.get("data");
+					System.out.println("Response: "+result);
+
 				default:
 					break;
 			}

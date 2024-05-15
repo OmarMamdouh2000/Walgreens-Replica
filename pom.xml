@@ -72,8 +72,16 @@
     <artifactId>json</artifactId>
     <version>20210307</version> <!-- Use the latest version -->
 </dependency>
-	
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>

@@ -1,5 +1,6 @@
 package com.example.Final;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -29,23 +30,25 @@ public class OrderTable {
     private double total_amount;
 
     @Column("date_issued")
-    private java.sql.Date date_issued;
+    private LocalDate date_issued;
 
     private String address;
     private boolean ispromoapplied;
-    private UUID promocodeId;
+    private String promocodeId;
 
     private List<OrderItem> items;
 
     @Column("refundedItems")
     private List<OrderItem> refundedItems;
 
+	private double promoAmount;
+
 
 	public OrderTable(){
 
 	}
-	public OrderTable(UUID id,String address,java.sql.Date date_issued, boolean ispromoapplied,  List<OrderItem> items,
-					  String order_status, String order_type,  UUID promoCodeId, List<OrderItem> refundedItems,
+	public OrderTable(UUID id,String address,LocalDate date_issued, boolean ispromoapplied,  List<OrderItem> items,
+					  String order_status, String order_type,  String promoCodeId, List<OrderItem> refundedItems,
 					  double total_amount, UUID transation_number,UUID user_id) {
 		super();
 		this.id = id;
@@ -61,6 +64,13 @@ public class OrderTable {
 		this.items = items;
 		this.refundedItems = refundedItems;
 		
+	}
+	public double getPromoAmount() {
+		return promoAmount;
+	}
+
+	public void setPromoAmount(double promoAmount) {
+		this.promoAmount = promoAmount;
 	}
 	
 	
@@ -124,12 +134,12 @@ public class OrderTable {
 	}
 
 
-	public java.sql.Date getDateIssued() {
+	public LocalDate getDateIssued() {
 		return date_issued;
 	}
 
 
-	public void setDateIssued(java.sql.Date dateIssued) {
+	public void setDateIssued(LocalDate dateIssued) {
 		this.date_issued = dateIssued;
 	}
 
@@ -154,12 +164,12 @@ public class OrderTable {
 	}
 
 
-	public UUID getPromoCodeId() {
+	public String getPromoCodeId() {
 		return promocodeId;
 	}
 
 
-	public void setPromoCodeId(UUID promoCodeId) {
+	public void setPromoCodeId(String promoCodeId) {
 		this.promocodeId = promoCodeId;
 	}
 

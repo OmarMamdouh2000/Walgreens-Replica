@@ -22,7 +22,8 @@ public class ConfirmRefund implements Command{
 
     @Override
     public Object execute(Map<String,Object> data) {
-        String token = (String) data.get("token");
+
+        String userId=(String) data.get("userId");
         String orderIdString = (String) data.get("orderId");
 
         UUID orderId = UUID.fromString(orderIdString);
