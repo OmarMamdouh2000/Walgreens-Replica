@@ -59,6 +59,21 @@ public class KafkaConsumerRequests {
 				case "deleteBrandCase":
 					finalData= (String) invoker.executeCommand("deleteBrandCommand", data.get("parameter"), data);
 					break;
+				case "addProductCase":
+					finalData= (String) invoker.executeCommand("addProductCommand", null, data);
+					break;
+				case "deleteProductCase":
+					finalData= (String) invoker.executeCommand("deleteProductCommand", data.get("parameter"), data);
+					break;
+				case "getProductCase":
+					finalData= (Object) invoker.executeCommand("getProductCOmmand", data.get("parameter"), data);
+					break;
+				case "listProductsCase":
+					finalData= (Object) invoker.executeCommand("listProductsCommand", data.get("parameter"), data);
+					break;
+				case "updateProductCase":
+					finalData= (String) invoker.executeCommand("updateProductommand", data.get("parameter"), data);
+					break;
 				default:
 					break;
 			}

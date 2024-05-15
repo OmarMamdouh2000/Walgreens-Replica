@@ -47,4 +47,13 @@ public class Brands {
 	public void setBrandProducts(List<Pobject> brandProducts) {
 		this.brandProducts = brandProducts;
 	}
+	
+	@Override
+    public String toString() {
+        return "CartTable{" +
+                "id=" + id +
+                ", name=" + name +
+                ", brandProducts='" + brandProducts + '\'' +
+                '}';
+    }
 }
