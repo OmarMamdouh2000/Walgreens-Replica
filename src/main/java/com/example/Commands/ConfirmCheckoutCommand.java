@@ -35,7 +35,13 @@ public class ConfirmCheckoutCommand implements Command {
 
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
+
+        String user=(String)data.get("userId");
+
+        CartTable userCart = cartRepo.getCart(UUID.fromString(user));
+
         data.put("commandName", "CreateOrder");
+        data.put("cart", userCart);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -48,12 +54,6 @@ public class ConfirmCheckoutCommand implements Command {
 
         kafkaProducer.publishToTopic("orderRequests",jsonString);
 
-        
-        String user=(String)data.get("userId");
-
-        String transactionNumber=(String)data.get("transactionNumber");
-       
-        CartTable userCart = cartRepo.getCart(UUID.fromString(user));
         // call createOrderAPi or publish to kafka orders with items and transaction
         userCart.getItems().clear();
         userCart.setTotalAmount(0);
