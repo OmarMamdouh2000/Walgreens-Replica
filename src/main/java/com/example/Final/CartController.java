@@ -177,6 +177,9 @@ public class CartController {
 		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
 		data.put("userId", userId);
 		data.put("commandName", "AddItem");
+		Pobject pobject = new Pobject(UUID.fromString(""), "Product1", "url1", "brand1", 1.20, "10");
+		data.put("itemPrice", pobject.getPrice());
+		data.put("itemId", pobject.getId().toString());
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -185,6 +188,7 @@ public class CartController {
 			e.printStackTrace();
 			return e.getMessage();
 		}
+		
 		kafkaProducerRequest.publishToTopic("productRequest",jsonString);
 		return "success";
 
