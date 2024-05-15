@@ -10,12 +10,8 @@ import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
-
+import com.example.Cache.SessionCache;
 import com.example.Commands.Invoker;
 import com.example.Commands.JwtDecoderService;
 import org.springframework.web.bind.annotation.*;
@@ -31,25 +27,34 @@ public class CartController {
 	public Services cartService;
 	@Autowired
 	public Invoker invoker=new Invoker();
+	@Autowired
+	private KafkaProducer kafkaProducerRequest;
 
-	// @Autowired
-	// private ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
+
 	@Autowired
-	KafkaProducer kafkaProducerResponse;
-	@Autowired
-	KafkaProducer kafkaProducerRequest;
+	private SessionCache sessionCache;
+
 
 	@GetMapping("/hello")
 	public String hello() {
 		return "hello";
 	}
+	@GetMapping("/storeSession")
+	public void storeSession(){
+		sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
+	}
+	@GetMapping("/getSession")
+	public Map<String, String> getSession(){
+		return sessionCache.getSessionDetails("1234");
+	}
 
 	@GetMapping("/getCart")
-	public Object getCart(@RequestParam String token) {
+	public Object getCart(@RequestParam String sessionId) {
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
-			jsonString = objectMapper.writeValueAsString( Map.of("token", token, "commandName", "GetUserCart"));
+			jsonString = objectMapper.writeValueAsString( Map.of("userId", userId, "commandName", "GetUserCart"));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
@@ -60,10 +65,10 @@ public class CartController {
 	}
 
 	@PostMapping("/editItemCount")
-	public String editItemCount(@RequestParam String token,@RequestBody Map<String,Object> data) {
+	public String editItemCount(@RequestParam String sessionId,@RequestBody Map<String,Object> data) {
 
-
-		data.put("token", token);
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "UpdateItemCountCommand");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -78,8 +83,9 @@ public class CartController {
 
 	}
 	@PostMapping("/addItemToSavedLater")
-	public String addItemToSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
-		data.put("token", token);
+	public String addItemToSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "AddToSavedForLater");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -94,8 +100,9 @@ public class CartController {
 		//return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
-	public String returnItemFromSavedLater(@RequestParam String token,@RequestBody Map<String, Object> data) {
-		data.put("token", token);
+	public String returnItemFromSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "ReturnFromSavedForLater");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -111,8 +118,9 @@ public class CartController {
 	}
 
 	@PostMapping("/removeItem")
-	public Object removeItemFromCart(@RequestParam String token ,@RequestBody Map<String, Object> data) throws Exception {
-		data.put("token", token);
+	public Object removeItemFromCart(@RequestParam String sessionId ,@RequestBody Map<String, Object> data) throws Exception {
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "RemoveItem");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -127,8 +135,9 @@ public class CartController {
 	}
 
 	@PostMapping("/changeOrderType")
-	public Object setOrderType(@RequestParam String token, @RequestBody Map<String, Object> data) throws Exception{
-		data.put("token", token);
+	public Object setOrderType(@RequestParam String sessionId, @RequestBody Map<String, Object> data) throws Exception{
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "ChangeOrderType");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -144,8 +153,9 @@ public class CartController {
 	}
 
 	@PostMapping("/applyPromo")
-	public Object applyPromo(@RequestParam String token, @RequestBody Map<String, Object> data){
-		data.put("token", token);
+	public Object applyPromo(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "ApplyPromo");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -162,9 +172,10 @@ public class CartController {
 
 
 	@PostMapping("/addItem")
-	public Object addItem(@RequestParam String token, @RequestBody Map<String, Object> data){
+	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		//TODO: Publish To Product Service Kafka
-		data.put("token", token);
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "AddItem");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -180,8 +191,9 @@ public class CartController {
 	}
 
 	@PostMapping("/addComment")
-	public Object addComment(@RequestParam String token, @RequestBody Map<String, Object> data){
-		data.put("token", token);
+	public Object addComment(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "AddComment");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -196,10 +208,6 @@ public class CartController {
 
 	}
 
-	@GetMapping("/getAllUsedPromo")
-	public List<UserUsedPromo> getAllPromoUsed(){
-		return cartService.getAllUsedPromo();
-	}
 	@PostMapping("/proceedToCheckOut")
 	public Object proceedToCheckOut(@RequestParam String token){
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -214,10 +222,11 @@ public class CartController {
 		return "success";
 	}
 	@PostMapping("/confirmCheckout")
-	public Object confirmCheckout(@RequestParam String token, @RequestBody Map<String, Object> data){
+	public Object confirmCheckout(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		data.put("token", token);
+		String userId=sessionCache.getSessionDetails(sessionId).get("userId");
+		data.put("userId", userId);
 		data.put("commandName", "ConfirmCheckoutCommand");
 		try {
 			jsonString = objectMapper.writeValueAsString( data);

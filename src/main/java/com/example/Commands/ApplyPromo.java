@@ -34,13 +34,8 @@ public class ApplyPromo implements Command{
     }
 
     @Override
-    public Object execute(Map<String,Object> data) throws Exception {
-        String token = (String)data.get("token");
-        Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
-
-        if(claims == null) return "Invalid Token";
-
-        String user = (String)claims.get("userId");
+    public Object execute(Map<String,Object> data) throws Exception {        
+        String user=(String)data.get("userId");
         UUID userID = UUID.fromString(user);
 
         String promoCode = (String) data.get("promoCode");

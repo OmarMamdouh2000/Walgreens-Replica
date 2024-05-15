@@ -48,25 +48,21 @@ public class ConfirmCheckoutCommand implements Command {
 
         kafkaProducer.publishToTopic("orderRequests",jsonString);
 
-        String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa"; 
-        String token=(String)data.get("token");
-        String transactionNumber=(String)data.get("transactionNumber");
-        Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
-        if (claims != null) {
-            String user = (String)claims.get("userId");
-            CartTable userCart = cartRepo.getCart(UUID.fromString(user));
-            // call createOrderAPi or publish to kafka orders with items and transaction
-            userCart.getItems().clear();
-            userCart.setTotalAmount(0);
-            userCart.setAppliedPromoCodeId("");
-            userCart.setPromoCodeAmount(0);
-            cartRepo.save(userCart);
+        
+        String user=(String)data.get("userId");
 
-            return "Order Placed Successfully";
-        } 
-        else{
-            return "Invalid Token";
-        }
+        String transactionNumber=(String)data.get("transactionNumber");
+       
+        CartTable userCart = cartRepo.getCart(UUID.fromString(user));
+        // call createOrderAPi or publish to kafka orders with items and transaction
+        userCart.getItems().clear();
+        userCart.setTotalAmount(0);
+        userCart.setAppliedPromoCodeId("");
+        userCart.setPromoCodeAmount(0);
+        cartRepo.save(userCart);
+
+        return "Order Placed Successfully";
+    
         
     }
 

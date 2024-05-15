@@ -31,12 +31,8 @@ public class GetUserCart implements Command {
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
-        String token = (String)data.get("token");
-        Claims claims = jwtDecoderService.decodeJwtToken(token, "ziad1234aaaa&&&&&thisisasecretekeyaaa");
 
-        if(claims == null) return "Invalid Token";
-
-        String user = (String)claims.get("userId");
+        String user = (String)data.get("userId");
         UUID userId = UUID.fromString(user);
         try{
             CartTable userCart = cartRepo.getCart(userId);

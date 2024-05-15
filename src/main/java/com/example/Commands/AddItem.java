@@ -33,21 +33,15 @@ public class AddItem implements Command{
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
         //TODO: data is the product from products
+        String user=(String)data.get("userId");
 
-
-        String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa";
-        String token = (String) data.get("token");
 
         String itemId = (String) data.get("itemId");
         int itemCount = (int) data.get("itemCount");
 
         double itemPrice = (double) data.get("itemPrice");
         String deliveryType = (String) data.get("deliveryType");
-        Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
 
-        if(claims == null) return "Invalid Token";
-
-        String user=(String) claims.get("userId");
         UUID userId = UUID.fromString(user);
 
         CartTable Cart = cartRepo.getCart(userId);
