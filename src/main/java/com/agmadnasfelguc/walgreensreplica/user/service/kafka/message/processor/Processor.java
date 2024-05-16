@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,13 @@ public abstract class Processor {
 
     public void init(Command command, JsonNode message) {
         this.command = command;
+        if(!message.get("correlationId").isNull()){
+            try {
+                this.command.setCorrelationId(message.get("correlationId").binaryValue());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         this.message = message;
         loadMessageInfo();
     }

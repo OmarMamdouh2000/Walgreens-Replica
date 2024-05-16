@@ -16,7 +16,7 @@ public class KafkaPublisher {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publish(String topic, Message<Object> message){
-        kafkaTemplate.send(topic, message);
+    public void publish(Message<String> message){
+        kafkaTemplate.send(message);
     }
 }
