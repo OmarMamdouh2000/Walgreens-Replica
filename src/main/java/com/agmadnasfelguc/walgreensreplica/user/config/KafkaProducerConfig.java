@@ -1,7 +1,9 @@
 package com.agmadnasfelguc.walgreensreplica.user.config;
 
-import org.springframework.kafka.support.serializer.JsonSerializer;
-import kafka.tools.ConsoleProducer;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,4 +42,21 @@ public class KafkaProducerConfig {
     ) {
         return new KafkaTemplate<>(producerFactory);
     }
+
+    @Bean
+    public ReplyingKafkaTemplate<String, Message<Object>, Message<Object>> replyKafkaTemplate(
+            ProducerFactory<String, Message<Object>> producerFactory,
+            KafkaMessageListenerContainer<String, Message<Object>> replyContainer
+    ) {
+        return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
+    }
+
+    @Bean
+    public KafkaMessageListenerContainer<String, Message<Object>> replyContainer(ConsumerFactory<String, Object> cf) {
+        ContainerProperties containerProperties = new ContainerProperties("responseTopic");
+        containerProperties.setGroupId("user");
+        return new KafkaMessageListenerContainer<>(cf, containerProperties);
+    }
+
+
 }

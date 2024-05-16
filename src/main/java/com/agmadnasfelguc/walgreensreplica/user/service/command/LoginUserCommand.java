@@ -6,12 +6,22 @@ import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.LoginResul
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.CreateSessionCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.GenerateOTPCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.MessageCreator;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.Tuple;
 import lombok.*;
+import org.apache.kafka.common.protocol.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -76,6 +86,20 @@ public class LoginUserCommand extends Command {
 //            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
 //        }
 
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            MessageCreator messageCreator = new MessageCreator(TemplatePaths.userLoginPath, new HashMap<>(), Map.of("email", "omarmmi2000@gmail.com", "password", "test123"));
+            ObjectNode message = (ObjectNode) messageCreator.createMessage();
+            getPublisher().publish(MessageBuilder
+							.withPayload(mapper.writeValueAsString(message))
+//							.setHeader(KafkaHeaders.REPLY_TOPIC, "fff")
+							.setHeader(KafkaHeaders.TOPIC, "responseTopic")
+                            .setHeader(KafkaHeaders.CORRELATION_ID, this.getCorrelationId())
+//							.setHeader(KafkaHeaders.KEY, "UserLogin")
+							.build());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
     }
 }

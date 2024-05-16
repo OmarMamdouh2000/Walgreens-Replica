@@ -1,18 +1,30 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.MessageCreator;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserRegistrationRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hibernate.sql.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -36,6 +48,11 @@ public class UserController {
     private final Command updatePasswordResetCommand;
 
     @Autowired
+    private ReplyingKafkaTemplate<String, Message<Object>, Message<Object>> replyingKafkaTemplate;
+
+    private int i=0;
+
+    @Autowired
     public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command logoutCommand, Command twoFactorAuthLoginCommand, Command resetPasswordCommand, Command verifyMailCommand, Command update2FAStatusCommand, Command verifyMailCheckOTPCommand, Command updatePasswordResetCommand) {
         this.registerCommand = registerCommand;
         this.changeEmailCommand = changeEmailCommand;
@@ -51,6 +68,21 @@ public class UserController {
         this.updatePasswordResetCommand = updatePasswordResetCommand;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<Object> test() throws ExecutionException, InterruptedException, JsonProcessingException {
+        System.out.println(i++);
+        ObjectMapper mapper = new ObjectMapper();
+        MessageCreator messageCreator = new MessageCreator(TemplatePaths.userLoginPath, new HashMap<>(), Map.of("email", "iislamddiab2001@gmail.com", "password", "changed"));
+        ObjectNode message = (ObjectNode) messageCreator.createMessage();
+
+        RequestReplyMessageFuture<String, Message<Object>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+							.withPayload(mapper.writeValueAsString(message))
+							.setHeader(KafkaHeaders.REPLY_TOPIC, "responseTopic")
+							.setHeader(KafkaHeaders.TOPIC, "userManagement")
+							.setHeader(KafkaHeaders.KEY, "iislamddiab2001@gmail.com")
+							.build());
+        return ResponseEntity.ok(result.get());
+    }
     @PostMapping("/registerUser")
     public ResponseEntity<Object> registerUser(@RequestBody UserRegistrationRequest request) {
         // Assuming the request contains first name, last name, email, and password
