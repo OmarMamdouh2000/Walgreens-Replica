@@ -47,6 +47,15 @@ public class KafkaConsumerResponses {
 				case "ConfirmCheckoutCommand":
 					System.out.println("Response: "+data.get("data"));
 					break;
+				case "AddToSavedForLaterCache":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "ReturnFromSavedForLaterCache":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "UpdateItemCountCommandCache":
+					System.out.println("Response: "+data.get("data"));
+					break;
 				default:
 					break;
 			}

@@ -94,7 +94,7 @@ public class CartController {
 	public String addItemToSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		data.put("userId", userId);
-		data.put("commandName", "AddToSavedForLater");
+		data.put("commandName", "AddToSavedForLaterCache");
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {

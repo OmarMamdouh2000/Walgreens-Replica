@@ -40,8 +40,11 @@ public class Invoker {
     public Invoker() {
         commandMap = new HashMap<>();
         commandMap.put("UpdateItemCountCommand","com.example.Commands.UpdateItemCountCommand");
+        commandMap.put("UpdateItemCountCommandCache","com.example.Commands.UpdateItemCountCommandCache");
         commandMap.put("AddToSavedForLater", "com.example.Commands.AddToSavedForLaterCommand");
+        commandMap.put("AddToSavedForLaterCache", "com.example.Commands.AddToSavedForLaterCommandCache");
         commandMap.put("ReturnFromSavedForLater", "com.example.Commands.ReturnFromSavedForLaterCommand");
+        commandMap.put("ReturnFromSavedForLaterCache", "com.example.Commands.ReturnFromSavedForLaterCommandCache");
         commandMap.put("GetUserCart", "com.example.Commands.GetUserCart");
         commandMap.put("RemoveItem", "com.example.Commands.RemoveItem");
         commandMap.put("ChangeOrderType", "com.example.Commands.ChangeOrderType");

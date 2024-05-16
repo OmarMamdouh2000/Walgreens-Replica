@@ -22,6 +22,7 @@ public class KafkaConsumerRequests {
 	public void consumeMessage(String message) {
 		try {
 			System.out.println("Request: "+message);
+			
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -66,6 +67,18 @@ public class KafkaConsumerRequests {
 					break;
 				case "ConfirmCheckoutCommand":
 					finalData = (Object) invoker.executeCommand("ConfirmCheckoutCommand", data);
+					break;
+				case "UpdateItemCountCommandCache":
+					finalData = (String) invoker.executeCommand("UpdateItemCountCommandCache", data);
+					break;
+				case "AddToSavedForLaterCache":
+					finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
+					data.replace("commandName", "AddToSavedForLater");
+					String jsonString2=objectMapper.writeValueAsString(data);
+					kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					break;
+				case "ReturnFromSavedForLaterCache":
+					finalData = (String) invoker.executeCommand("ReturnFromSavedForLaterCache", data);
 					break;
 				default:
 					break;

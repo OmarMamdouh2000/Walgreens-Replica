@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 @Component
 public class SessionCache {
-
+    
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -64,6 +64,12 @@ public class SessionCache {
     // Helper method to construct a Redis key for a given session and section
     private String buildSectionKey(String sessionId, String section) {
         return String.format("%s:%s", sessionId, section); // Constructs a key like "sessionId:section"
+    }
+    public void updateSessionSection(String sessionId, String section, Map<String, Object> updatedData, long timeout, TimeUnit unit) {
+        String sectionKey = buildSectionKey(sessionId, section);
+        updatedData.forEach((key, value) ->
+                redisTemplate.opsForHash().put(sectionKey, key, value));
+        redisTemplate.expire(sectionKey, timeout, unit);
     }
 
 }

@@ -52,11 +52,6 @@ public class GetUserCart implements Command {
             String jsonString = null;
             jsonString = objectMapper.writeValueAsString(userCart);
             System.out.println("before:   " + jsonString);
-            // jsonString = jsonString.replace("\\", "");
-            // jsonString = jsonString.substring(1, jsonString.length()-1);
-            System.out.println("AAAAAA:   " + jsonString);
-            // Map<String,Object> map=objectMapper.convertValue(jsonString, Map.class);
-
             Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
             sessionCache.createSession((String)data.get("sessionId"), "cart", map);
             return userCart;
