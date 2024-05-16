@@ -5,6 +5,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import java.util.Set;
 
 public class CommandToReqMapper {
     private static CommandToReqMapper commandToReqMapper = null;
+    Logger logger = LoggerFactory.getLogger(CommandToReqMapper.class);
     @Getter
     private final HashMap<String, String> commandsMap = new HashMap<>();
 
@@ -37,12 +40,16 @@ public class CommandToReqMapper {
                     String className = sb.toString();
                     System.out.println(className);
                     String requestName = (String) jsonMap.get(className);
-                    if(requestName != null)
+                    if(requestName != null){
                         commandsMap.put(requestName, className);
+                        logger.info("Command" + requestName + " added to command map");
+                    }
+
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
+
         }
 
     }

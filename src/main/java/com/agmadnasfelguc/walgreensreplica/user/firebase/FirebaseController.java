@@ -18,6 +18,7 @@ public class FirebaseController {
 
     @PostMapping("/upload")
     public String uploadPhoto(@RequestParam("id") String id, @RequestParam("file") MultipartFile file) throws IOException {
+
         return firebaseService.uploadPhoto(id, file);
     }
 

@@ -9,6 +9,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.Generate
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +30,17 @@ public class ResetPasswordCommand extends Command {
     @Autowired
     private Command generateOTPCommand;
 
+    Logger logger = LoggerFactory.getLogger(ResetPasswordCommand.class);
+
 
     @Override
     public void execute() {
-//        try{
+        try{
             ((FindCustomerByEmailCommand) findCustomerByEmailCommand).setEmail(email);
             findCustomerByEmailCommand.execute();
             if (findCustomerByEmailCommand.getState().getStatus().equals(ResponseState.Failure)) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "User not found"));
+                logger.error(this.getState().getMessage());
                 return;
             }
             Customer customer = ((FindCustomerByEmailCommand) findCustomerByEmailCommand).getCustomer();
@@ -44,6 +49,7 @@ public class ResetPasswordCommand extends Command {
             checkEmailVerifiedCommand.execute();
             if(checkEmailVerifiedCommand.getState().getStatus().equals(ResponseState.Failure)){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Email is not verified"));
+                logger.error(this.getState().getMessage());
                 return;
             }
 
@@ -55,14 +61,24 @@ public class ResetPasswordCommand extends Command {
             generateOTPCommand.execute();
             if(generateOTPCommand.getState().getStatus().equals(ResponseState.Failure)){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Failed to generate OTP"));
+                logger.error(this.getState().getMessage());
                 return;
             }
             this.setState(new ResponseStatus(ResponseState.Success, generateOTPCommand.getState().getMessage()));
 
-//
-//        }catch (Exception e){
-//            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-//        }
+            if(this.getState().getStatus().equals(ResponseState.Success)){
+                logger.info("Password Reset successfully"+this.getState().getMessage());
+            }
+            else if(this.getState().getStatus().equals(ResponseState.Failure)){
+                logger.error("Resetting password failed");
+            }
+
+        }catch (Exception e){
+            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
+            if(this.getState().getStatus().equals(ResponseState.Failure)){
+                logger.error(e.getMessage());
+            }
+        }
 
     }
 }

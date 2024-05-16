@@ -10,6 +10,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +33,11 @@ public class VerifyMailCheckOTPCommand extends Command {
     @Autowired
     private Command checkOTPCommand;
 
+    Logger logger = LoggerFactory.getLogger(VerifyMailCheckOTPCommand.class);
+
     @Override
     public void execute() {
-//        try {
+        try {
             Map<String, String> details = sessionCache.getSessionDetails(sessionId);
 
             ((CheckOTPCommand) checkOTPCommand).setEmail(details.get("email"));
@@ -43,6 +47,7 @@ public class VerifyMailCheckOTPCommand extends Command {
 
             if (checkOTPCommand.getState().getStatus() == ResponseState.Failure) {
                 this.setState(new ResponseStatus(ResponseState.Failure, checkOTPCommand.getState().getMessage()));
+                logger.error(checkOTPCommand.getState().getMessage());
                 return;
             }
 
@@ -52,13 +57,16 @@ public class VerifyMailCheckOTPCommand extends Command {
 
             if(response.getStatus().equals(ResponseState.Failure.toString())){
                 this.setState(new ResponseStatus(ResponseState.Failure, response.getMessage()));
+                logger.error("Sending Verify Email Failed");
                 return;
             }
             this.setState(new ResponseStatus(ResponseState.Success, response.getMessage()));
+            logger.info("Sending Verify Email Success" + response.getMessage());
 //            System.out.println(this.getState());
-//        } catch (Exception e) {
-//            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-//        }
+        } catch (Exception e) {
+            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
+            logger.error(e.getMessage());
+        }
 
     }
 }

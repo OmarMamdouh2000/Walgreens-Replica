@@ -1,6 +1,8 @@
 package com.agmadnasfelguc.walgreensreplica.user.firebase;
 
 import com.google.cloud.storage.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,31 +14,12 @@ public class FirebaseService {
 
     @Autowired
     private Storage storage;
+    Logger logger = LoggerFactory.getLogger(FirebaseService.class);
     //private final FirebaseConfig firebaseConfig;
 
     public FirebaseService(FirebaseConfig firebaseConfig) {
-        /*this.firebaseConfig = firebaseConfig;
-        try {
 
-            this.storage = firebaseConfig.initializeStorage();
-        } catch (IOException e) {
-            // Handle the exception, e.g., logging or throwing a runtime exception
-            e.printStackTrace();
-            //System.out.println("Haneen?");// Or log it
-            throw new RuntimeException("Failed to initialize Firebase Storage", e);
-        }*/
     }
-
-    /*public String uploadPhoto(String id, MultipartFile file) throws IOException {
-        // Generate a filename based on the provided ID
-        String fileName = "photos/" + id ;
-
-        // Upload the file to Firebase Storage
-        Blob blob = storage.create(Blob.newBuilder(fileName, file.getInputStream()).build());
-
-        // Get the URL of the uploaded file
-        return blob.getMediaLink();
-    }*/
 
     public String uploadPhoto(String id, MultipartFile file) throws IOException {
         // Generate a filename based on the provided ID
@@ -59,6 +42,13 @@ public class FirebaseService {
 
     public String getPhotoUrl(String id) {
         // Assuming the photo URL is constructed based on the ID
-        return "https://storage.googleapis.com/walgreens-replica.appspot.com/photos/" + id ;
+        String photoURL = "";
+        try{
+            photoURL =  "https://storage.googleapis.com/walgreens-replica.appspot.com/photos/" + id ;
+        }catch(Exception e){
+            logger.error(e.getMessage());
+        }
+        return photoURL;
+
     }
 }
