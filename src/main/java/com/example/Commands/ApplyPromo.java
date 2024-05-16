@@ -1,5 +1,6 @@
 package com.example.Commands;
 
+import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
@@ -25,12 +26,18 @@ public class ApplyPromo implements Command{
     private UserUsedPromoRepo userUsedPromoRepo;
 
     private KafkaProducer kafkaProducer;
+
+    @Autowired
+	private SessionCache sessionCache;
     
     @Autowired
-    public ApplyPromo(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    public ApplyPromo(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
+        this.sessionCache = sessionCache;
+        this.promoRepo=promoRepo;
+        this.userUsedPromoRepo=userUsedPromoRepo;
     }
 
     @Override

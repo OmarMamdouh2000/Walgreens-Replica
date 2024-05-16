@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
@@ -21,12 +22,17 @@ public class AddToSavedForLaterCommand implements Command {
     private CartRepo cartRepo;
     
     private KafkaProducer kafkaProducer;
+
+    @Autowired
+	private SessionCache sessionCache;
     
     @Autowired
-    public AddToSavedForLaterCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    public AddToSavedForLaterCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
+        this.sessionCache = sessionCache;
+
     }
 
     @Override

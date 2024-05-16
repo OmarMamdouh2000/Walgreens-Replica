@@ -1,5 +1,6 @@
 package com.example.Commands;
 
+import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
@@ -22,12 +23,16 @@ public class RemoveItem implements Command{
     private CartRepo cartRepo;
 
     private KafkaProducer kafkaProducer;
+
+    @Autowired
+	private SessionCache sessionCache;
     
     @Autowired
-    public RemoveItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    public RemoveItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
+        this.sessionCache = sessionCache;
     }
 
     @Override

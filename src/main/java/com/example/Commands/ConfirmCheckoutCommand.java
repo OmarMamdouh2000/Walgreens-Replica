@@ -9,6 +9,7 @@ import org.apache.kafka.common.Uuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Cache.SessionCache;
 import com.example.Final.CartRepo;
 import com.example.Final.CartTable;
 import com.example.Final.PromoRepo;
@@ -25,12 +26,16 @@ public class ConfirmCheckoutCommand implements Command {
     private CartRepo cartRepo;
     
     private KafkaProducer kafkaProducer;
+
+    @Autowired
+	private SessionCache sessionCache;
     
     @Autowired
-    public ConfirmCheckoutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer) {
+    public ConfirmCheckoutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
+        this.sessionCache = sessionCache;
     }
 
     @Override

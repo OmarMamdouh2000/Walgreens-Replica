@@ -1,5 +1,6 @@
 package com.example.Commands;
 
+import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 import io.jsonwebtoken.Claims;
@@ -24,11 +25,15 @@ public class AddItem implements Command{
     private UserUsedPromoRepo userUsedPromoRepo;
 
     @Autowired
-    public AddItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer) {
+	private SessionCache sessionCache;
+
+    @Autowired
+    public AddItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer, SessionCache sessionCache) {
         this.cartRepo=cartRepo;
         this.jwtDecoderService=jwtDecoderService;
         this.promoRepo=promoRepo;
         this.userUsedPromoRepo=userUsedPromoRepo;
+        this.sessionCache = sessionCache;
     }
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
