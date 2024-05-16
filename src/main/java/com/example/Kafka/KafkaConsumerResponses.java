@@ -35,7 +35,7 @@ public class KafkaConsumerResponses {
 
 					try{
 						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
-						System.out.println("Response: "+cart.toString());
+						System.out.println("Response: "+cart);
 					}catch(Exception e){
 						String error = (String)data.get("data");
 						System.out.println("Response: "+error);
