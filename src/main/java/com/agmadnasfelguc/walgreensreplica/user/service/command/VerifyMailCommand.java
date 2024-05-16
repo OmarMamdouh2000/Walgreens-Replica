@@ -26,16 +26,16 @@ public class VerifyMailCommand extends Command {
     public void execute() {
         try {
 
-            Map<String,String> details = sessionCache.getSessionDetails(sessionId);
+            Map<String,Object> details = sessionCache.getSessionSection(sessionId,"user");
             if(details == null){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Session not found"));
                 return;
             }
 
-            ((GenerateOTPCommand) generateOTPCommand).setEmail(details.get("email"));
+            ((GenerateOTPCommand) generateOTPCommand).setEmail(String.valueOf(details.get("email")));
             ((GenerateOTPCommand) generateOTPCommand).setOtpType(OTPTypes.VERIFYMAIL);
-            ((GenerateOTPCommand) generateOTPCommand).setFirstName(details.get("firstName"));
-            ((GenerateOTPCommand) generateOTPCommand).setLastName(details.get("lastName"));
+            ((GenerateOTPCommand) generateOTPCommand).setFirstName(String.valueOf(details.get("firstName")));
+            ((GenerateOTPCommand) generateOTPCommand).setLastName(String.valueOf(details.get("lastName")));
             ((GenerateOTPCommand) generateOTPCommand).setSubject("Verify Email");
             generateOTPCommand.execute();
             this.setState(new ResponseStatus(ResponseState.Success, "Email sent"));

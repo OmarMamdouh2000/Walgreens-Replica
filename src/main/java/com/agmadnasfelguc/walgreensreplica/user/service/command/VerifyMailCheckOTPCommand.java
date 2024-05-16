@@ -34,19 +34,19 @@ public class VerifyMailCheckOTPCommand extends Command {
     @Override
     public void execute() {
 //        try {
-            Map<String, String> details = sessionCache.getSessionDetails(sessionId);
+            Map<String, Object> details = sessionCache.getSessionSection(sessionId, "user");
 
-            ((CheckOTPCommand) checkOTPCommand).setEmail(details.get("email"));
+            ((CheckOTPCommand) checkOTPCommand).setEmail(String.valueOf(details.get("email")));
             ((CheckOTPCommand) checkOTPCommand).setOtp(otp);
             ((CheckOTPCommand) checkOTPCommand).setOtpType(OTPTypes.VERIFYMAIL);
             checkOTPCommand.execute();
 
-            if (checkOTPCommand.getState().getStatus() == ResponseState.Failure) {
+            if (checkOTPCommand.getState().getStatus().equals(ResponseState.Failure)) {
                 this.setState(new ResponseStatus(ResponseState.Failure, checkOTPCommand.getState().getMessage()));
                 return;
             }
 
-            Tuple result =  userRepository.verifyEmail(UUID.fromString(details.get("userId")));
+            Tuple result =  userRepository.verifyEmail(UUID.fromString(String.valueOf(details.get("userId"))));
             BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
 //            System.out.println(response);
 

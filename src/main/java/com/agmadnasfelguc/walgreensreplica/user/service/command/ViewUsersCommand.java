@@ -32,9 +32,9 @@ public class ViewUsersCommand extends Command {
     public void execute() {
 //        try{
         System.out.println(sessionId);
-        Map<String,String> details = sessionCache.getSessionDetails(sessionId);
+        Map<String, Object> details = sessionCache.getSessionSection(sessionId,"user");
         System.out.println(details);
-        String role = details.get("role");
+        String role = String.valueOf(details.get("role"));
         if(role == null){
             this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
             return;

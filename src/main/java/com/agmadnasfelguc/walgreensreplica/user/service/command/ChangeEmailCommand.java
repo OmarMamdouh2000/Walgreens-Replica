@@ -31,7 +31,7 @@ public class ChangeEmailCommand extends Command {
     @Override
     public void execute() {
         try{
-            String userID = sessionCache.getSessionDetails(sessionID).get("userId");
+            String userID = String.valueOf(sessionCache.getSessionSection(sessionID,"user").get("userId"));
             if(userID == null){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
                 return;

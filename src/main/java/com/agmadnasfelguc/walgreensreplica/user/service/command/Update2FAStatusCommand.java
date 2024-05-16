@@ -37,7 +37,7 @@ public class Update2FAStatusCommand extends Command {
     @Override
     public void execute() {
         try{
-            String userID = sessionCache.getSessionDetails(sessionId).get("userId");
+            String userID = String.valueOf(sessionCache.getSessionSection(sessionId,"user").get("userId"));
             if (userID == null) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
                 return;

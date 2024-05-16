@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Service
@@ -26,7 +28,8 @@ public class CreateSessionCommand extends Command {
     @Override
     public void execute() {
         this.sessionId = JwtUtil.generateToken(userId);
-        sessionCache.createSession(sessionId,userId,role,email,firstName,lastName);
+        Map<String,Object> userMap  = Map.of("userId",userId,"role",role,"email",email,"firstName",firstName,"lastName",lastName);
+        sessionCache.createSession(sessionId,"user",userMap);
 
     }
 }

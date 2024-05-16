@@ -18,7 +18,7 @@ public class LogoutCommand extends Command {
     private SessionCache sessionCache;
     @Override
     public void execute() {
-        sessionCache.deleteSession(sessionId);
+        sessionCache.deleteCompleteSession(sessionId);
         this.setState(new ResponseStatus(ResponseState.Success, "Logged Out"));
     }
 

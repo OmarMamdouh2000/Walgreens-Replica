@@ -47,14 +47,14 @@ public class UserInvoker {
         }
     }
 
-    public static void main(String[] args) {
-        UserInvoker userInvoker = new UserInvoker();
-        Map<String,String> bodyMap = new HashMap<>();
-        bodyMap.put(Keys.email,"omarmmi2000@gmail.com");
-        bodyMap.put(Keys.password,"changed");
-        MessageCreator creator = new MessageCreator(TemplatePaths.userLoginPath,new HashMap<>(),bodyMap);
-        JsonNode jsonNode = creator.createMessage();
-        userInvoker.callCommand(jsonNode);
-    }
+//    public static void main(String[] args) {
+//        UserInvoker userInvoker = new UserInvoker();
+//        Map<String,String> bodyMap = new HashMap<>();
+//        bodyMap.put(Keys.email,"omarmmi2000@gmail.com");
+//        bodyMap.put(Keys.password,"changed");
+//        MessageCreator creator = new MessageCreator(TemplatePaths.userLoginPath,new HashMap<>(),bodyMap);
+//        JsonNode jsonNode = creator.createMessage();
+//        userInvoker.callCommand(jsonNode);
+//    }
 
 }
