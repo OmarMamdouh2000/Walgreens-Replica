@@ -11,6 +11,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import jakarta.persistence.Tuple;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public class EditDetailsCommand extends Command {
     private String phoneNumber;
     private String extension;
 
+    Logger logger = LoggerFactory.getLogger(EditDetailsCommand.class);
+
 
     @Override
     public void execute() {
@@ -38,15 +42,26 @@ public class EditDetailsCommand extends Command {
             String userID = JwtUtil.getUserIdFromToken(sessionID);
             if (userID == null) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
+                if(this.getState().getStatus().equals(ResponseState.Failure)){
+                    logger.error(this.getState().getMessage());
+                }
                 return;
             }
             Tuple result = userRepository.editUser(UUID.fromString(userID), address, dateOfBirth, gender, phoneNumber, extension);
             BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
             this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            System.out.println(this.getState());
+            if(this.getState().getStatus().equals(ResponseState.Success)){
+                logger.info("The details changed" + response.getMessage());
+            }
+            else if(this.getState().getStatus().equals(ResponseState.Failure)){
+                logger.error("Changing the details failed" +response.getMessage());
+            }
         }
         catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
+            if(this.getState().getStatus().equals(ResponseState.Failure)){
+                logger.error(e.getMessage());
+            }
         }
     }
 }

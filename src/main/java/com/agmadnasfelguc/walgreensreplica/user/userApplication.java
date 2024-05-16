@@ -21,27 +21,26 @@ import java.util.UUID;
 
 @SpringBootApplication
 public class userApplication {
+	//@Bean
+	/*CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
+		System.out.println("NOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-//	@Bean
-//	CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
-//		System.out.println("NOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//
-//		return args -> {
-//			ObjectMapper mapper = new ObjectMapper();
-//			MessageCreator messageCreator = new MessageCreator(TemplatePaths.userLoginPath, new HashMap<>(), Map.of("email", "omarmmi2000@gmail.com", "password", "test123"));
-//			ObjectNode message = (ObjectNode) messageCreator.createMessage();
-//
-//			kafkaTemplate.send(
-//					MessageBuilder
-//							.withPayload(mapper.writeValueAsString(message))
-//							.setHeader(KafkaHeaders.REPLY_TOPIC, "fff")
-//							.setHeader(KafkaHeaders.TOPIC, "userManagement")
-//							.setHeader(KafkaHeaders.KEY, "UserLogin")
-//							.build()
-//			);
-//
-//		};
-//	}
+		return args -> {
+			ObjectMapper mapper = new ObjectMapper();
+			MessageCreator messageCreator = new MessageCreator(TemplatePaths.userLoginPath, new HashMap<>(), Map.of("email", "omarmmi2000@gmail.com", "password", "test123"));
+			ObjectNode message = (ObjectNode) messageCreator.createMessage();
+
+			kafkaTemplate.send(
+					MessageBuilder
+							.withPayload(mapper.writeValueAsString(message))
+							.setHeader(KafkaHeaders.REPLY_TOPIC, "fff")
+							.setHeader(KafkaHeaders.TOPIC, "userManagement")
+							.setHeader(KafkaHeaders.KEY, "UserLogin")
+							.build()
+			);
+
+		};
+	}*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(userApplication.class, args);

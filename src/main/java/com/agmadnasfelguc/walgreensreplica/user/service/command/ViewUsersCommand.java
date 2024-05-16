@@ -8,6 +8,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,27 +30,38 @@ public class ViewUsersCommand extends Command {
 
     private List<User> userInfo;
 
+    Logger logger = LoggerFactory.getLogger(ViewUsersCommand.class);
+
     @Override
     public void execute() {
-//        try{
+        try{
         System.out.println(sessionId);
         Map<String, Object> details = sessionCache.getSessionSection(sessionId,"user");
         System.out.println(details);
         String role = String.valueOf(details.get("role"));
         if(role == null){
             this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
+            logger.error(this.getState().getMessage());
             return;
         }
         if(!role.equals("admin")){
             this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session Type"));
+            logger.error(this.getState().getMessage());
             return;
         }
         userInfo = userRepository.findAll();
         System.out.println(userInfo);
         this.setState(new ResponseStatus(ResponseState.Success, "Users retrieved successfully"));
-//        } catch (Exception e) {
-//            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
-//        }
+        if(this.getState().getStatus().equals(ResponseState.Success)){
+            logger.info(this.getState().getMessage());
+        }
+        else if(this.getState().getStatus().equals(ResponseState.Failure)){
+            logger.error("Error retrieving users");
+        }
+        } catch (Exception e) {
+            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
+            logger.error(e.getMessage());
+        }
     }
 }
 

@@ -6,6 +6,8 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.Generate
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ public class VerifyMailCommand extends Command {
     @Autowired
     private Command generateOTPCommand;
 
+    Logger logger = LoggerFactory.getLogger(VerifyMailCommand.class);
+
     @Override
     public void execute() {
         try {
@@ -29,6 +33,7 @@ public class VerifyMailCommand extends Command {
             Map<String,Object> details = sessionCache.getSessionSection(sessionId,"user");
             if(details == null){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Session not found"));
+                logger.error("Session not found");
                 return;
             }
 
@@ -39,8 +44,14 @@ public class VerifyMailCommand extends Command {
             ((GenerateOTPCommand) generateOTPCommand).setSubject("Verify Email");
             generateOTPCommand.execute();
             this.setState(new ResponseStatus(ResponseState.Success, "Email sent"));
+            if(this.getState().getStatus().equals(ResponseState.Success)){
+
+            }else if(this.getState().getStatus().equals(ResponseState.Failure)){
+
+            }
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
+            logger.error(e.getMessage());
         }
 
     }
