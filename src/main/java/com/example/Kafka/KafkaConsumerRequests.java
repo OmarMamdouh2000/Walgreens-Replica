@@ -31,14 +31,35 @@ public class KafkaConsumerRequests {
 			Map<String,Object> result = new HashMap<>();
 			result.put("commandName", data.get("commandName").toString());
 			Object finalData="";
+			String jsonString2="";
 			switch (data.get("commandName").toString()) {
 				
+				case "UpdateItemCountCommandCache":
+					finalData = (String) invoker.executeCommand("UpdateItemCountCommandCache", data);
+					data.replace("commandName", "UpdateItemCountCommand");
+					jsonString2=objectMapper.writeValueAsString(data);
+					kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					break;
 
 				case "UpdateItemCountCommand":
 					finalData= (String) invoker.executeCommand("UpdateItemCountCommand", data);
 					break;
+
+				case "AddToSavedForLaterCache":
+				finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
+				data.replace("commandName", "AddToSavedForLater");
+				jsonString2=objectMapper.writeValueAsString(data);
+				kafkaProducer.publishToTopic("cartRequests", jsonString2);
+				break;
 				case "AddToSavedForLater":
 					finalData= (String) invoker.executeCommand("AddToSavedForLater", data);
+					break;
+
+				case "ReturnFromSavedForLaterCache":
+					finalData = (String) invoker.executeCommand("ReturnFromSavedForLaterCache", data);
+					data.replace("commandName", "ReturnFromSavedForLater");
+					jsonString2=objectMapper.writeValueAsString(data);
+					kafkaProducer.publishToTopic("cartRequests", jsonString2);
 					break;
 				case "ReturnFromSavedForLater":
 					finalData= (String) invoker.executeCommand("ReturnFromSavedForLater", data);
@@ -67,18 +88,6 @@ public class KafkaConsumerRequests {
 					break;
 				case "ConfirmCheckoutCommand":
 					finalData = (Object) invoker.executeCommand("ConfirmCheckoutCommand", data);
-					break;
-				case "UpdateItemCountCommandCache":
-					finalData = (String) invoker.executeCommand("UpdateItemCountCommandCache", data);
-					break;
-				case "AddToSavedForLaterCache":
-					finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
-					data.replace("commandName", "AddToSavedForLater");
-					String jsonString2=objectMapper.writeValueAsString(data);
-					kafkaProducer.publishToTopic("cartRequests", jsonString2);
-					break;
-				case "ReturnFromSavedForLaterCache":
-					finalData = (String) invoker.executeCommand("ReturnFromSavedForLaterCache", data);
 					break;
 				default:
 					break;

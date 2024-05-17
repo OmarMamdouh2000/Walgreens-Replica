@@ -83,7 +83,7 @@ public class UpdateItemCountCommand implements Command{
             return "invalid item id";
         }
         
-        return "success";
+        return "successfully updated item count in DB";
 
     }
 

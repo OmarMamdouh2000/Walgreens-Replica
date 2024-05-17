@@ -49,7 +49,7 @@ public class AddToSavedForLaterCommand implements Command {
         UUID cartId=oldCart.getId();
         boolean found=false;
         double newTotal=0;
-        for(int i=0;i<oldItems.size();i++) {
+        for(int i=0;oldItems !=null && i<oldItems.size();i++) {
             if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 newSaved.add(oldItems.get(i));
                 int oldcount=oldItems.get(i).getItemCount();
@@ -68,7 +68,7 @@ public class AddToSavedForLaterCommand implements Command {
             return "invalid item id";
         }
         
-        return "success";
+        return "successfully added to saved for later DB";
         
     }
 

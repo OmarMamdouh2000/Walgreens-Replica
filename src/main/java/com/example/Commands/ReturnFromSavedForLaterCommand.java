@@ -46,7 +46,7 @@ public class ReturnFromSavedForLaterCommand implements Command {
         if(oldItems==null) {
             oldItems=new ArrayList<CartItem>();
         }
-        for(int i=0;i<newSaved.size();i++) {
+        for(int i=0;newSaved!=null &&i<newSaved.size();i++) {
             if(newSaved.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 oldItems.add(newSaved.get(i));
                 int oldcount=newSaved.get(i).getItemCount();
@@ -65,7 +65,7 @@ public class ReturnFromSavedForLaterCommand implements Command {
             return "invalid item id";
         }
         
-        return "success";
+        return "successfully returned from saved for later DB";
 
     }
 

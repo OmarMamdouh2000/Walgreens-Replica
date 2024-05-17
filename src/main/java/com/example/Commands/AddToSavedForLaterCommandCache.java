@@ -40,11 +40,19 @@ public class AddToSavedForLaterCommandCache implements Command {
     @Override
     public Object execute(Map<String, Object> data) {
         String itemId=(String)data.get("itemId");
-        String userId=(String)data.get("userId");
+        
         String sessionId = (String)data.get("sessionId");
         Map<String, Object> session = sessionCache.getSessionSection(sessionId, "cart");
+        Map<String, Object> sessionUser = sessionCache.getSessionSection(sessionId, "user");
+        String userId=(String) sessionUser.get("userId");
         ObjectMapper objectMapper = new ObjectMapper();
-        CartTable oldCart = objectMapper.convertValue(session, CartTable.class);
+        CartTable oldCart =null;
+        if(session !=null) {
+            oldCart = objectMapper.convertValue(session, CartTable.class);
+        }else{
+            oldCart=cartRepo.getCart(UUID.fromString(userId));
+            sessionCache.createSession(sessionId, "cart", objectMapper.convertValue(oldCart, Map.class));
+        }
         List<CartItem> oldItems=oldCart.getItems();
         List<CartItem> newSaved=oldCart.getSavedForLaterItems();
         if(newSaved==null) {
@@ -53,7 +61,7 @@ public class AddToSavedForLaterCommandCache implements Command {
         UUID cartId=oldCart.getId();
         boolean found=false;
         double newTotal=0;
-        for(int i=0;i<oldItems.size();i++) {
+        for(int i=0;oldItems !=null && i<oldItems.size();i++) {
             if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 newSaved.add(oldItems.get(i));
                 int oldcount=oldItems.get(i).getItemCount();
@@ -71,12 +79,13 @@ public class AddToSavedForLaterCommandCache implements Command {
             Map<String, Object> newData = objectMapper.convertValue(oldCart, Map.class);
             sessionCache.updateSessionSection(sessionId, "cart", newData, 10, TimeUnit.HOURS);
 
+
         }
         else {
             return "invalid item id";
         }
         
-        return "successfully added to saved for later";
+        return "successfully added to saved for later cache";
         
     }
 

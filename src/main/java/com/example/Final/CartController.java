@@ -42,13 +42,17 @@ public class CartController {
 	@GetMapping("/storeSessionUser")
 	public void storeSessionUser(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "user", Map.of("userId", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "email", "ziad@gmail", "username", "ziad"));
+		sessionCache.createSession("1234", "user", Map.of("userId", "e0036741-4913-499a-aad4-1c90d40b4a77", "email", "ziad@gmail", "username", "ziad"));
 	}
 
 	@GetMapping("/storeSessionCart")
 	public void storeSessionCart(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "cart", Map.of("userId", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "cartId", "cart1"));
+		sessionCache.createSession("1234", "cart", Map.of("userId", "e0036741-4913-499a-aad4-1c90d40b4a77", "cartId", "cart1"));
+	}
+	@GetMapping("/cartSection")
+	public Map<String, Object> getCartSection(){
+		return sessionCache.getSessionSection("1234", "cart");
 	}
 	@GetMapping("/getSession")
 	public Map<String, Object> getSession(){
@@ -77,7 +81,8 @@ public class CartController {
 
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		data.put("userId", userId);
-		data.put("commandName", "UpdateItemCountCommand");
+		data.put("commandName", "UpdateItemCountCommandCache");
+		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -95,6 +100,7 @@ public class CartController {
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		data.put("userId", userId);
 		data.put("commandName", "AddToSavedForLaterCache");
+		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -111,7 +117,8 @@ public class CartController {
 	public String returnItemFromSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		data.put("userId", userId);
-		data.put("commandName", "ReturnFromSavedForLater");
+		data.put("commandName", "ReturnFromSavedForLaterCache");
+		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
