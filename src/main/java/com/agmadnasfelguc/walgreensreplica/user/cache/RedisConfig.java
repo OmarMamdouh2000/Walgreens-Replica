@@ -15,7 +15,7 @@ public class RedisConfig {
     public LettuceConnectionFactory redisConnectionFactory() {
         // Configuration for the Redis server
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-        redisConfig.setHostName("localhost");
+        redisConfig.setHostName("host.docker.internal");
         redisConfig.setPort(6379);
         redisConfig.setPassword("root");
 

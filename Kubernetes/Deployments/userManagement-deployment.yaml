@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-management-mini-service-deployment
+  labels:
+    app: user-management-mini-service
+spec:
+  selector:
+    matchLabels:
+      app: user-management-mini-service
+  template:
+    metadata:
+      labels:
+        app: user-management-mini-service
+    spec:
+      containers:
+      - name: user-management-mini-service
+        image: walgreens/mini-service/user-management
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 300m
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-management-service
+spec:
+  selector:
+    app: user-management-mini-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+# Another Loadbalancer or nodePort service to access the mini service from outside directly without ingress
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mini-services-ingress
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: walgreens.com
+    http:
+      paths:
+      - path: /api/user
+        pathType: Prefix  
+        backend:
+          service:
+            name: user-management-service
+            port: 
+              number: 8080
+      - path: /api/admin
+        pathType: Prefix  
+        backend:
+          service:
+            name: user-management-service
+            port: 
+              number: 8080
+      - path: /actuator/health
+        pathType: Prefix  
+        backend:
+          service:
+            name: user-management-service
+            port: 
+              number: 8080
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: user-management-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: user-management-mini-service-deployment
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
