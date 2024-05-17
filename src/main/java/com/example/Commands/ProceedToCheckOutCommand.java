@@ -16,7 +16,7 @@ import com.example.Final.UserUsedPromoRepo;
 import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.jsonwebtoken.Claims;
+
 @Service
 public class ProceedToCheckOutCommand implements Command {
 
@@ -39,13 +39,21 @@ public class ProceedToCheckOutCommand implements Command {
 
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
-        
+        Map<String,Object> session = sessionCache.getSessionSection((String)data.get("sessionId"), "cart");
+        String sessionId=(String)data.get("sessionId");
         String user = (String)data.get("userId");
-        CartTable userCart = cartRepo.getCart(UUID.fromString(user));
+        CartTable userCart = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        if(session!=null){
+            
+            userCart = objectMapper.convertValue(session, CartTable.class);
+        }else{  
+            userCart = cartRepo.getCart(UUID.fromString(user));
+            sessionCache.createSession(sessionId, "cart", objectMapper.convertValue(userCart, Map.class));
+        }
         Map<String, Object> request = new HashMap<>();
         request.put("commandName", "Checkout");
         request.put("data", userCart);
-        ObjectMapper objectMapper = new ObjectMapper();
         String userCartString = objectMapper.writeValueAsString(request);
 
         //TODO: Publish to Payment Service Kafka

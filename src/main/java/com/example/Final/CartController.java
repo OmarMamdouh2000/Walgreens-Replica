@@ -228,11 +228,12 @@ public class CartController {
 	}
 
 	@PostMapping("/proceedToCheckOut")
-	public Object proceedToCheckOut(@RequestParam String token){
+	public Object proceedToCheckOut(@RequestParam String sessionId){
+		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
-			jsonString = objectMapper.writeValueAsString( Map.of("token", token, "commandName", "ProceedToCheckOutCommand"));
+			jsonString = objectMapper.writeValueAsString( Map.of("sessionId", sessionId,"userId",userId, "commandName", "ProceedToCheckOutCommand"));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
