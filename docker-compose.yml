@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
   db:
-    container_name: postgres
+    container_name: postgresWalgreens
     image: postgres
     environment:
       POSTGRES_USER: paymentcluster
@@ -13,8 +15,19 @@ services:
     networks:
       - db
     restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - db
+    restart: unless-stopped
+
 networks:
   db:
     driver: bridge
+
 volumes:
   db:
