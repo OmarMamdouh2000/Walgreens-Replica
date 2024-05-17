@@ -1,0 +1,13 @@
+
+{
+  "addPaymentMethodCommand": "AddPaymentMethod",
+  "createCheckoutCommand": "CreateCheckout",
+  "createCouponCommand": "CreateCoupon",
+  "createCustomerCommand": "CreateCustomer",
+  "customerApplyCouponCommand": "CustomerApplyCoupon",
+  "payUsingPaymentMethodsCommand": "PayUsingPaymentMethods",
+  "viewBalanceCommand": "ViewBalance",
+  "viewLoyaltyPointsCommand": "ViewLoyaltyPoints",
+  "viewPaymentMethodsCommand": "ViewPaymentMethods"
+
+}

@@ -1,14 +1,12 @@
 package com.walgreens.payment.service.command;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.Coupon;
-import com.stripe.model.Customer;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.walgreens.payment.model.ProductsDto;
 import com.walgreens.payment.repository.CouponRepository;
 import com.walgreens.payment.repository.CustomerRepository;
-import com.walgreens.payment.responses.CheckoutSessionResponse;
+import com.walgreens.payment.service.responses.CheckoutSessionResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

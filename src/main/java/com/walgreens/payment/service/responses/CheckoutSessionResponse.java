@@ -1,4 +1,4 @@
-package com.walgreens.payment.responses;
+package com.walgreens.payment.service.responses;
 
 
 import lombok.AllArgsConstructor;
