@@ -50,7 +50,7 @@ public class Brands {
 	
 	@Override
     public String toString() {
-        return "CartTable{" +
+        return "Brand{" +
                 "id=" + id +
                 ", name=" + name +
                 ", brandProducts='" + brandProducts + '\'' +

@@ -31,50 +31,63 @@ public class KafkaConsumerRequests {
 			Object finalData="";
 			switch (data.get("commandName").toString()) {
 				
-
+				// Categories
 				case "listCategoriesCase":
-					finalData= (Object) invoker.executeCommand("listCategoriesCommand", data.get("parameter"), data);
+					finalData= (Object) invoker.executeCommand("listCategoriesCommand", null, null);
 					break;
 				case "getCategoryCase":
-					finalData= (Object) invoker.executeCommand("getCategoryCommand", data.get("parameter"), data);
+					finalData= (Object) invoker.executeCommand("getCategoryCommand", data.get("parameter"), null);
+					break;
+				case "listCategoryProductsCase":
+					finalData= (Object) invoker.executeCommand("listCategoryProductsCommand", data.get("parameter"), null);
+					break;
+				case "deleteCategoryCase":
+					finalData= (String) invoker.executeCommand("deleteCategoryCommand", data.get("parameter"), null);
 					break;
 				case "addCategoryCase":
 					finalData= (String) invoker.executeCommand("addCategoryCommand", null, data);
 					break;
-				case "addBrandCase":
-					finalData= (String) invoker.executeCommand("addBrandCommand", null, data);	
+				case "updateCategoryCase":
+					finalData= (String) invoker.executeCommand("updateCategoryCommand", data.get("parameter"), data);
 					break;
-				case "getBrandCase":
-					finalData= (Object) invoker.executeCommand("getBrandCOmmand", data.get("parameter"), data);
+					
+				//Products
+				case "listProductsCase":
+					finalData= (Object) invoker.executeCommand("listProductsCommand", null, null);
 					break;
-				case "listBrandCase":
-					finalData= (Object) invoker.executeCommand("listBrandCommand",null, data);
+				case "getProductCase":
+					finalData= (Object) invoker.executeCommand("getProductCommand", data.get("parameter"), null);
 					break;
-				case "listBrandProductsCase":
-					finalData= (Object) invoker.executeCommand("listBrandProductsCommand", data.get("parameter"), data);
-					break;
-				case "updateBrandCase":
-					finalData= (String) invoker.executeCommand("updateBrandCommand", data.get("parameter"), data);
-					break;
-				case "deleteBrandCase":
-					finalData= (String) invoker.executeCommand("deleteBrandCommand", data.get("parameter"), data);
+				case "deleteProductCase":
+					finalData= (String) invoker.executeCommand("deleteProductCommand", data.get("parameter"), null);
 					break;
 				case "addProductCase":
 					finalData= (String) invoker.executeCommand("addProductCommand", null, data);
 					break;
-				case "deleteProductCase":
-					finalData= (String) invoker.executeCommand("deleteProductCommand", data.get("parameter"), data);
-					break;
-				case "getProductCase":
-					finalData= (Object) invoker.executeCommand("getProductCOmmand", data.get("parameter"), data);
-					break;
-				case "listProductsCase":
-					finalData= (Object) invoker.executeCommand("listProductsCommand", data.get("parameter"), data);
-					break;
 				case "updateProductCase":
-					finalData= (String) invoker.executeCommand("updateProductommand", data.get("parameter"), data);
+					finalData= (String) invoker.executeCommand("updateProductCommand", data.get("parameter"), data);
 					break;
 				default:
+					break;
+					
+				// Brands
+				case "listBrandCase":
+					finalData= (Object) invoker.executeCommand("listBrandCommand", null, null);
+					break;
+				case "getBrandCase":
+					finalData= (Object) invoker.executeCommand("getBrandCommand", data.get("parameter"), null);
+					break;
+				case "listBrandProductsCase":
+					finalData= (Object) invoker.executeCommand("listBrandProductsCommand", data.get("parameter"), null);
+					break;
+				case "deleteBrandCase":
+					finalData= (String) invoker.executeCommand("deleteBrandCommand", data.get("parameter"), null);
+					break;
+				case "addBrandCase":
+					finalData= (String) invoker.executeCommand("addBrandCommand", null, data);	
+					break;
+				case "updateBrandCase":
+					finalData= (String) invoker.executeCommand("updateBrandCommand", data.get("parameter"), data);
 					break;
 			}
 			result.put("data", finalData);

@@ -1,4 +1,4 @@
-package com.example.demo.cassandraModels;
+	package com.example.demo.cassandraModels;
 
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
@@ -66,4 +66,15 @@ public class Categories {
 	public void setCategoryProducts(List<Pobject> categoryProducts) {
 		this.categoryProducts = categoryProducts;
 	}
+	@Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name=" + name +
+                ", image=" + image +
+                ", parentCategory=" + parentCategory +
+                ", subCategories=" + subCategories +
+                ", categoryProducts='" + categoryProducts + '\'' +
+                '}';
+    }
 }

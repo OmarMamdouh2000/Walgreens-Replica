@@ -1,6 +1,5 @@
 package com.example.demo.cassandraCommands;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,31 +33,33 @@ public class updateBrandCommand implements Command {
 		if(body.containsKey("parameter")) 
 		{
 			String newBrandName;
-			
-			UUID brandId = UUID.fromString((String)body.get("id"));
+			UUID brandId = UUID.fromString((String)body.get("parameter"));
 			Brands brand = brandRepo.getBrandRepo(brandId);
 			
 			if(body.containsKey("name"))
 			{
 				newBrandName = (String)body.get("name");
 				
-				for(Pobject prod : brand.getBrandProducts())
+				if(brand.getBrandProducts() != null)
 				{
-					Products product = prodRepo.getProductRepo(prod.getId());
-					UUID parentCategoryId = product.getParentCategory();
-					Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-					
-					for(Pobject categoryProd : parentCategory.getCategoryProducts())
+					for(Pobject prod : brand.getBrandProducts())
 					{
-						if(categoryProd.getId().equals(prod.getId()))
+						Products product = prodRepo.getProductRepo(prod.getId());
+						UUID parentCategoryId = product.getParentCategory();
+						Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
+						
+						for(Pobject categoryProd : parentCategory.getCategoryProducts())
 						{
-							categoryProd.setBrandName(newBrandName);
-							catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-							break;
+							if(categoryProd.getId().equals(prod.getId()))
+							{
+								categoryProd.setBrandName(newBrandName);
+								catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+								break;
+							}
 						}
+						
+						prod.setBrandName(newBrandName);
 					}
-					
-					prod.setBrandName(newBrandName);
 				}
 			}
 			else

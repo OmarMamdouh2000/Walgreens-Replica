@@ -1,7 +1,6 @@
 package com.example.demo.cassandraControllers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +12,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.cassandraModels.Pobject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.RequestParam;
-import com.example.demo.cassandraModels.Products;
-import com.example.demo.cassandraCommands.Invoker;
 import com.example.demo.cassandraKafka.KafkaProducer;
-import com.example.demo.cassandraModels.Brands;
 
 
 @RestController
 public class Controllers {
 	
-	@Autowired
-	private Invoker invoker;
 	@Autowired
 	private KafkaProducer kafkaProducerRequest;
 	
@@ -36,34 +29,48 @@ public class Controllers {
 	
 	@GetMapping("/listCategories")
 	public void listCategories()
-	{
-		//return (List<Categories>) invoker.executeCommand("listCategoriesCommand", null, null);
-		
+	{	
 		Map<String,Object> body = new HashMap<>();
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = null;
 		body.put("commandName", "listCategoriesCase");
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		
 		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	
 	@GetMapping("/getCategory/{categoryId}")
 	public void getCategory(@PathVariable Object categoryId)
 	{
-		//return (Categories) invoker.executeCommand("getCategoryCommand", categoryId, body);
 		Map<String,Object> body = new HashMap<>();
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = null;
 		body.put("parameter", categoryId);
 		body.put("commandName", "getCategoryCase");
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+	}
+	
+	@GetMapping("/listCategoryProducts/{categoryId}")
+	public void listCategoryProducts(@PathVariable Object categoryId) 
+	{ 
+		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", categoryId);
+		body.put("commandName", "listCategoryProductsCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
@@ -74,19 +81,30 @@ public class Controllers {
 	}
 	
 	@DeleteMapping("/deleteCategory/{categoryId}")
-	public String deleteCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public void deleteCategory(@PathVariable Object categoryId)
 	{
-		return (String) invoker.executeCommand("deleteCategoryCommand", categoryId, body);
+		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", categoryId);
+		body.put("commandName", "deleteCategoryCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	@PostMapping("/addCategory")
 	public void addCategory(@RequestBody Map<String, Object> body)
 	{
-		//return (String) invoker.executeCommand("addCategoryCommand", null,  body);
+		body.put("commandName", "addCategoryCase");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "addCategory");
-		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
@@ -97,9 +115,20 @@ public class Controllers {
 	}
 	
 	@PutMapping("/updateCategory/{categoryId}")
-	public String updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public void updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
-		return (String) invoker.executeCommand("updateCategoryCommand", categoryId,  body);
+		body.put("parameter", categoryId);
+		body.put("commandName", "updateCategoryCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	// --------------------------------------------- END CATEGORIES ------------------------------------------------
@@ -108,42 +137,94 @@ public class Controllers {
 	
 	// --------------------------------------------- PRODUCTS ------------------------------------------------
 	
-	@SuppressWarnings("unchecked")
 	@GetMapping("/listProducts")
-	public List<Products> listProducts(@RequestParam(name = "page", defaultValue = "0") int page,
-	        @RequestParam(name = "size", defaultValue = "10") int size) {
+	public void listProducts(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
 			int [] params = new int [2];
 			params[0] = page;
 			params[1] = size; //(List<Products>)
-	    return (List<Products>) invoker.executeCommand("listProductsCommand", params , null);
+			
+			Map<String,Object> body = new HashMap<>();
+			body.put("parameter", params);
+			body.put("commandName", "listProductsCase");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			String jsonString = null;
+			try {
+				jsonString = objectMapper.writeValueAsString(body);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				System.out.print(e.getMessage());
+			}
+			kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 
 	@GetMapping("/getProduct/{productId}")
-	public Products getProduct(@PathVariable Object productId)
+	public void getProduct(@PathVariable Object productId)
 	{
-		return (Products) invoker.executeCommand("getProductCommand", productId , null);
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	@GetMapping("/listCategoryProducts/{categoryId}")
-	public List<Pobject> listCategoryProducts(@PathVariable Object categoryId) { 
-		return (List<Pobject>) invoker.executeCommand("listCategoryProductsCommand", categoryId , null);
+		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", productId);
+		body.put("commandName", "getProductCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	@DeleteMapping("/deleteProduct/{productId}")
-	public String deleteProduct(@PathVariable Object productId) {
-		return (String)invoker.executeCommand("deleteProductCommand", productId , null);
+	public void deleteProduct(@PathVariable Object productId) 
+	{
+		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", productId);
+		body.put("commandName", "deleteProductCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	@PostMapping("/addProduct")
-    public String addProduct(@RequestBody Map<String, Object> body) {
-		return (String) invoker.executeCommand("addProductCommand", null , body);
+    public void addProduct(@RequestBody Map<String, Object> body) 
+	{
+		body.put("commandName", "addProductCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
    	}
 	
 	@PutMapping("/updateProduct/{productId}")
-	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) {
-		return (String) invoker.executeCommand("updateProductCommand", productId , body);
+	public void updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) 
+	{
+		body.put("parameter", productId);
+		body.put("commandName", "updateProductCase");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = objectMapper.writeValueAsString(body);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			System.out.print(e.getMessage());
+		}
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
 	
@@ -155,37 +236,34 @@ public class Controllers {
 	public void ListBrand()
 	{
 		Map<String,Object> body = new HashMap<>();
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = null;
 		body.put("commandName", "listBrandCase");
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		
 		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	
 	@GetMapping("/getBrand/{brandId}")
 	public void getBrand(@PathVariable Object brandId)
 	{
-		
 		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", brandId);
+		body.put("commandName", "getBrandCase");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "getBrandCase");
-		body.put("parameter",brandId );
-		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		
 		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	
@@ -193,18 +271,17 @@ public class Controllers {
 	public void listBrandProducts(@PathVariable Object brandId) 
 	{
 		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", brandId);
+		body.put("commandName", "listBrandProductsCase");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "listBrandProductsCase");
-		body.put("parameter",brandId );
-		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		
 		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	
@@ -212,10 +289,11 @@ public class Controllers {
 	public void deleteBrand(@PathVariable Object brandId)
 	{
 		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", brandId);
+		body.put("commandName", "deleteBrandCase");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "deleteBrandCase");
-		body.put("parameter",brandId );
 		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
@@ -223,16 +301,15 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		
 		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
 	}
 	@PostMapping("/addBrand")
 	public void addBrand(@RequestBody Map<String, Object> body)
 	{
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = null;
 		body.put("commandName", "addBrandCase");
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonString = null;
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {
@@ -244,14 +321,13 @@ public class Controllers {
 	}
 	
 	@PutMapping("/updateBrand/{brandId}")
-	public void updateBrand(@PathVariable Object brandId)
+	public void updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
 	{
-		Map<String,Object> body = new HashMap<>();
+		body.put("parameter", brandId);
+		body.put("commandName", "updateBrandCase");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		body.put("commandName", "updateBrandCase");
-		body.put("parameter",brandId );
-		
 		try {
 			jsonString = objectMapper.writeValueAsString(body);
 		} catch (JsonProcessingException e) {

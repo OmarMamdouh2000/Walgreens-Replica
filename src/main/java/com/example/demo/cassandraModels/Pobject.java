@@ -2,23 +2,31 @@ package com.example.demo.cassandraModels;
 
 import java.util.UUID;
 
-import org.springframework.data.cassandra.core.mapping.Frozen;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
-import com.datastax.driver.mapping.annotations.UDT;
 
-@Frozen
-@UDT(name="pobject")
 @UserDefinedType("pobject")
 public class Pobject {
 	
+	@CassandraType(type = CassandraType.Name.UUID)
 	private UUID id;
+	@CassandraType(type = CassandraType.Name.TEXT)
     private String name;
+	@CassandraType(type = CassandraType.Name.TEXT)
     private String image;
+	@CassandraType(type = CassandraType.Name.TEXT)
     private String brandName;
+	@CassandraType(type = CassandraType.Name.DOUBLE)
     private double price;
+	@CassandraType(type = CassandraType.Name.TEXT)
     private String discount;
     
+	public Pobject()
+	{
+		
+	}
+	
     public Pobject(UUID id, String name, String image, String brandName, double price, String discount) {
       this.id = id;
       this.name = name;
@@ -75,4 +83,16 @@ public class Pobject {
 	public void setImage(String image) {
 		this.image = image;
 	}
+	
+	@Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name=" + name +
+                ", image=" + image +
+                ", brandName=" + brandName +
+                ", price=" + price +
+                ", discount='" + discount + '\'' +
+                '}';
+    }
 }

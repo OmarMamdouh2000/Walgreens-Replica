@@ -26,19 +26,20 @@ public class Invoker {
 
         public Invoker() {
                 commandMap = new HashMap<>();
+                // Categories
                 commandMap.put("listCategoriesCommand", "com.example.demo.cassandraCommands.listCategoriesCommand");
                 commandMap.put("getCategoryCommand", "com.example.demo.cassandraCommands.getCategoryCommand");
+                commandMap.put("listCategoryProductsCommand", "com.example.demo.cassandraCommands.listCategoryProductsCommand");
                 commandMap.put("deleteCategoryCommand", "com.example.demo.cassandraCommands.deleteCategoryCommand");
                 commandMap.put("addCategoryCommand", "com.example.demo.cassandraCommands.addCategoryCommand");
                 commandMap.put("updateCategoryCommand", "com.example.demo.cassandraCommands.updateCategoryCommand");
-
                 // Products
                 commandMap.put("listProductsCommand", "com.example.demo.cassandraCommands.listProductsCommand");
                 commandMap.put("getProductCommand", "com.example.demo.cassandraCommands.getProductCommand");
                 commandMap.put("deleteProductCommand", "com.example.demo.cassandraCommands.deleteProductCommand");
                 commandMap.put("addProductCommand", "com.example.demo.cassandraCommands.addProductCommand");
                 commandMap.put("updateProductCommand", "com.example.demo.cassandraCommands.updateProductCommand");
-                commandMap.put("listCategoryProductsCommand", "com.example.demo.cassandraCommands.listCategoryProductsCommand");
+                // Brands
                 commandMap.put("listBrandCommand", "com.example.demo.cassandraCommands.listBrandCommand");
                 commandMap.put("getBrandCommand", "com.example.demo.cassandraCommands.getBrandCommand");
                 commandMap.put("listBrandProductsCommand", "com.example.demo.cassandraCommands.listBrandProductsCommand");
@@ -64,7 +65,6 @@ public class Invoker {
                                 Object instance = constructor.newInstance(catRepo, prodRepo, brandRepo); // replace with
                                                                                                          // your actual
                                                                                                          // parameters
-
                                 // If your class has a method you want to invoke, you can do so like this:
                                 String methodName = "execute"; // replace with your method name
                                 Method method = class1.getDeclaredMethod(methodName, Map.class); // replace with your

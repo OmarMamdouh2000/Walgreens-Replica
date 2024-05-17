@@ -229,13 +229,23 @@ public class updateProductCommand implements Command{
 					    	else
 					    		newBrand.getBrandProducts().add(productObject);
 							
-							oldBrand.getBrandProducts().remove(productObject);
+							if(!oldBrand.getId().equals(newBrand.getId()))
+							{
+								oldBrand.getBrandProducts().remove(productObject);
+							}
 							
 							break;
 						}
 					}
-					brandRepo.updateBrandRepo(oldBrand.getId(), oldBrand.getName(), oldBrand.getBrandProducts());
-					brandRepo.updateBrandRepo(newBrand.getId(), newBrand.getName(), newBrand.getBrandProducts());
+					if(oldBrand.getId().equals(newBrand.getId()))
+					{
+						brandRepo.updateBrandRepo(oldBrand.getId(), oldBrand.getName(), oldBrand.getBrandProducts());
+					}
+					else
+					{
+						brandRepo.updateBrandRepo(oldBrand.getId(), oldBrand.getName(), oldBrand.getBrandProducts());
+						brandRepo.updateBrandRepo(newBrand.getId(), newBrand.getName(), newBrand.getBrandProducts());
+					}
 				}
 				else
 				{
@@ -293,13 +303,23 @@ public class updateProductCommand implements Command{
 					    	else
 					    		newParentCategory.getCategoryProducts().add(prod);
 							
-							oldParentCategory.getCategoryProducts().remove(prod);
+							if(!oldParentCategory.getId().equals(newParentCategory.getId()))
+							{
+								oldParentCategory.getCategoryProducts().remove(prod);
+							}
 							
 							break;
 						}
 					}
-					catRepo.updateCategoryRepo(oldParentCategory.getId(), oldParentCategory.getName(), oldParentCategory.getImage(), oldParentCategory.getParentCategory(), oldParentCategory.getSubCategories(), oldParentCategory.getCategoryProducts());
-					catRepo.updateCategoryRepo(newParentCategory.getId(), newParentCategory.getName(), newParentCategory.getImage(), newParentCategory.getParentCategory(), newParentCategory.getSubCategories(), newParentCategory.getCategoryProducts());
+					if(oldParentCategory.getId().equals(newParentCategory.getId()))
+					{
+						catRepo.updateCategoryRepo(oldParentCategory.getId(), oldParentCategory.getName(), oldParentCategory.getImage(), oldParentCategory.getParentCategory(), oldParentCategory.getSubCategories(), oldParentCategory.getCategoryProducts());
+					}
+					else
+					{
+						catRepo.updateCategoryRepo(oldParentCategory.getId(), oldParentCategory.getName(), oldParentCategory.getImage(), oldParentCategory.getParentCategory(), oldParentCategory.getSubCategories(), oldParentCategory.getCategoryProducts());
+						catRepo.updateCategoryRepo(newParentCategory.getId(), newParentCategory.getName(), newParentCategory.getImage(), newParentCategory.getParentCategory(), newParentCategory.getSubCategories(), newParentCategory.getCategoryProducts());
+					}
 				}
 				else
 				{

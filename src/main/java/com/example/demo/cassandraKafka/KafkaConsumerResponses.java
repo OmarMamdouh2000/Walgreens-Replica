@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Categories;
 import com.example.demo.cassandraModels.Pobject;
+import com.example.demo.cassandraModels.Products;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -27,8 +28,8 @@ public class KafkaConsumerResponses {
 				case "listCategoriesCase":
 					try{
 						@SuppressWarnings("unchecked")
-						List<Categories> category = objectMapper.convertValue(data.get("data"), List.class);
-						System.out.println("Response: " + category.toString());
+						List<Categories> categories = objectMapper.convertValue(data.get("data"), List.class);
+						System.out.println("Response: " + categories.toString());
 					}catch(Exception e){
 						String error = (String)data.get("data");
 						System.out.println("Response: "+error);
@@ -43,12 +44,67 @@ public class KafkaConsumerResponses {
 						System.out.println("Response: "+error);
 					}
 					break;
+				case "listCategoryProductsCase":
+					try{
+						@SuppressWarnings("unchecked")
+						List<Pobject> products = objectMapper.convertValue(data.get("data"), List.class);
+						System.out.println("Response: " + products.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
+					break;
+				case "deleteCategoryCase":
+					System.out.println("Response: "+data.get("data"));
+					break;
 				case "addCategoryCase":
 					System.out.println("Response: "+data.get("data"));
 					break;
-					
-				case "addBrandCase":
+				case "updateCategoryCase":
 					System.out.println("Response: "+data.get("data"));
+					break;
+				
+				//Products
+				case "listProductsCase":
+					try{
+						@SuppressWarnings("unchecked")
+						List<Products> products = objectMapper.convertValue(data.get("data"), List.class);
+						System.out.println("Response: " + products.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
+					break;
+				case "getProductCase":
+					try{
+						System.out.println(data.get("data"));
+						Products product = objectMapper.convertValue(data.get("data"), Products.class);
+						System.out.println("Response: " + product.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
+					break;
+				case "deleteProductCase":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "addProductCase":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "updateProductCase":
+					System.out.println("Response: "+data.get("data"));
+					break;
+					
+				// Brands
+				case "listBrandCase":
+					try {
+						@SuppressWarnings("unchecked")
+						List<Brands> brands = objectMapper.convertValue(data.get("data"), List.class);
+						System.out.println("Response: " + brands.toString());
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
 					break;
 				case "getBrandCase":
 					try{
@@ -58,32 +114,24 @@ public class KafkaConsumerResponses {
 						String error = (String)data.get("data");
 						System.out.println("Response: "+error);
 					}
-					
 					break;
-				case "listBrandCase":
-					try {
-					List<Brands> brand = objectMapper.convertValue(data.get("data"), List.class);
-					System.out.println("Response: " + brand.toString());
-					}catch(Exception e){
-					String error = (String)data.get("data");
-					System.out.println("Response: "+error);
-					}
-					break;
-				
 				case "listBrandProductsCase":
 					try {
+						@SuppressWarnings("unchecked")
 						List<Pobject> products = objectMapper.convertValue(data.get("data"), List.class);
 						System.out.println("Response: " + products.toString());
-						}catch(Exception e){
+					}catch(Exception e){
 						String error = (String)data.get("data");
 						System.out.println("Response: "+error);
-						}
-						break;	
-				case "updateBrandCase":
+					}
+					break;
+				case "deleteBrandCase":
 					System.out.println("Response: "+data.get("data"));
 					break;
-					
-				case "deleteBrandCase":
+				case "addBrandCase":
+					System.out.println("Response: "+data.get("data"));
+					break;
+				case "updateBrandCase":
 					System.out.println("Response: "+data.get("data"));
 					break;
 				default:

@@ -32,7 +32,7 @@ public class listBrandProductsCommand implements Command{
 	{
 		if(body.containsKey("parameter"))
 		{
-			UUID brandId = UUID.fromString((String)body.get("id"));
+			UUID brandId = UUID.fromString((String)body.get("parameter"));
 			Brands brand = brandRepo.getBrandRepo(brandId);
 			List<Pobject> brandProducts = new ArrayList<>();
 			

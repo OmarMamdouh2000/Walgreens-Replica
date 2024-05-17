@@ -35,31 +35,56 @@ public class deleteCategoryCommand implements Command{
 	{
 		if(body.containsKey("parameter"))
 		{
-			UUID brandId = UUID.fromString((String)body.get("id"));
-			Brands brand = brandRepo.getBrandRepo(brandId);
+			UUID categoryId = UUID.fromString((String)body.get("parameter"));
+			Categories category = catRepo.getCategoryRepo(categoryId);
 			
 			//Set all products to be null parent category if had products
-			if(brand.getBrandProducts() != null)
+			if(category.getCategoryProducts() != null)
 			{
-				for(Pobject prod : brand.getBrandProducts())
+				for(Pobject prod: category.getCategoryProducts())
 				{
 					Products product = prodRepo.getProductRepo(prod.getId());
-					UUID parentCategoryId = product.getParentCategory();
-					Categories parentCategory = catRepo.getCategoryRepo(parentCategoryId);
-					for(Pobject categoryProd : parentCategory.getCategoryProducts())
-					{
-						if(categoryProd.getId().equals(prod.getId()))
-						{
-							categoryProd.setBrandName("");
-							catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
-							break;
-						}
-					}
-					product.setBrand(null);
+					product.setParentCategory(null);
 					prodRepo.updateProductRepo(product.getId(), product.getName(), product.getImage(), product.getPrice(), product.getDiscount(), product.getDescription(), product.getBrand(), product.getParentCategory());
 				}
 			}
-			brandRepo.deleteBrandRepo(brandId);
+			
+			if(category.getSubCategories() != null)
+			{
+				if(category.getParentCategory() != null)
+				{
+					Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
+					for(UUID subCategoryId: category.getSubCategories())
+					{
+						Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
+						subCategory.setParentCategory(parentCategory.getId());
+						catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
+						
+						parentCategory.getSubCategories().add(subCategoryId);
+					}
+					
+					parentCategory.getSubCategories().remove(categoryId);
+					catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+				}
+				else
+				{
+					for(UUID subCategoryId: category.getSubCategories())
+					{
+						Categories subCategory = catRepo.getCategoryRepo(subCategoryId);
+						subCategory.setParentCategory(null);
+						catRepo.updateCategoryRepo(subCategory.getId(), subCategory.getName(), subCategory.getImage(), subCategory.getParentCategory(), subCategory.getSubCategories(), subCategory.getCategoryProducts());
+					}
+				}
+			}
+			if(category.getParentCategory() != null)
+			{
+				Categories parentCategory = catRepo.getCategoryRepo(category.getParentCategory());
+				parentCategory.getSubCategories().remove(categoryId);
+				catRepo.updateCategoryRepo(parentCategory.getId(), parentCategory.getName(), parentCategory.getImage(), parentCategory.getParentCategory(), parentCategory.getSubCategories(), parentCategory.getCategoryProducts());
+			}
+			
+			catRepo.deleteCategoryRepo(categoryId);
+			return "Success";
 		}
 		return "Failed";
 	}
