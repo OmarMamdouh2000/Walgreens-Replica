@@ -14,7 +14,7 @@ public class CartCassandraConf extends AbstractCassandraConfiguration {
 	 @Bean
 	    public CqlSessionFactoryBean session() {
 	        CqlSessionFactoryBean session = new CqlSessionFactoryBean();
-	        session.setContactPoints("127.0.0.1");
+	        session.setContactPoints("cassandra");
 	        session.setPort(9042);
 	        session.setLocalDatacenter("datacenter1");
 	        session.setKeyspaceName(getKeyspaceName());
