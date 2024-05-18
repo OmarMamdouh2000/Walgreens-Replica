@@ -40,15 +40,15 @@ public class CartController {
 		return "hello";
 	}
 	@GetMapping("/storeSessionUser")
-	public void storeSessionUser(){
+	public void storeSessionUser(){						
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "user", Map.of("userId", "c8254473-5ea3-4f44-8b6a-be1cf137277c", "email", "ziad@gmail", "username", "ziad"));
+		sessionCache.createSession("1234", "user", Map.of("userId", "235772bd-f0de-41ee-8280-642a5bdf837f", "email", "ziad@gmail", "username", "ziad"));
 	}
 
 	@GetMapping("/storeSessionCart")
 	public void storeSessionCart(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "cart", Map.of("userId", "c8254473-5ea3-4f44-8b6a-be1cf137277c", "cartId", "cart1"));
+		sessionCache.createSession("1234", "cart", Map.of("userId", "235772bd-f0de-41ee-8280-642a5bdf837f", "cartId", "cart1"));
 	}
 	@GetMapping("/cartSection")
 	public Map<String, Object> getCartSection(){
