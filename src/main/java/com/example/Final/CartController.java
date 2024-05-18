@@ -135,6 +135,7 @@ public class CartController {
 	@PostMapping("/removeItem")
 	public Object removeItemFromCart(@RequestParam String sessionId ,@RequestBody Map<String, Object> data) throws Exception {
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "RemoveItem");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -152,6 +153,7 @@ public class CartController {
 	@PostMapping("/changeOrderType")
 	public Object setOrderType(@RequestParam String sessionId, @RequestBody Map<String, Object> data) throws Exception{
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ChangeOrderType");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -170,6 +172,7 @@ public class CartController {
 	@PostMapping("/applyPromo")
 	public Object applyPromo(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ApplyPromo");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -190,6 +193,7 @@ public class CartController {
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "GetProductForCartCommand");
 		data.put("sessionId", sessionId);
@@ -210,6 +214,7 @@ public class CartController {
 	@PostMapping("/addComment")
 	public Object addComment(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "AddComment");
 		ObjectMapper objectMapper = new ObjectMapper();

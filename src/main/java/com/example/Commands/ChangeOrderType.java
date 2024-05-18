@@ -4,6 +4,8 @@ import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ChangeOrderType implements Command{
@@ -35,7 +38,8 @@ public class ChangeOrderType implements Command{
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
-    
+        String sessionId = (String) data.get("sessionId");
+
         String user = (String)data.get("userId");
         UUID userID = UUID.fromString(user);
 
@@ -44,8 +48,12 @@ public class ChangeOrderType implements Command{
 
         String orderType = (String) data.get("orderType");
 
+        CartTable userCart;
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
 
-        CartTable userCart = cartRepo.getCart(userID);
+        if(!cachedCart.isEmpty()) userCart = objectMapper.convertValue(cachedCart, CartTable.class);
+        else userCart = cartRepo.getCart(userID);
 
         if(userCart != null){
             if(orderType.equals("shipping")){
@@ -56,8 +64,12 @@ public class ChangeOrderType implements Command{
             }else{
                 userCart.getItems().forEach(item -> item.setDeliveryType(orderType));
             }
-            cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
-            return cartRepo.getCart(userID);
+
+            String jsonString = objectMapper.writeValueAsString(userCart);
+            Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+            sessionCache.updateSessionSection(sessionId, "cart", map, 10, TimeUnit.HOURS);
+
+            return userCart;
         }else{
             return "Cart not found";
         }

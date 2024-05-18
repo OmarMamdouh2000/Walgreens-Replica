@@ -20,7 +20,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
         redisConfig.setHostName("host.docker.internal");
         redisConfig.setPort(6379);
-        redisConfig.setPassword("root");
+//        redisConfig.setPassword("root");
 
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
                 .clientOptions(ClientOptions.builder()

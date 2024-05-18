@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class KafkaConsumerResponses {
+	@Autowired
+	KafkaProducer kafkaProducer;
 
-	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
-
-
-	@KafkaListener(topics="cartResponses",groupId = "KafkaGroupResponseCart")
+	@KafkaListener(topics="cartResponses",groupId = "KafkaGroupResponse")
 	public void consumeMessage(String message) {
 		try{
 			message=message.replace("\\", "");
@@ -27,16 +27,12 @@ public class KafkaConsumerResponses {
 			@SuppressWarnings("unchecked")
 			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);
 			switch (data.get("commandName").toString()) {
-				case "UpdateItemCountCommand":
-					logger.info("Response: "+data.get("data"));
+				case "UpdateItemCountCommand", "AddToSavedForLater", "ReturnFromSavedForLater",
+                     "ProceedToCheckOutCommand", "ConfirmCheckoutCommand", "AddToSavedForLaterCache",
+                     "ReturnFromSavedForLaterCache", "UpdateItemCountCommandCache", "UpdateCart":
+					System.out.println("Response: "+data.get("data"));
 					break;
-				case "AddToSavedForLater":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "ReturnFromSavedForLater":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "GetUserCart", "RemoveItem", "ChangeOrderType", "ApplyPromo", "AddItem", "AddComment":
+                case "GetUserCart", "RemoveItem", "ChangeOrderType", "ApplyPromo", "AddItem", "AddComment":
 
 					try{
 						CartTable cart = objectMapper.convertValue(data.get("data"), CartTable.class);
@@ -46,22 +42,7 @@ public class KafkaConsumerResponses {
 						logger.info("Response: "+error);
 					}
 					break;
-                case "ProceedToCheckOutCommand":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "ConfirmCheckoutCommand":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "AddToSavedForLaterCache":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "ReturnFromSavedForLaterCache":
-					logger.info("Response: "+data.get("data"));
-					break;
-				case "UpdateItemCountCommandCache":
-					logger.info("Response: "+data.get("data"));
-					break;
-				default:
+                default:
 					break;
 			}
 		}catch(Exception e){

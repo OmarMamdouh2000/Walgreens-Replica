@@ -72,18 +72,64 @@ public class KafkaConsumerRequests {
 					break;
 				case "RemoveItem":
 					finalData = (Object) invoker.executeCommand("RemoveItem", data);
+					try{
+						CartTable cart = (CartTable) finalData;
+						data.replace("commandName", "UpdateCart");
+						data.put("cart", finalData);
+						jsonString2=objectMapper.writeValueAsString(data);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					}catch(Exception e){
+						System.out.println("Item wasn't removed");
+					}
 					break;
 				case "ChangeOrderType":
 					finalData = (Object) invoker.executeCommand("ChangeOrderType", data);
+					try{
+						CartTable cart = (CartTable) finalData;
+						data.replace("commandName", "UpdateCart");
+						data.put("cart", finalData);
+						jsonString2=objectMapper.writeValueAsString(data);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					}catch(Exception e){
+						System.out.println("Cart wasn't changed");
+					}
 					break;
 				case "ApplyPromo":
 					finalData = (Object) invoker.executeCommand("ApplyPromo", data);
+					try{
+						CartTable cart = (CartTable) finalData;
+						data.replace("commandName", "UpdateCart");
+						data.put("cart", finalData);
+						jsonString2=objectMapper.writeValueAsString(data);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					}catch(Exception e){
+						System.out.println("Promo Not Applied");
+					}
+
 					break;
 				case "AddItem":
 					finalData = (Object) invoker.executeCommand("AddItem", data);
+					try{
+						CartTable cart = (CartTable) finalData;
+						data.replace("commandName", "UpdateCart");
+						data.put("cart", finalData);
+						jsonString2=objectMapper.writeValueAsString(data);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					}catch(Exception e){
+						System.out.println("Item wasn't added");
+					}
 					break;
 				case "AddComment":
 					finalData = (Object) invoker.executeCommand("AddComment", data);
+					try{
+						CartTable cart = (CartTable) finalData;
+						data.replace("commandName", "UpdateCart");
+						data.put("cart", finalData);
+						jsonString2=objectMapper.writeValueAsString(data);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					}catch(Exception e){
+						System.out.println("Comment wasn't added");
+					}
 					break;
 			
 				case "ProceedToCheckOutCommand":
@@ -91,6 +137,9 @@ public class KafkaConsumerRequests {
 					break;
 				case "ConfirmCheckoutCommand":
 					finalData = (Object) invoker.executeCommand("ConfirmCheckoutCommand", data);
+					break;
+				case "UpdateCart":
+					finalData = (Object) invoker.executeCommand("UpdateCart", data);
 					break;
 				case "GetProductForCartCommand":
 					finalData = (Object) invoker.executeCommand("AddItem", data);
