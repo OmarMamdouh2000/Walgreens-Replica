@@ -26,7 +26,7 @@ public class KafkaConsumerResponses {
 			message=message.substring(1, message.length()-1);
 			ObjectMapper objectMapper = new ObjectMapper();
 			@SuppressWarnings("unchecked")
-			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);
+			Map<String,Object> data = objectMapper.readValue(message, Map.class);
 			switch (data.get("commandName").toString()) {
 				case "listCategoriesCase":
 					try{
@@ -142,7 +142,11 @@ public class KafkaConsumerResponses {
 						Products product = objectMapper.convertValue(data.get("data"), Products.class);
 						System.out.println("Response: " + product.toString());
 						data.put("itemPrice", product.getPrice());
-						data.put("discount", Double.parseDouble(product.getDiscount()));
+						if(product.getDiscount()!="" && !product.getDiscount().isEmpty())
+							data.put("discount", Double.parseDouble(product.getDiscount()));
+						else
+						data.put("discount", 0.0);
+						System.out.println(data);
 						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data));
 					}catch(Exception e){
 						String error = (String)data.get("data");
