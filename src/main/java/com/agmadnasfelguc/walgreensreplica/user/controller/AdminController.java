@@ -2,106 +2,78 @@ package com.agmadnasfelguc.walgreensreplica.user.controller;
 
 import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.UserRequests;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.keys.Keys;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    private final Command loginAdminCommand;
-    private final Command banAccountCommand;
-    private final Command addAdminCommand;
-    private final Command addPharmacistCommand;
-    private final Command viewUsersCommand;
-    private final Command logoutCommand;
-    private final Command unbanAccountCommand;
-
     @Autowired
-    public AdminController(Command loginAdminCommand , Command banAccountCommand , Command addAdminCommand , Command addPharmacistCommand ,Command viewUsersCommand, Command logoutCommand, Command unbanAccountCommand){
-        this.loginAdminCommand = loginAdminCommand;
-        this.banAccountCommand = banAccountCommand;
-        this.addAdminCommand = addAdminCommand;
-        this.addPharmacistCommand = addPharmacistCommand;
-        this.viewUsersCommand = viewUsersCommand;
-        this.logoutCommand = logoutCommand;
-        this.unbanAccountCommand = unbanAccountCommand;
-    }
-
+    private UserRequests userRequests;
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
-//        try {
-            ((LoginAdminCommand) loginAdminCommand).setUsername(username);
-            ((LoginAdminCommand) loginAdminCommand).setPassword(password);
-            loginAdminCommand.execute();
-            if (loginAdminCommand.getState().getStatus().toString().equals("FAILURE"))
-                return ResponseEntity.badRequest().body(loginAdminCommand.getState().getMessage());
-            return ResponseEntity.ok(loginAdminCommand.getState().getMessage());
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
-//        }
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.adminLoginPath, new HashMap<>(), Map.of(Keys.username, username, Keys.password, password)));
     }
 
     @PostMapping("/banAccount")
     public ResponseEntity<Object> banAccount(@RequestParam String sessionId, @RequestParam String userIdToBan) {
-        ((BanAccountCommand)banAccountCommand).setSessionId(sessionId);
-        ((BanAccountCommand)banAccountCommand).setUserIdToBan(userIdToBan);
-        banAccountCommand.execute();
-        return formulateResponse(banAccountCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.banAccountPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.userId, userIdToBan)));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(@RequestParam String sessionId) {
-        ((LogoutCommand)logoutCommand).setSessionId(sessionId);
-        logoutCommand.execute();
-        return formulateResponse(logoutCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
     }
 
     @PostMapping("/unbanAccount")
     public ResponseEntity<Object> unbanAccount(@RequestParam String sessionId, @RequestParam String userIdToUnban) {
-        ((UnbanAccountCommand)unbanAccountCommand).setSessionId(sessionId);
-        ((UnbanAccountCommand)unbanAccountCommand).setUserIdToUnban(userIdToUnban);
-        unbanAccountCommand.execute();
-        return formulateResponse(unbanAccountCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.unbanAccountPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.userId, userIdToUnban)));
     }
 
     @PostMapping("/addAdmin")
     public ResponseEntity<Object> addAdmin(@RequestParam String username ,@RequestParam String password, @RequestParam String sessionId) {
-        ((AddAdminCommand)addAdminCommand).setUsername(username);
-        ((AddAdminCommand)addAdminCommand).setPassword(password);
-        ((AddAdminCommand)addAdminCommand).setSessionId(sessionId);
-        addAdminCommand.execute();
-        return formulateResponse(addAdminCommand);
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, sessionId);
+        Map<String,String> bodyMap = Map.of(Keys.username, username, Keys.password, password);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.addAdminPath, paramsMap, bodyMap));
     }
 
     @PostMapping("/addPharmacist")
     public ResponseEntity<Object> addPharmacist(@RequestParam String firstName , @RequestParam String lastName , @RequestParam String email , @RequestParam String password, @RequestParam String sessionId) {
-        ((AddPharmacistCommand)addPharmacistCommand).setFirstName(firstName);
-        ((AddPharmacistCommand)addPharmacistCommand).setLastName(lastName);
-        ((AddPharmacistCommand)addPharmacistCommand).setEmail(email);
-        ((AddPharmacistCommand)addPharmacistCommand).setPassword(password);
-        ((AddPharmacistCommand)addPharmacistCommand).setSessionId(sessionId);
-        addPharmacistCommand.execute();
-        return formulateResponse(addPharmacistCommand);
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, sessionId);
+        Map<String,String> bodyMap = Map.of(Keys.firstName, firstName, Keys.lastName, lastName, Keys.email, email, Keys.password, password);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.addPharmacistPath, paramsMap, bodyMap));
     }
 
     @GetMapping("/viewUsers")
-    public ResponseEntity<List<Object>> viewUsers(@RequestParam String sessionId) {
-        ((ViewUsersCommand)viewUsersCommand).setSessionId(sessionId);
-        viewUsersCommand.execute();
-        if(viewUsersCommand.getState().getStatus().toString().equals("FAILURE"))
-            return ResponseEntity.badRequest().body(Collections.singletonList(viewUsersCommand.getState().getMessage()));
-        return ResponseEntity.ok(Collections.singletonList(((ViewUsersCommand) viewUsersCommand).getUserInfo()));
+    public ResponseEntity<Object> viewUsers(@RequestParam String sessionId) {
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.viewUsersPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
     }
 
-    private ResponseEntity<Object> formulateResponse(Command command){
-        if(command.getState().getStatus().toString().equals("FAILURE"))
-            return ResponseEntity.badRequest().body(command.getState().getMessage());
-        return ResponseEntity.ok(command.getState().getMessage());
+    private ResponseEntity<Object> formulateResponse(JsonNode response) {
+        if (response.get("status").asText().equals("Success")) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("status", response.get("status").asText());
+            responseBody.put("message", response.get("message").asText());
+            JsonNode payload = response.get("payload");
+            if (payload != null && !payload.isEmpty()) {
+                responseBody.put("payload", payload);
+            } else {
+                responseBody.put("payload", new HashMap<>());
+            }
+            return ResponseEntity.ok(responseBody);
+        }
+        return ResponseEntity.badRequest().body(response.get("message").asText());
     }
 
 }

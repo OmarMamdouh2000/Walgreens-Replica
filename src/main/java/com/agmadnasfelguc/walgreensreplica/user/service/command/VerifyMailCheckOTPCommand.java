@@ -6,6 +6,7 @@ import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResul
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.CheckOTPCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
@@ -39,34 +40,30 @@ public class VerifyMailCheckOTPCommand extends Command {
     public void execute() {
         try {
             Map<String, Object> details = sessionCache.getSessionSection(sessionId, "user");
-
-            ((CheckOTPCommand) checkOTPCommand).setEmail(String.valueOf(details.get("email")));
-            ((CheckOTPCommand) checkOTPCommand).setOtp(otp);
-            ((CheckOTPCommand) checkOTPCommand).setOtpType(OTPTypes.VERIFYMAIL);
-            checkOTPCommand.execute();
-
+            setUpCheckOtpCommandAndExecute(details);
             if (checkOTPCommand.getState().getStatus().equals(ResponseState.Failure)) {
                 this.setState(new ResponseStatus(ResponseState.Failure, checkOTPCommand.getState().getMessage()));
-                logger.error(checkOTPCommand.getState().getMessage());
-                return;
             }
 
-            Tuple result =  userRepository.verifyEmail(UUID.fromString(String.valueOf(details.get("userId"))));
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-//            System.out.println(response);
+            else{
+                Tuple result =  userRepository.verifyEmail(UUID.fromString(String.valueOf(details.get("userId"))));
+                BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
 
-            if(response.getStatus().equals(ResponseState.Failure.toString())){
-                this.setState(new ResponseStatus(ResponseState.Failure, response.getMessage()));
-                logger.error("Sending Verify Email Failed");
-                return;
             }
-            this.setState(new ResponseStatus(ResponseState.Success, response.getMessage()));
-            logger.info("Sending Verify Email Success" + response.getMessage());
-//            System.out.println(this.getState());
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            logger.error(e.getMessage());
         }
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
 
+    }
+
+    private void setUpCheckOtpCommandAndExecute(Map<String, Object> details) {
+        System.out.println("otp check");
+        System.out.println(otp);
+        ((CheckOTPCommand) checkOTPCommand).setEmail(String.valueOf(details.get("email")));
+        ((CheckOTPCommand) checkOTPCommand).setOtp(otp);
+        ((CheckOTPCommand) checkOTPCommand).setOtpType(OTPTypes.VERIFYMAIL);
+        checkOTPCommand.execute();
     }
 }

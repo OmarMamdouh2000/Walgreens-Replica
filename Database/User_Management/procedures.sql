@@ -281,7 +281,7 @@ BEGIN
     IF v_current_password = p_password THEN
         IF p_new_email IS NOT NULL THEN
             UPDATE "User"
-            SET email = p_new_email, "email_verified" = FALSE
+            SET email = p_new_email, "email_verified" = FALSE, "TwoFactorAuth_Enabled" = FALSE
             WHERE id = p_user_id;
             status := 'Success';
             message := 'Email updated successfully.';
@@ -484,7 +484,8 @@ CREATE OR REPLACE FUNCTION login(
     OUT role VARCHAR,
     OUT first_name VARCHAR,
     OUT last_name VARCHAR,
-    OUT email VARCHAR
+    OUT email VARCHAR,
+    OUT email_verified BOOLEAN
 )
 RETURNS record
 LANGUAGE plpgsql
@@ -493,8 +494,8 @@ DECLARE
     v_TwoFactorAuth_Enabled BOOLEAN;
 BEGIN
     -- Initial user check
-    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled"
-    INTO user_id, status, role, v_TwoFactorAuth_Enabled
+    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled", U."email_verified"
+    INTO user_id, status, role, v_TwoFactorAuth_Enabled, email_verified
     FROM "User" U
     WHERE U.email = p_email AND U.password = p_password;
 

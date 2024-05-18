@@ -5,6 +5,7 @@ import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResul
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import jakarta.persistence.Tuple;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -36,29 +38,21 @@ public class ChangeEmailCommand extends Command {
     public void execute() {
         try{
             String userID = String.valueOf(sessionCache.getSessionSection(sessionID,"user").get("userId"));
-            if(userID == null){
+            if(userID.equals("null")){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
-                if(this.getState().getStatus().equals(ResponseState.Failure)){
-                    logger.error(this.getState().getMessage());
+            }
+            else{
+                Tuple result = userRepository.changeEmail(UUID.fromString(userID),password,email);
+                BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
+                if(this.getState().getStatus().equals(ResponseState.Success)){
+                    sessionCache.updateSessionDetails(sessionID,"user", Map.of("email",email, "emailVerified",false));
                 }
-                return;
-            }
-            Tuple result = userRepository.changeEmail(UUID.fromString(userID),password,email);
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Success)){
-                logger.info("Email changed" + response.getMessage());
-            }
-            else if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error("Changing the email failed" +response.getMessage());
             }
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error(e.getMessage());
-            }
         }
-
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
 
     }
 }

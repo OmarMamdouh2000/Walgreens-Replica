@@ -1,11 +1,13 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.command;
 
+import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
 import com.agmadnasfelguc.walgreensreplica.user.model.enums.Gender;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import com.agmadnasfelguc.walgreensreplica.user.service.Utils.JwtUtil;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import jakarta.persistence.Tuple;
@@ -33,35 +35,29 @@ public class EditDetailsCommand extends Command {
     private String phoneNumber;
     private String extension;
 
+    @Autowired
+    private SessionCache sessionCache;
+
     Logger logger = LoggerFactory.getLogger(EditDetailsCommand.class);
 
 
     @Override
     public void execute() {
         try {
-            String userID = JwtUtil.getUserIdFromToken(sessionID);
-            if (userID == null) {
+            String userID = String.valueOf(sessionCache.getSessionSection(sessionID,"user").get("userId"));
+            if (userID.equals("null")) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
-                if(this.getState().getStatus().equals(ResponseState.Failure)){
-                    logger.error(this.getState().getMessage());
-                }
-                return;
             }
-            Tuple result = userRepository.editUser(UUID.fromString(userID), address, dateOfBirth, gender, phoneNumber, extension);
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Success)){
-                logger.info("The details changed" + response.getMessage());
+            else{
+                Tuple result = userRepository.editUser(UUID.fromString(userID), address, dateOfBirth, gender, phoneNumber, extension);
+                BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
             }
-            else if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error("Changing the details failed" +response.getMessage());
-            }
+
         }
         catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error(e.getMessage());
-            }
         }
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
     }
 }

@@ -1,221 +1,137 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.*;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
-import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.MessageCreator;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.UserRequests;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
+import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.keys.Keys;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserRegistrationRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.hibernate.sql.Template;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
-import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    private final Command registerCommand;
-    private final Command changeEmailCommand;
-    private final Command changePasswordCommand;
-    private final Command editDetailsCommand;
-
-    private final Command loginUserCommand;
-    private final Command logoutCommand;
-    private final Command twoFactorAuthLoginCommand;
-    private final Command resetPasswordCommand;
-
-    private final Command verifyMailCommand;
-
-    private final Command update2FAStatusCommand;
-
-    private final Command verifyMailCheckOTPCommand;
-
-    private final Command updatePasswordResetCommand;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, Message<Object>, Message<Object>> replyingKafkaTemplate;
+    private UserRequests userRequests;
 
     private int i=0;
-
-    @Autowired
-    public UserController(Command registerCommand, Command changeEmailCommand, Command changePasswordCommand, Command editDetailsCommand, Command loginUserCommand, Command logoutCommand, Command twoFactorAuthLoginCommand, Command resetPasswordCommand, Command verifyMailCommand, Command update2FAStatusCommand, Command verifyMailCheckOTPCommand, Command updatePasswordResetCommand) {
-        this.registerCommand = registerCommand;
-        this.changeEmailCommand = changeEmailCommand;
-        this.changePasswordCommand = changePasswordCommand;
-        this.editDetailsCommand = editDetailsCommand;
-        this.loginUserCommand = loginUserCommand;
-        this.logoutCommand = logoutCommand;
-        this.twoFactorAuthLoginCommand = twoFactorAuthLoginCommand;
-        this.resetPasswordCommand = resetPasswordCommand;
-        this.verifyMailCommand = verifyMailCommand;
-        this.update2FAStatusCommand = update2FAStatusCommand;
-        this.verifyMailCheckOTPCommand = verifyMailCheckOTPCommand;
-        this.updatePasswordResetCommand = updatePasswordResetCommand;
-    }
 
     @GetMapping("/test")
     public ResponseEntity<Object> test() throws ExecutionException, InterruptedException, JsonProcessingException {
         System.out.println(i++);
-        ObjectMapper mapper = new ObjectMapper();
-        MessageCreator messageCreator = new MessageCreator(TemplatePaths.userLoginPath, new HashMap<>(), Map.of("email", "iislamddiab2001@gmail.com", "password", "changed"));
-        ObjectNode message = (ObjectNode) messageCreator.createMessage();
-
-        RequestReplyMessageFuture<String, Message<Object>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
-							.withPayload(mapper.writeValueAsString(message))
-							.setHeader(KafkaHeaders.REPLY_TOPIC, "responseTopic")
-							.setHeader(KafkaHeaders.TOPIC, "userManagement")
-							.setHeader(KafkaHeaders.KEY, "iislamddiab2001@gmail.com")
-							.build());
-        return ResponseEntity.ok(result.get());
+        return ResponseEntity.ok(i);
     }
     @PostMapping("/registerUser")
     public ResponseEntity<Object> registerUser(@RequestBody UserRegistrationRequest request) {
-        // Assuming the request contains first name, last name, email, and password
-
-        // Set the user registration details in the command class
-        ((RegisterCommand)registerCommand).setFirstName(request.getFirstName());
-        ((RegisterCommand)registerCommand).setLastName(request.getLastName());
-        ((RegisterCommand)registerCommand).setEmail(request.getEmail());
-        ((RegisterCommand)registerCommand).setPassword(request.getPassword());
-
-        registerCommand.execute();
-        return formulateResponse(registerCommand);
+        Map<String,String> bodyMap = Map.of("email", request.getEmail(), "password", request.getPassword(), "firstName", request.getFirstName(), "lastName", request.getLastName());
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.registerPath,  new HashMap<>(), bodyMap));
     }
 
 
     @PostMapping("/changeEmail")
     public ResponseEntity<Object> changeEmail(@RequestBody UserChangeEmailRequest request) {
-        // Assuming the request contains User Id ,and email.
 
-        // Set the user registration details in the command class
-        ((ChangeEmailCommand)changeEmailCommand).setSessionID(request.getSessionId());
-        ((ChangeEmailCommand)changeEmailCommand).setEmail(request.getEmail());
-        ((ChangeEmailCommand)changeEmailCommand).setPassword(request.getPassword());
-
-        changeEmailCommand.execute();
-        return formulateResponse(changeEmailCommand);
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, request.getSessionId());
+        Map<String,String> bodyMap = Map.of(Keys.newEmail, request.getEmail(), Keys.password, request.getPassword());
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.changeEmailPath, paramsMap, bodyMap));
     }
 
     @PostMapping("/changePassword")
     public ResponseEntity<Object> changePassword(@RequestBody UserChangePasswordRequest request) {
-        // Assuming the request contains UserId ,and password.
 
-        // Set the user registration details in the command class
-        ((ChangePasswordCommand)changePasswordCommand).setSessionID(request.getSessionId());
-        ((ChangePasswordCommand)changePasswordCommand).setOldPassword(request.getOldPassword());
-        ((ChangePasswordCommand)changePasswordCommand).setNewPassword(request.getNewPassword());
-
-        changePasswordCommand.execute();
-        return formulateResponse(changePasswordCommand);
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, request.getSessionId());
+        Map<String,String> bodyMap = Map.of(Keys.oldPassword, request.getOldPassword(), Keys.newPassword, request.getNewPassword());
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.changePasswordPath, paramsMap, bodyMap));
     }
 
 
     @PostMapping("/editPersonalDetails")
     public ResponseEntity<Object> editPersonalDetails(@RequestBody UserEditRequest request) {
-        // Assuming the request contains userId, address, date of birth, gender, phone number, and password
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, request.getSessionId());
+        Map<String, String> bodyMap = new HashMap<>();
 
-        //check that the request contains all the required fields
-
-        // Set the user registration details in the command class
-        ((EditDetailsCommand)editDetailsCommand).setSessionID(request.getSessionId());
-        ((EditDetailsCommand)editDetailsCommand).setDateOfBirth(request.formatDate());
-        ((EditDetailsCommand)editDetailsCommand).setGender(request.getGender());
-        ((EditDetailsCommand)editDetailsCommand).setPhoneNumber(request.getPhoneNumber());
-        ((EditDetailsCommand)editDetailsCommand).setExtension(request.getExtension());
-        ((EditDetailsCommand)editDetailsCommand).setAddress(request.getAddress());
-
-        editDetailsCommand.execute();
-        return formulateResponse(editDetailsCommand);
-
+        if (request.getDateOfBirth() != null) {
+            bodyMap.put(Keys.dateOfBirth, request.getDateOfBirth());
+        }
+        if (request.getGender() != null) {
+            bodyMap.put(Keys.gender, request.getGender());
+        }
+        if (request.getPhoneNumber() != null) {
+            bodyMap.put(Keys.phoneNumber, request.getPhoneNumber());
+        }
+        if (request.getExtension() != null) {
+            bodyMap.put(Keys.extension, request.getExtension());
+        }
+        if (request.getAddress() != null) {
+            bodyMap.put(Keys.address, request.getAddress());
+        }
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.editDetailsPath, paramsMap, bodyMap));
 
     }
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestParam String email, @RequestParam String password) {
-        ((LoginUserCommand)loginUserCommand).setEmail(email);
-        ((LoginUserCommand)loginUserCommand).setPassword(password);
-        loginUserCommand.execute();
-        if(loginUserCommand.getState().getStatus().toString().equals("FAILURE"))
-            return ResponseEntity.badRequest().body(loginUserCommand.getState().getMessage());
-        return ResponseEntity.ok(loginUserCommand.getState().getMessage());
-
+        Map<String ,String> bodyMap = Map.of(Keys.email, email, Keys.password, password);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.userLoginPath, new HashMap<>(), bodyMap));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(@RequestParam String sessionId) {
-        ((LogoutCommand)logoutCommand).setSessionId(sessionId);
-        logoutCommand.execute();
-        return formulateResponse(logoutCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
     }
 
     @PostMapping("/twoFactorAuthLogin")
-    public ResponseEntity<Object> twoFactorAuthLogin(@RequestParam String email, @RequestParam String OTP, @RequestParam String userId, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String role) {
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setEmail(email);
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setOtp(OTP);
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setUserId(userId);
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setFirstName(firstName);
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setLastName(lastName);
-        ((TwoFactorAuthLoginCommand)twoFactorAuthLoginCommand).setRole(role);
-        twoFactorAuthLoginCommand.execute();
-        return formulateResponse(twoFactorAuthLoginCommand);
+    public ResponseEntity<Object> twoFactorAuthLogin(@RequestParam String email, @RequestParam String otp, @RequestParam String userId, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String role, @RequestParam String emailVerified) {
+        Map<String,String> paramsMap = Map.of(Keys.userId, userId);
+        Map<String,String> bodyMap = Map.of(Keys.email, email, Keys.otp, otp, Keys.firstName, firstName, Keys.lastName, lastName, Keys.role, role, Keys.emailVerified, emailVerified);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.twoFactorAuthLoginPath, paramsMap, bodyMap));
     }
 
     @PostMapping("/verifyMailCheckOtp")
     public ResponseEntity<Object> verifyMailCheckOtp(@RequestParam String sessionId, @RequestParam String otp) {
-        ((VerifyMailCheckOTPCommand)verifyMailCheckOTPCommand).setSessionId(sessionId);
-        ((VerifyMailCheckOTPCommand)verifyMailCheckOTPCommand).setOtp(otp);
-        verifyMailCheckOTPCommand.execute();
-        return formulateResponse(verifyMailCheckOTPCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.verifyMailCheckOtpPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.otp, otp)));
     }
 
     @PostMapping("/updatePasswordReset")
     public ResponseEntity<Object> updatePasswordReset(@RequestParam String email, @RequestParam String password, @RequestParam String otp) {
-        ((UpdatePasswordResetCommand)updatePasswordResetCommand).setEmail(email);
-        ((UpdatePasswordResetCommand)updatePasswordResetCommand).setPassword(password);
-        ((UpdatePasswordResetCommand)updatePasswordResetCommand).setOtp(otp);
-        updatePasswordResetCommand.execute();
-        return formulateResponse(updatePasswordResetCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.resetPasswordCheckOtpPath, new HashMap<>(), Map.of(Keys.email, email, Keys.newPassword, password, Keys.otp, otp)));
     }
 
     @PostMapping("/resetPassword")
     public ResponseEntity<Object> resetPassword(@RequestParam String email) {
-        ((ResetPasswordCommand)resetPasswordCommand).setEmail(email);
-        resetPasswordCommand.execute();
-        return formulateResponse(resetPasswordCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.resetPasswordPath, new HashMap<>(), Map.of(Keys.email, email)));
     }
 
     @PostMapping("/verifyMail")
     public ResponseEntity<Object> verifyMail(@RequestParam String sessionId) {
-        ((VerifyMailCommand)verifyMailCommand).setSessionId(sessionId);
-        verifyMailCommand.execute();
-        return formulateResponse(verifyMailCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.verifyMailPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
     }
 
     @PostMapping("/update2FAStatus")
     public ResponseEntity<Object> update2FAStatus(@RequestParam String sessionId, @RequestParam boolean status) {
-        ((Update2FAStatusCommand)update2FAStatusCommand).setSessionId(sessionId);
-        ((Update2FAStatusCommand)update2FAStatusCommand).setTwoFAEnabled(status);
-        update2FAStatusCommand.execute();
-        return formulateResponse(update2FAStatusCommand);
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.update2FAStatusPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.status, String.valueOf(status))));
     }
 
-    private ResponseEntity<Object> formulateResponse(Command command){
-        if(command.getState().getStatus().equals(ResponseState.Failure))
-            return ResponseEntity.badRequest().body(command.getState().getMessage());
-        return ResponseEntity.ok(command.getState().getMessage());
+    private ResponseEntity<Object> formulateResponse(JsonNode response) {
+        if (response.get("status").asText().equals("Success")||response.get("status").asText().equals("Pending")) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("status", response.get("status").asText());
+            responseBody.put("message", response.get("message").asText());
+            JsonNode payload = response.get("payload");
+            if (payload != null && !payload.isEmpty()) {
+                responseBody.put("payload", payload);
+            } else {
+                responseBody.put("payload", new HashMap<>());
+            }
+            return ResponseEntity.ok(responseBody);
+        }
+        return ResponseEntity.badRequest().body(response.get("message").asText());
     }
 }

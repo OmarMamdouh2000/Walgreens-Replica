@@ -38,7 +38,7 @@ public class GenerateOTPCommand extends Command {
 
         try{
             String otp = OTPGenerator.generateOTP();
-            sessionCache.storeOtp(email, otpType, otp, 5, java.util.concurrent.TimeUnit.MINUTES);
+            sessionCache.storeOtp(email, otpType, otp, 10, java.util.concurrent.TimeUnit.MINUTES);
 
             logger.info("OTP generated");
             //block 1

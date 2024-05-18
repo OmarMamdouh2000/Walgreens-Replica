@@ -4,7 +4,7 @@ import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.AdminRepository;
-import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import jakarta.persistence.Tuple;
@@ -40,36 +40,24 @@ public class BanAccountCommand extends Command {
     @Override
     public void execute() {
         try{
-            String role = String.valueOf(sessionCache.getSessionSection(sessionId,"user").get("role"));
-            if (role == null) {
+            String role = String.valueOf(sessionCache.getAdminSessionDetails(sessionId).get("role"));
+            if (role.equals("null")) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
-                if(this.getState().getStatus().equals(ResponseState.Failure)){
-                    logger.error(this.getState().getMessage());
+            }
+            else{
+                if (!role.equals("admin")) {
+                    this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session Type"));
                 }
-                return;
-            }
-            if (!role.equals("admin")) {
-                this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session Type"));
-                if(this.getState().getStatus().equals(ResponseState.Failure)){
-                    logger.error(this.getState().getMessage());
+                else {
+                    Tuple result = adminRepository.banAccount(UUID.fromString(userIdToBan));
+                    BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                    this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
                 }
-                return;
-            }
-            Tuple result = adminRepository.banAccount(UUID.fromString(userIdToBan));
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Success)){
-                logger.info("Account Got banned" + response.getMessage());
-            }
-            else if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error("Banning the account failed" +response.getMessage());
             }
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error(e.getMessage());
-            }
         }
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
     }
 
 

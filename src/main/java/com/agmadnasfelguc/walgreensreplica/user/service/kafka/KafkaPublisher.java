@@ -12,13 +12,13 @@ public class KafkaPublisher {
 
     Logger logger = LoggerFactory.getLogger(KafkaPublisher.class);
     @Autowired
-    private KafkaTemplate<String, Message<Object>> kafkaTemplate;
+    private KafkaTemplate<String, Message<String>> kafkaTemplate;
 
-    public KafkaPublisher(KafkaTemplate<String, Message<Object>> kafkaTemplate) {
+    public KafkaPublisher(KafkaTemplate<String, Message<String>> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publish(Message<Object> message){
+    public void publish(Message<String> message){
         kafkaTemplate.send(message);
         logger.info("Sending Message: " + message);
     }

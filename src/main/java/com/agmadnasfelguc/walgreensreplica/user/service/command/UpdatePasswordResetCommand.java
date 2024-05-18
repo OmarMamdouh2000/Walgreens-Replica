@@ -5,6 +5,7 @@ import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResul
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.CheckOTPCommand;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
@@ -32,31 +33,26 @@ public class UpdatePasswordResetCommand extends Command {
     @Override
     public void execute() {
         try {
-            ((CheckOTPCommand) checkOTPCommand).setEmail(email);
-            ((CheckOTPCommand) checkOTPCommand).setOtp(otp);
-            ((CheckOTPCommand) checkOTPCommand).setOtpType(OTPTypes.RESETPASSWORD);
-            checkOTPCommand.execute();
-
+            setUpCheckOtpCommandAndExecute();
             if (checkOTPCommand.getState().getStatus().equals(ResponseState.Failure)) {
                 this.setState(new ResponseStatus(ResponseState.Failure, checkOTPCommand.getState().getMessage()));
-                logger.error(checkOTPCommand.getState().getMessage());
-                return;
             }
-
-            Tuple result = userRepository.updatePassword(email, password);
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-
-            if(response.getStatus().equals(ResponseState.Failure.toString())){
-                this.setState(new ResponseStatus(ResponseState.Failure, response.getMessage()));
-                logger.error("Error updating password");
-                return;
+            else{
+                Tuple result = userRepository.updatePassword(email, password);
+                BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
             }
-            this.setState(new ResponseStatus(ResponseState.Success, response.getMessage()));
-            logger.info("Successfully updated password" + response.getMessage());
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            logger.error(e.getMessage());
         }
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
+    }
+
+    private void setUpCheckOtpCommandAndExecute() {
+        ((CheckOTPCommand) checkOTPCommand).setEmail(email);
+        ((CheckOTPCommand) checkOTPCommand).setOtp(otp);
+        ((CheckOTPCommand) checkOTPCommand).setOtpType(OTPTypes.RESETPASSWORD);
+        checkOTPCommand.execute();
     }
 
 }

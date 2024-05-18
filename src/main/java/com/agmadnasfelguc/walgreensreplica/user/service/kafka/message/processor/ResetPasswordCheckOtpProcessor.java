@@ -12,7 +12,7 @@ public class ResetPasswordCheckOtpProcessor extends Processor {
         UpdatePasswordResetCommand typeCastedCommand = (UpdatePasswordResetCommand) getCommand();
         Map<String,String> messageInfo = getMessageInfo().get(Keys.body);
         typeCastedCommand.setOtp(messageInfo.get(Keys.otp));
-        typeCastedCommand.setPassword(messageInfo.get(Keys.email));
-        typeCastedCommand.setPassword(messageInfo.get(Keys.password));
+        typeCastedCommand.setEmail(messageInfo.get(Keys.email));
+        typeCastedCommand.setPassword(messageInfo.get(Keys.newPassword));
     }
 }

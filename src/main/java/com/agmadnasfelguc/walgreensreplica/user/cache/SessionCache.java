@@ -20,11 +20,24 @@ public class SessionCache {
         redisTemplate.expire(sessionId, timeout, unit);
     }
 
+    public void updateSessionDetails(String sessionId, String section, Map<String, Object> sessionDetails) {
+        Map<String,Object> oldSessionDetails = getSessionSection(sessionId, section);
+        oldSessionDetails.putAll(sessionDetails);
+        storeSessionSectionNoTimeout(sessionId, section, oldSessionDetails);
+    }
+
     private void storeSessionSection(String sessionId, String section, Map<String, Object> data, long timeout, TimeUnit unit) {
-        String sectionKey = buildSectionKey(sessionId, section); // Construct the full Redis key for the section
+        String sectionKey = buildSectionKey(sessionId, section);
         data.forEach((key, value) ->
                 redisTemplate.opsForHash().put(sectionKey, key, value));
-        redisTemplate.expire(sectionKey, timeout, unit); // Apply expiration to the section key
+        redisTemplate.expire(sectionKey, timeout, unit);
+    }
+
+    private void storeSessionSectionNoTimeout(String sessionId, String section, Map<String, Object> data) {
+        String sectionKey = buildSectionKey(sessionId, section);
+        data.forEach((key, value) ->
+                redisTemplate.opsForHash().put(sectionKey, key, value));
+
     }
 
     public Map<String, Object> getSessionSection(String sessionId, String section) {
@@ -50,6 +63,7 @@ public class SessionCache {
         // This method assumes deletion of all sections related to the sessionId
         deleteSessionSection(sessionId, "user");
         deleteSessionSection(sessionId, "cart");
+        redisTemplate.delete(sessionId);
         // Add more sections as necessary
     }
 
@@ -69,6 +83,14 @@ public class SessionCache {
         sessionDetails.put("role", "admin");
         sessionDetails.put("username", username);
         storeSessionWithDetails(sessionId, sessionDetails, 10, TimeUnit.HOURS);
+    }
+
+    public Map<String, Object> getAdminSessionDetails(String sessionId){
+        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries(sessionId);
+        Map<String, Object> data = new HashMap<>();
+        rawMap.forEach((key, value) ->
+                data.put(String.valueOf(key), value));
+        return data;
     }
 
     // Helper method to construct a Redis key for a given session and section

@@ -32,27 +32,27 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, Message<Object>> producerFactory() {
+    public ProducerFactory<String, Message<String>> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
     @Bean
-    public KafkaTemplate<String, Message<Object>> kafkaTemplate(
-            ProducerFactory<String, Message<Object>> producerFactory
+    public KafkaTemplate<String, Message<String>> kafkaTemplate(
+            ProducerFactory<String, Message<String>> producerFactory
     ) {
         return new KafkaTemplate<>(producerFactory);
     }
 
     @Bean
-    public ReplyingKafkaTemplate<String, Message<Object>, Message<Object>> replyKafkaTemplate(
-            ProducerFactory<String, Message<Object>> producerFactory,
-            KafkaMessageListenerContainer<String, Message<Object>> replyContainer
+    public ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyKafkaTemplate(
+            ProducerFactory<String, Message<String>> producerFactory,
+            KafkaMessageListenerContainer<String, Message<String>> replyContainer
     ) {
         return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
     }
 
     @Bean
-    public KafkaMessageListenerContainer<String, Message<Object>> replyContainer(ConsumerFactory<String, Object> cf) {
+    public KafkaMessageListenerContainer<String, Message<String>> replyContainer(ConsumerFactory<String, Message<String>> cf) {
         ContainerProperties containerProperties = new ContainerProperties("responseTopic");
         containerProperties.setGroupId("user");
         return new KafkaMessageListenerContainer<>(cf, containerProperties);

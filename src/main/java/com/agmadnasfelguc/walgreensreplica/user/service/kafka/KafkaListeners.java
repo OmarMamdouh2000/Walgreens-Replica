@@ -31,6 +31,7 @@ public class KafkaListeners {
             System.out.println("Received message: " + rootNode);
             if (rootNode instanceof ObjectNode objectNode) {
                 objectNode.put("correlationId", correlationIdBytes);
+                objectNode.put("replyTopic", replyTopic);
                 logger.info("Received message" + rootNode);
                 userInvoker.callCommand(objectNode);
             } else {

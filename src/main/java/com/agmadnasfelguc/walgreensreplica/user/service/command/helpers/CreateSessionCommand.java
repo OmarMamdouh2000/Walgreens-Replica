@@ -25,6 +25,7 @@ public class CreateSessionCommand extends Command {
     private String sessionId;
     private String firstName;
     private String lastName;
+    private boolean emailVerified;
 
     @Autowired
     private SessionCache sessionCache;
@@ -34,14 +35,10 @@ public class CreateSessionCommand extends Command {
     public void execute() {
         try{
             this.sessionId = JwtUtil.generateToken(userId);
-            Map<String,Object> userMap  = Map.of("userId",userId,"role",role,"email",email,"firstName",firstName,"lastName",lastName);
+            Map<String,Object> userMap  = Map.of("userId",userId,"role",role,"email",email,"firstName",firstName,"lastName",lastName, "emailVerified",emailVerified);
             sessionCache.createSession(sessionId,"user",userMap);
             this.setState(new ResponseStatus(ResponseState.Success, "Session Created"));
-            if(this.getState().getStatus().equals(ResponseState.Success)){
-                logger.info("Session Created");
-            }else if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error("Failed to create session");
-            }
+            logger.info("Session Created");
         }catch(Exception e){
             logger.error(e.getMessage());
         }

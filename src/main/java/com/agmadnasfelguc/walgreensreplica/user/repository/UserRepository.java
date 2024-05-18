@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    @Query(value = "SELECT user_id AS user_id, status AS status, message AS message, role AS role, first_name AS first_name, last_name AS last_name, email AS email FROM login(:p_email, :p_password)", nativeQuery = true)
+    @Query(value = "SELECT user_id AS user_id, status AS status, message AS message, role AS role, first_name AS first_name, last_name AS last_name, email AS email, email_verified AS email_verified FROM login(:p_email, :p_password)", nativeQuery = true)
     Tuple loginUser(@Param("p_email") String email,
                     @Param("p_password") String password);
 

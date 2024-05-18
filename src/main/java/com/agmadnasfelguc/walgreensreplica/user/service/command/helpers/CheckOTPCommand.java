@@ -30,13 +30,14 @@ public class CheckOTPCommand extends Command {
             String storedOtp = sessionCache.getOtp(email, otpType);
             if (storedOtp == null || !storedOtp.equals(otp)) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid OTP"));
-                logger.error("Invalid OTP");
+                logger.error("Invalid OTP: " + otp);
                 return;
             }
             sessionCache.deleteOtp(email, otpType);
             this.setState(new ResponseStatus(ResponseState.Success, "OTP Verified"));
             logger.info("OTP Verified");
         }catch(Exception e){
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
 

@@ -4,6 +4,7 @@ import com.agmadnasfelguc.walgreensreplica.user.cache.SessionCache;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.BasicResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.BasicResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import jakarta.persistence.Tuple;
@@ -42,24 +43,18 @@ public class Update2FAStatusCommand extends Command {
     public void execute() {
         try{
             String userID = String.valueOf(sessionCache.getSessionSection(sessionId,"user").get("userId"));
-            if (userID == null) {
+            if (userID.equals("null")) {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
-                logger.info(this.getState().getMessage());
-                return;
             }
-
-            Tuple result = userRepository.update2FAStatus(UUID.fromString(userID),twoFAEnabled);
-            BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Success)){
-                logger.info("2FA Status Updated" + response.getMessage());
-            }else if(this.getState().getStatus().equals(ResponseState.Failure)){
-                logger.error("Updating 2FA Status failed"+response.getStatus());
+            else{
+                Tuple result = userRepository.update2FAStatus(UUID.fromString(userID),twoFAEnabled);
+                BasicResult response = BasicResultConverter.convertTupleToBasicResult(result);
+                this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
             }
         } catch (Exception e) {
             this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            logger.error(this.getState().getMessage());
         }
+        ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
     }
 
 
