@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class KafkaConsumerResponses {
 	@Autowired
 	KafkaProducer kafkaProducer;
-
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerResponses.class);
 	@KafkaListener(topics="cartResponses",groupId = "KafkaGroupResponse")
 	public void consumeMessage(String message) {
 		try{
@@ -30,7 +30,7 @@ public class KafkaConsumerResponses {
 				case "UpdateItemCountCommand", "AddToSavedForLater", "ReturnFromSavedForLater",
                      "ProceedToCheckOutCommand", "ConfirmCheckoutCommand", "AddToSavedForLaterCache",
                      "ReturnFromSavedForLaterCache", "UpdateItemCountCommandCache", "UpdateCart":
-					System.out.println("Response: "+data.get("data"));
+					logger.info("Response: "+data.get("data"));
 					break;
                 case "GetUserCart", "RemoveItem", "ChangeOrderType", "ApplyPromo", "AddItem", "AddComment":
 
