@@ -46,6 +46,8 @@ public class AddItem implements Command{
 
         double itemPrice = (double) data.get("itemPrice");
         String deliveryType = (String) data.get("deliveryType");
+        double discount = (double) data.get("discount");
+        itemPrice = itemPrice * (1 - discount / 100);
 
         UUID userId = UUID.fromString(user);
 
