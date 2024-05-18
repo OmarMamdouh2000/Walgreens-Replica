@@ -4,6 +4,8 @@ import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ApplyPromo implements Command{
@@ -41,7 +44,9 @@ public class ApplyPromo implements Command{
     }
 
     @Override
-    public Object execute(Map<String,Object> data) throws Exception {        
+    public Object execute(Map<String,Object> data) throws Exception {
+        String sessionId = (String) data.get("sessionId");
+
         String user=(String)data.get("userId");
         UUID userID = UUID.fromString(user);
 
@@ -53,21 +58,21 @@ public class ApplyPromo implements Command{
         if (promo == null) {
             return "Promo not found";
         }else {
+            CartTable userCart;
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
 
-            CartTable userCart = cartRepo.getCart(userID);
+            if(!cachedCart.isEmpty()) userCart = objectMapper.convertValue(cachedCart, CartTable.class);
+            else userCart = cartRepo.getCart(userID);
 
-            if (userCart == null) {
-                return "Cart not found";
-            }
-
-            if( Objects.equals(userCart.getAppliedPromoCodeId(), ' ') || Objects.equals(userCart.getAppliedPromoCodeId(), promoCode)){
-                return "Promo already applied";
-            }
+            if (userCart == null) return "Cart not found";
 
             //check if promo is in userUsedPromos --> if so return invalid
             UserUsedPromo isUsed = userUsedPromoRepo.findUserPromo(userID, promoCode);
 
-            if (isUsed != null) {
+            if(!Objects.equals(userCart.getAppliedPromoCodeId(), ' ') && userCart.getPromoCodeAmount() != 0){
+                return "Promo already applied";
+            } else if (isUsed != null) {
                 return "Promo already used";
             } else if (!promo.isValid()) {
                 return "Promo not valid";
@@ -88,11 +93,11 @@ public class ApplyPromo implements Command{
                 //add promo to userUsedPromos
                 userUsedPromoRepo.insertUserPromo(userID, promoCode);
 
-                cartRepo.updateCartPromo(promoCode, promoAmount, newAmount, userCart.getId());
+                String jsonString = objectMapper.writeValueAsString(userCart);
+                Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+                sessionCache.updateSessionSection(sessionId, "cart", map, 10, TimeUnit.HOURS);
 
-                CartTable newCart = cartRepo.getCart(userID);
-
-                return newCart;
+                return userCart;
             }
         }
 

@@ -53,6 +53,7 @@ public class Invoker {
         commandMap.put("AddComment", "com.example.Commands.AddComment");
         commandMap.put("ProceedToCheckOutCommand", "com.example.Commands.ProceedToCheckOutCommand");
         commandMap.put("ConfirmCheckoutCommand", "com.example.Commands.ConfirmCheckoutCommand");
+        commandMap.put("UpdateCart", "com.example.Commands.UpdateCart");
 
 
     }

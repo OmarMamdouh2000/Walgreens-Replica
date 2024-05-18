@@ -3,6 +3,8 @@ package com.example.Commands;
 import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AddItem implements Command{
@@ -37,9 +40,11 @@ public class AddItem implements Command{
     }
     @Override
     public Object execute(Map<String, Object> data) throws Exception {
+        String sessionId = (String) data.get("sessionId");
+
         //TODO: data is the product from products
         String user=(String)data.get("userId");
-
+        UUID userId = UUID.fromString(user);
 
         String itemId = (String) data.get("itemId");
         int itemCount = (int) data.get("itemCount");
@@ -47,10 +52,14 @@ public class AddItem implements Command{
         double itemPrice = (double) data.get("itemPrice");
         String deliveryType = (String) data.get("deliveryType");
 
-        UUID userId = UUID.fromString(user);
+        CartTable Cart;
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
 
-        CartTable Cart = cartRepo.getCart(userId);
-        UUID cartId = Cart.getId();
+        if(!cachedCart.isEmpty()) Cart = objectMapper.convertValue(cachedCart, CartTable.class);
+        else Cart = cartRepo.getCart(userId);
+
+        if (Cart == null) return "Cart not found";
 
         List<CartItem> Cart_Items = Cart.getItems();
         CartItem first_item = Cart_Items.get(0);
@@ -71,6 +80,7 @@ public class AddItem implements Command{
             }else{
                 newTotal += itemCount*itemPrice;
             }
+            Cart.setTotalAmount(newTotal);
         }
         else {
             CartItem item_to_be_added = new CartItem();
@@ -85,9 +95,13 @@ public class AddItem implements Command{
             }else{
                 newTotal += itemCount*itemPrice;
             }
+            Cart.setTotalAmount(newTotal);
         }
 
-        cartRepo.updateCartItems(Cart_Items, cartId, newTotal);
-        return cartRepo.getCart(userId);
+        String jsonString = objectMapper.writeValueAsString(Cart);
+        Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+        sessionCache.updateSessionSection(sessionId, "cart", map, 10, TimeUnit.HOURS);
+
+        return Cart;
     }
 }

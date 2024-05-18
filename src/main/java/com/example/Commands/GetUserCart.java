@@ -40,20 +40,34 @@ public class GetUserCart implements Command {
     @Override
     @SuppressWarnings("unchecked")
     public Object execute(Map<String,Object> data) throws Exception {
+        String sessionId = (String) data.get("sessionId");
 
         String user = (String)data.get("userId");
         UUID userId = UUID.fromString(user);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        CartTable userCart;
+        Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
+
+        if(!cachedCart.isEmpty()){
+            System.out.println("Cart from Cache");
+            userCart = objectMapper.convertValue(cachedCart, CartTable.class);
+            return userCart;
+        }
+
         try{
-            CartTable userCart = cartRepo.getCart(userId);
+            userCart = cartRepo.getCart(userId);
             if(userCart == null){
                 userCart = cartRepo.createNewCart(userId);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
+
             String jsonString = null;
             jsonString = objectMapper.writeValueAsString(userCart);
-            System.out.println("before:   " + jsonString);
+
             Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
             sessionCache.createSession((String)data.get("sessionId"), "cart", map);
+
             return userCart;
 
         }catch (Exception e){

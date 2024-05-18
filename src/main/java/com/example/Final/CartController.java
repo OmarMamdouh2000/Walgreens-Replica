@@ -42,7 +42,7 @@ public class CartController {
 	@GetMapping("/storeSessionUser")
 	public void storeSessionUser(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "user", Map.of("userId", "e0036741-4913-499a-aad4-1c90d40b4a77", "email", "ziad@gmail", "username", "ziad"));
+		sessionCache.createSession("1234", "user", Map.of("userId", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "email", "ziad@gmail", "username", "ziad"));
 	}
 
 	@GetMapping("/storeSessionCart")
@@ -135,6 +135,7 @@ public class CartController {
 	@PostMapping("/removeItem")
 	public Object removeItemFromCart(@RequestParam String sessionId ,@RequestBody Map<String, Object> data) throws Exception {
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "RemoveItem");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -152,6 +153,7 @@ public class CartController {
 	@PostMapping("/changeOrderType")
 	public Object setOrderType(@RequestParam String sessionId, @RequestBody Map<String, Object> data) throws Exception{
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ChangeOrderType");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -170,6 +172,7 @@ public class CartController {
 	@PostMapping("/applyPromo")
 	public Object applyPromo(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ApplyPromo");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -190,6 +193,7 @@ public class CartController {
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		//TODO: Publish To Product Service Kafka
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "AddItem");
 		// Pobject pobject = new Pobject(UUID.fromString(""), "Product1", "url1", "brand1", 1.20, "10");
@@ -212,6 +216,7 @@ public class CartController {
 	@PostMapping("/addComment")
 	public Object addComment(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "AddComment");
 		ObjectMapper objectMapper = new ObjectMapper();

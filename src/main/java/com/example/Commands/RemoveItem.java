@@ -4,6 +4,8 @@ import com.example.Cache.SessionCache;
 import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +40,7 @@ public class RemoveItem implements Command{
 
     @Override
     public Object execute(Map<String,Object> data) throws Exception {
+        String sessionId = (String) data.get("sessionId");
 
         String user = (String)data.get("userId");
         UUID userId = UUID.fromString(user);
@@ -44,7 +48,13 @@ public class RemoveItem implements Command{
         String itemString = (String)data.get("itemId");
         UUID itemId = UUID.fromString(itemString);
 
-        CartTable userCart = cartRepo.getCart(userId);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        CartTable userCart;
+        Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
+
+        if(!cachedCart.isEmpty()) userCart = objectMapper.convertValue(cachedCart, CartTable.class);
+        else userCart = cartRepo.getCart(userId);
 
         if(userCart != null){
             CartItem toBeDeleted = userCart.getItems().stream()
@@ -61,9 +71,12 @@ public class RemoveItem implements Command{
 
             userCart.setItems(updatedItems);
             userCart.setTotalAmount(userCart.getTotalAmount() - priceRemove);
-            cartRepo.updateCartItems(userCart.getItems(), userCart.getId(), userCart.getTotalAmount());
 
-            return cartRepo.getCart(userId);
+            String jsonString = objectMapper.writeValueAsString(userCart);
+            Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+            sessionCache.updateSessionSection(sessionId, "cart", map, 10, TimeUnit.HOURS);
+
+            return userCart;
         }else{
             return "Cart not found";
         }
