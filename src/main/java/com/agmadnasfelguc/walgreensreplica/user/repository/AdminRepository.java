@@ -31,4 +31,7 @@ public interface AdminRepository extends JpaRepository<Admin, UUID>{
                    @Param("p_last_name") String lastName,
                    @Param("p_email") String email,
                    @Param("p_password") String password);
+
+    @Query(value = "SELECT * FROM get_all_users()", nativeQuery = true)
+    List<Tuple> getAllUsers();
 }

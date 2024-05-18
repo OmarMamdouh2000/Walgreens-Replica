@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -41,14 +43,26 @@ public class FirebaseService {
     }
 
     public String getPhotoUrl(String id) {
-        // Assuming the photo URL is constructed based on the ID
         String photoURL = "";
-        try{
-            photoURL =  "https://storage.googleapis.com/walgreens-replica.appspot.com/photos/" + id ;
-        }catch(Exception e){
-            logger.error(e.getMessage());
+        try {
+            BlobId blobId = BlobId.of("walgreens-replica.appspot.com", "photos/" + id);
+            Blob blob = storage.get(blobId);
+
+            if (blob != null) {
+                URL signedUrl = storage.signUrl(
+                        BlobInfo.newBuilder(blobId).build(),
+                        7, // URL expiration in days
+                        TimeUnit.DAYS,
+                        Storage.SignUrlOption.withV4Signature()
+                );
+                photoURL = signedUrl.toString();
+                logger.info("Signed URL: " + photoURL);
+            } else {
+                throw new StorageException(404, "Photo not found");
+            }
+        } catch (StorageException e) {
+            logger.error("Failed to get signed URL", e);
         }
         return photoURL;
-
     }
 }

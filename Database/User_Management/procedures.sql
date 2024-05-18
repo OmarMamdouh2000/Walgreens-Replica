@@ -550,7 +550,7 @@ $$;
 
 
 
--- Function: Login_Admin
+-- Function: get_all_users
 /*
 Description: Authenticates an administrator login attempt by verifying username and password.
 Parameters:
@@ -558,31 +558,100 @@ Parameters:
 - password: Password provided by the administrator attempting to log in (VARCHAR).
 Returns: Status message indicating the outcome of the login attempt (VARCHAR).
 */
-CREATE OR REPLACE FUNCTION login_admin(
-    p_username VARCHAR,
-    p_password VARCHAR,
-    OUT admin_id UUID,
-    OUT status VARCHAR,
-    OUT message VARCHAR
+-- Function: get_all_users
+/*
+Description: Authenticates an administrator login attempt by verifying username and password.
+Parameters:
+- username: Username of the administrator attempting to log in (VARCHAR).
+- password: Password provided by the administrator attempting to log in (VARCHAR).
+Returns: Status message indicating the outcome of the login attempt (VARCHAR).
+*/
+CREATE OR REPLACE FUNCTION get_all_users()
+RETURNS TABLE(
+    user_id UUID,
+    email VARCHAR,
+    "role" "Role",
+    "status" "Status",
+    email_verified BOOLEAN,
+    "TwoFactorAuth_Enabled" BOOLEAN,
+    first_name VARCHAR,
+    last_name VARCHAR,
+    address VARCHAR,
+    date_of_birth DATE,
+    "gender" "Gender",
+    phone_number VARCHAR,
+    "extension" VARCHAR
 )
-RETURNS record
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    SELECT A.id
-    INTO admin_id
-    FROM "Administrator" A
-    WHERE A.username = p_username AND A.password = p_password;
+    RETURN QUERY
+    SELECT
+        u.id AS user_id,
+        u.email,
+        u.role,
+        u.status,
+        u.email_verified,
+        u."TwoFactorAuth_Enabled",
+        COALESCE(c.first_name, p.first_name, '') AS first_name,
+        COALESCE(c.last_name, p.last_name, '') AS last_name,
+        COALESCE(c.address, '') AS address,
+        COALESCE(c.date_of_birth, '') AS date_of_birth,
+        COALESCE(c.gender, '') AS gender,
+        COALESCE(pn.number, '') AS phone_number,
+        COALESCE(pn.extension, '') AS extension
+    FROM "User" u
+    LEFT JOIN "Customer" c ON u.id = c.id
+    LEFT JOIN "Pharmacist" p ON u.id = p.id
+    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id;
+END;
+$$;
 
-    IF NOT FOUND THEN
-        status := 'Failure';
-        message := 'Wrong Email or Password';
-        admin_id := NULL;
-    ELSE
-        status := 'Success';
-        message := 'Logged in successfully';
-    END IF;
 
+
+-- Function: get_user_details
+/*
+Description: Retrieves the details of all users.
+Returns: A record containing the user's personal details.
+*/
+CREATE OR REPLACE FUNCTION get_all_users()
+RETURNS TABLE(
+    user_id UUID,
+    email VARCHAR,
+    role Role,
+    status Status,
+    email_verified BOOLEAN,
+    two_factor_auth_enabled BOOLEAN,
+    first_name VARCHAR,
+    last_name VARCHAR,
+    address VARCHAR,
+    date_of_birth DATE,
+    gender Gender,
+    phone_number VARCHAR,
+    extension VARCHAR
+)
+BEGIN
+    RETURN QUERY
+    LANGUAGE plpgsql
+    AS $$
+    SELECT
+        u.id AS user_id,
+        u.email,
+        u.role,
+        u.status,
+        u.email_verified,
+        u.TwoFactorAuth_Enabled,
+        COALESCE(c.first_name, p.first_name, '') AS first_name,
+        COALESCE(c.last_name, p.last_name, '') AS last_name,
+        COALESCE(c.address, '') AS address,
+        c.date_of_birth,
+        c.gender,
+        COALESCE(pn.number, '') AS phone_number,
+        COALESCE(pn.extension, '') AS extension
+    FROM "User" u
+    LEFT JOIN "Customer" c ON u.id = c.id
+    LEFT JOIN "Pharmacist" p ON u.id = p.id
+    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id;
 END;
 $$;
 
