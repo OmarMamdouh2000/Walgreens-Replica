@@ -17,7 +17,7 @@ public class KafkaConsumerRequests {
 	@Autowired
 	KafkaProducer kafkaProducer;
 	
-	@KafkaListener(topics="ProductsRequests",groupId = "KafkaGroupRequest")
+	@KafkaListener(topics="ProductsRequests",groupId = "KafkaGroupRequestProduct")
 	public void consumeMessage(String message) {
 		try {
 			System.out.println("Request: "+message);
@@ -27,7 +27,7 @@ public class KafkaConsumerRequests {
 			@SuppressWarnings("unchecked")
 			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);
 			Map<String,Object> result = new HashMap<>();
-			result.put("commandName", data.get("commandName").toString());
+			result.putAll(data);
 			Object finalData="";
 			switch (data.get("commandName").toString()) {
 				
@@ -88,6 +88,9 @@ public class KafkaConsumerRequests {
 					break;
 				case "updateBrandCase":
 					finalData= (String) invoker.executeCommand("updateBrandCommand", data.get("parameter"), data);
+					break;
+				case "GetProductForCartCommand":
+					finalData= (Object) invoker.executeCommand("getProductCommand", data.get("itemId"), null);
 					break;
 			}
 			result.put("data", finalData);

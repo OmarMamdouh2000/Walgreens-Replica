@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class KafkaConsumerResponses {
-
-	@KafkaListener(topics="ProductsResponses",groupId = "KafkaGroupResponse")
+	@Autowired
+	public KafkaProducer kafkaProducer;
+	
+	@KafkaListener(topics="ProductsResponses",groupId = "KafkaGroupResponseProduct")
 	public void consumeMessage(String message) {
 		try{
 			message=message.replace("\\", "");
@@ -133,6 +136,18 @@ public class KafkaConsumerResponses {
 					break;
 				case "updateBrandCase":
 					System.out.println("Response: "+data.get("data"));
+					break;
+				case "GetProductForCartCommand":
+					try{
+						Products product = objectMapper.convertValue(data.get("data"), Products.class);
+						System.out.println("Response: " + product.toString());
+						data.put("itemPrice", product.getPrice());
+						data.put("discount", Double.parseDouble(product.getDiscount()));
+						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data));
+					}catch(Exception e){
+						String error = (String)data.get("data");
+						System.out.println("Response: "+error);
+					}
 					break;
 				default:
 					break;
