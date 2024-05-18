@@ -191,14 +191,12 @@ public class CartController {
 
 	@PostMapping("/addItem")
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		//TODO: Publish To Product Service Kafka
+		
 		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
-		data.put("commandName", "AddItem");
-		// Pobject pobject = new Pobject(UUID.fromString(""), "Product1", "url1", "brand1", 1.20, "10");
-		// data.put("itemPrice", pobject.getPrice());
-		// data.put("itemId", pobject.getId().toString());
+		data.put("commandName", "GetProductForCartCommand");
+		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -208,7 +206,7 @@ public class CartController {
 			return e.getMessage();
 		}
 		
-		kafkaProducerRequest.publishToTopic("productRequest",jsonString);
+		kafkaProducerRequest.publishToTopic("productRequests",jsonString);
 		return "success";
 
 	}
