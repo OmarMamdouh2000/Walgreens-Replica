@@ -2,7 +2,8 @@ package com.example.Kafka;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.example.Commands.Invoker;
 import com.example.Final.CartTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 @Service
 public class KafkaConsumerRequests {
 	@Autowired
@@ -18,10 +20,11 @@ public class KafkaConsumerRequests {
 	@Autowired
 	KafkaProducer kafkaProducer;
 	
-	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequest")
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
+	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequestCart")
 	public void consumeMessage(String message) {
 		try {
-			System.out.println("Request: "+message);
+			logger.info("Request: "+message);
 			
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);

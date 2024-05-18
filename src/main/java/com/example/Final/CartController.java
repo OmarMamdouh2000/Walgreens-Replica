@@ -42,13 +42,13 @@ public class CartController {
 	@GetMapping("/storeSessionUser")
 	public void storeSessionUser(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "user", Map.of("userId", "e0036741-4913-499a-aad4-1c90d40b4a77", "email", "ziad@gmail", "username", "ziad"));
+		sessionCache.createSession("1234", "user", Map.of("userId", "c8254473-5ea3-4f44-8b6a-be1cf137277c", "email", "ziad@gmail", "username", "ziad"));
 	}
 
 	@GetMapping("/storeSessionCart")
 	public void storeSessionCart(){
 		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "cart", Map.of("userId", "e0036741-4913-499a-aad4-1c90d40b4a77", "cartId", "cart1"));
+		sessionCache.createSession("1234", "cart", Map.of("userId", "c8254473-5ea3-4f44-8b6a-be1cf137277c", "cartId", "cart1"));
 	}
 	@GetMapping("/cartSection")
 	public Map<String, Object> getCartSection(){
@@ -202,7 +202,7 @@ public class CartController {
 			return e.getMessage();
 		}
 		
-		kafkaProducerRequest.publishToTopic("productRequests",jsonString);
+		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 		return "success";
 
 	}
