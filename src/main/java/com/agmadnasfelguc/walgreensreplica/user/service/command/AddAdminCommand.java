@@ -32,7 +32,6 @@ public class AddAdminCommand extends Command {
     @Override
     public void execute() {
        try{
-           System.out.println("SessionId: " +sessionId);
            String role = String.valueOf(sessionCache.getAdminSessionDetails(sessionId).get("role"));
         if (role.equals("null")) {
             this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));

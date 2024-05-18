@@ -1,4 +1,5 @@
 package com.agmadnasfelguc.walgreensreplica.user.controller;
+import com.agmadnasfelguc.walgreensreplica.user.firebase.FirebaseService;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.UserRequests;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.keys.Keys;
@@ -8,19 +9,30 @@ import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest
 import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserRegistrationRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
+    Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserRequests userRequests;
+
+    @Autowired
+    private FirebaseService firebaseService;
 
     private int i=0;
 
@@ -117,6 +129,19 @@ public class UserController {
     @PostMapping("/update2FAStatus")
     public ResponseEntity<Object> update2FAStatus(@RequestParam String sessionId, @RequestParam boolean status) {
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.update2FAStatusPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.status, String.valueOf(status))));
+    }
+
+    @PostMapping("/uploadImage")
+    public ResponseEntity<Object> uploadImage(@RequestParam String sessionId, @RequestParam("imageFile") MultipartFile imageFile){
+        UUID imageId = UUID.randomUUID();
+        try {
+            firebaseService.uploadPhoto(imageId.toString(), imageFile);
+            logger.info("Image uploaded to firebase");
+            return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.uploadImagePath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.imageId, imageId.toString())));
+        } catch (IOException e) {
+            logger.error("Failed to upload image to firebase: ", e);
+            return ResponseEntity.badRequest().body("Failed to upload image");
+        }
     }
 
     private ResponseEntity<Object> formulateResponse(JsonNode response) {

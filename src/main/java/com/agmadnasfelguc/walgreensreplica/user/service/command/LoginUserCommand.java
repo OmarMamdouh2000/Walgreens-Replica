@@ -82,6 +82,7 @@ public class LoginUserCommand extends Command {
     private void setUpCreateSessionCommandAndExecute(LoginResult response){
         ((CreateSessionCommand) createSessionCommand).setEmail(email);
         ((CreateSessionCommand) createSessionCommand).setUserId(userId);
+        ((CreateSessionCommand) createSessionCommand).setSessionId(response.getImageId());
         ((CreateSessionCommand) createSessionCommand).setRole(response.getRole());
         ((CreateSessionCommand) createSessionCommand).setFirstName(response.getFirst_name());
         ((CreateSessionCommand) createSessionCommand).setLastName(response.getLast_name());

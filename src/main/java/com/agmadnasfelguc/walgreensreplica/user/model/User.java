@@ -35,4 +35,7 @@ public class User {
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified = false;
 
+    @Column(name = "image_id")
+    private UUID imageId;
+
 }

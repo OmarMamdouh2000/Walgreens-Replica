@@ -17,28 +17,18 @@ public class FirebaseService {
     @Autowired
     private Storage storage;
     Logger logger = LoggerFactory.getLogger(FirebaseService.class);
-    //private final FirebaseConfig firebaseConfig;
 
     public FirebaseService(FirebaseConfig firebaseConfig) {
 
     }
 
     public String uploadPhoto(String id, MultipartFile file) throws IOException {
-        // Generate a filename based on the provided ID
         String fileName = "photos/" + id;
-
-        // Define the BlobId with the bucket name and the generated filename
         BlobId blobId = BlobId.of("walgreens-replica.appspot.com", fileName);
-
-        // Create BlobInfo with the generated BlobId and set the content type
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(file.getContentType())
                 .build();
-
-        // Upload the file to Firebase Storage
         Blob blob = storage.create(blobInfo, file.getBytes());
-
-        // Get the URL of the uploaded file
         return blob.getMediaLink();
     }
 
@@ -64,5 +54,16 @@ public class FirebaseService {
             logger.error("Failed to get signed URL", e);
         }
         return photoURL;
+    }
+
+    public boolean deleteImage(String id) {
+        BlobId blobId = BlobId.of("walgreens-replica.appspot.com", "photos/" + id);
+        boolean deleted = storage.delete(blobId);
+        if (deleted) {
+            logger.info("Image deleted successfully");
+        } else {
+            logger.error("Failed to delete image");
+        }
+        return deleted;
     }
 }

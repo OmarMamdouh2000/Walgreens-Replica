@@ -485,7 +485,8 @@ CREATE OR REPLACE FUNCTION login(
     OUT first_name VARCHAR,
     OUT last_name VARCHAR,
     OUT email VARCHAR,
-    OUT email_verified BOOLEAN
+    OUT email_verified BOOLEAN,
+    OUT image_id UUID
 )
 RETURNS record
 LANGUAGE plpgsql
@@ -494,8 +495,8 @@ DECLARE
     v_TwoFactorAuth_Enabled BOOLEAN;
 BEGIN
     -- Initial user check
-    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled", U."email_verified"
-    INTO user_id, status, role, v_TwoFactorAuth_Enabled, email_verified
+    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled", U."email_verified", U.image_id
+    INTO user_id, status, role, v_TwoFactorAuth_Enabled, email_verified, image_id
     FROM "User" U
     WHERE U.email = p_email AND U.password = p_password;
 
@@ -578,6 +579,7 @@ RETURNS TABLE(
     last_name VARCHAR,
     address VARCHAR,
     date_of_birth DATE,
+    image_id UUID,
     "gender" "Gender",
     phone_number VARCHAR,
     "extension" VARCHAR
@@ -596,55 +598,8 @@ BEGIN
         COALESCE(c.first_name, p.first_name, '') AS first_name,
         COALESCE(c.last_name, p.last_name, '') AS last_name,
         COALESCE(c.address, '') AS address,
-        COALESCE(c.date_of_birth, '') AS date_of_birth,
-        COALESCE(c.gender, '') AS gender,
-        COALESCE(pn.number, '') AS phone_number,
-        COALESCE(pn.extension, '') AS extension
-    FROM "User" u
-    LEFT JOIN "Customer" c ON u.id = c.id
-    LEFT JOIN "Pharmacist" p ON u.id = p.id
-    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id;
-END;
-$$;
-
-
-
--- Function: get_user_details
-/*
-Description: Retrieves the details of all users.
-Returns: A record containing the user's personal details.
-*/
-CREATE OR REPLACE FUNCTION get_all_users()
-RETURNS TABLE(
-    user_id UUID,
-    email VARCHAR,
-    role Role,
-    status Status,
-    email_verified BOOLEAN,
-    two_factor_auth_enabled BOOLEAN,
-    first_name VARCHAR,
-    last_name VARCHAR,
-    address VARCHAR,
-    date_of_birth DATE,
-    gender Gender,
-    phone_number VARCHAR,
-    extension VARCHAR
-)
-BEGIN
-    RETURN QUERY
-    LANGUAGE plpgsql
-    AS $$
-    SELECT
-        u.id AS user_id,
-        u.email,
-        u.role,
-        u.status,
-        u.email_verified,
-        u.TwoFactorAuth_Enabled,
-        COALESCE(c.first_name, p.first_name, '') AS first_name,
-        COALESCE(c.last_name, p.last_name, '') AS last_name,
-        COALESCE(c.address, '') AS address,
         c.date_of_birth,
+        u.image_id,
         c.gender,
         COALESCE(pn.number, '') AS phone_number,
         COALESCE(pn.extension, '') AS extension
@@ -654,6 +609,60 @@ BEGIN
     LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id;
 END;
 $$;
+
+
+-- Function: get_user
+/*
+Description: Retrieves the personal details of a user based on their user ID.
+Parameters:
+- p_id: User ID of the user whose details are being retrieved (VARCHAR).
+Returns: A record containing the user's personal details.
+*/
+CREATE OR REPLACE FUNCTION get_user(p_id UUID)
+RETURNS TABLE(
+    user_id UUID,
+    email VARCHAR,
+    "role" "Role",
+    "status" "Status",
+    email_verified BOOLEAN,
+    "TwoFactorAuth_Enabled" BOOLEAN,
+    first_name VARCHAR,
+    last_name VARCHAR,
+    address VARCHAR,
+    date_of_birth DATE,
+    image_id UUID,
+    "gender" "Gender",
+    phone_number VARCHAR,
+    "extension" VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        u.id AS user_id,
+        u.email,
+        u.role,
+        u.status,
+        u.email_verified,
+        u."TwoFactorAuth_Enabled",
+        COALESCE(c.first_name, p.first_name, '') AS first_name,
+        COALESCE(c.last_name, p.last_name, '') AS last_name,
+        COALESCE(c.address, '') AS address,
+        c.date_of_birth,
+        u.image_id,
+        c.gender,
+        COALESCE(pn.number, '') AS phone_number,
+        COALESCE(pn.extension, '') AS extension
+    FROM "User" u
+    LEFT JOIN "Customer" c ON u.id = c.id
+    LEFT JOIN "Pharmacist" p ON u.id = p.id
+    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id
+    WHERE u.id = p_id;
+END;
+$$;
+
+
 
 
 

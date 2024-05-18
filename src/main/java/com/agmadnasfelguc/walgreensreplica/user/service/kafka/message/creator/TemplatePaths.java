@@ -27,6 +27,8 @@ public class TemplatePaths {
     public static final String verifyMailPath = basePath + "VerifyMail.json";
     public static final String verifyMailCheckOtpPath = basePath + "VerifyMailCheckOtp.json";
 
+    public static final String uploadImagePath = basePath + "UploadImage.json";
+
     public static final String responsePath = "messageTemplates/userManagement/response/Response.json";
 
 

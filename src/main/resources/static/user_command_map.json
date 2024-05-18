@@ -17,5 +17,7 @@
   "verifyMailCommand": "VerifyMail",
   "update2FAStatusCommand": "Update2FAStatus",
   "verifyMailCheckOTPCommand": "VerifyMailCheckOtp",
-  "updatePasswordResetCommand": "ResetPasswordCheckOtp"
+  "updatePasswordResetCommand": "ResetPasswordCheckOtp",
+  "uploadImageCommand": "UploadImage",
+  "viewUserCommand": "ViewUser"
 }

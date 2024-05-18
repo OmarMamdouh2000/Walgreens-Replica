@@ -17,7 +17,8 @@ public class LoginResultConverter {
                 tuple.get("email", String.class),
                 tuple.get("first_name",String.class),
                 tuple.get("last_name",String.class),
-                tuple.get("email_verified",Boolean.class)
+                tuple.get("email_verified",Boolean.class),
+                tuple.get("image_id",String.class)
         );
     }
 }

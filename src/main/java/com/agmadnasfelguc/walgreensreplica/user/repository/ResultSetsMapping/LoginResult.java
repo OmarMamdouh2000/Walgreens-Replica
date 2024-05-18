@@ -16,4 +16,5 @@ public class LoginResult {
     private String first_name;
     private String last_name;
     private boolean email_verified;
+    private String imageId;
 }

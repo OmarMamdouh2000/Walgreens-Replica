@@ -21,6 +21,7 @@ CREATE TABLE "User" (
   "role" "Role" NOT NULL,
   "status" "Status" NOT NULL,
   "email_verified" boolean DEFAULT false,
+  "image_id" UUID DEFAULT NULL,
   "TwoFactorAuth_Enabled" boolean DEFAULT false
 );
 
