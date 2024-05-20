@@ -70,7 +70,7 @@ public class ConfirmCheckoutCommand implements Command {
         userCart.setTotalAmount(0);
         userCart.setAppliedPromoCodeId("");
         userCart.setPromoCodeAmount(0);
-        if(!session.isEmpty()){
+        if(session!=null && !session.isEmpty()){
             CartTable userCartCache = objectMapper.convertValue(session, CartTable.class);
             userCartCache.getItems().clear();
             userCartCache.setTotalAmount(0);
