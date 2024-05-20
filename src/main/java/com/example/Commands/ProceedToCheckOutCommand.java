@@ -57,8 +57,12 @@ public class ProceedToCheckOutCommand implements Command {
         
         
         //------------ karim integration
-        request.put("commandName", "Checkout");
-        request.put("data", userCart);
+        request.put("request", "CheckPaymentMethod");
+        request.put("customerUuid", user);
+        request.put("paymentAmount", userCart.getTotalAmount()+"");
+        request.put("cartUuid", userCart.getId().toString());
+        request.put("cartItems", userCart.getItems());
+
         String userCartString = objectMapper.writeValueAsString(request);
         kafkaProducer.publishToTopic("payment", userCartString);
         return "Proceed to checkout request sent";
