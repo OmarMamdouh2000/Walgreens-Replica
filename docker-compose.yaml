@@ -1,0 +1,31 @@
+version: '3'
+services:
+  springboot-order:
+    ports:
+      - 8083:8083
+    build:
+      context: .
+      args:
+        JAR_FILE: /Order-Service.jar
+    restart: always
+    
+    
+
+  cassandradorder:
+    image: cassandra
+    container_name: cassandraOrder
+    ports:
+      - "9044:9042"
+  
+  
+ 
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=root
+    command: ["redis-server", "--requirepass", "root"]
+    ports:
+      - "6379:6379"
+networks:
+  kafka-net:
+    driver: bridge

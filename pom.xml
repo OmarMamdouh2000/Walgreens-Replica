@@ -97,6 +97,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>Order-Service</finalName>
 	</build>
 
 </project>

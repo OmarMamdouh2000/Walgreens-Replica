@@ -15,8 +15,8 @@ public class OrderCassandraConf extends AbstractCassandraConfiguration {
 	 @Bean
 	    public CqlSessionFactoryBean session() {
 	        CqlSessionFactoryBean session = new CqlSessionFactoryBean();
-	        session.setContactPoints("127.0.0.1");
-	        session.setPort(9042);
+	        session.setContactPoints("host.docker.internal");
+	        session.setPort(9044);
 	        session.setLocalDatacenter("datacenter1");
 	        session.setKeyspaceName(getKeyspaceName());
 	        return session;
