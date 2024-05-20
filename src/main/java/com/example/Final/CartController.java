@@ -38,8 +38,8 @@ public class CartController {
 		return jwtDecoderService.generateToken("235772bd-f0de-41ee-8280-642a5bdf837f");
 	}
 	@GetMapping("/getUserId")
-	public String getUserId(@RequestParam String token) {
-		return jwtDecoderService.getUserIdFromToken(token);
+	public String getUserId(@RequestParam String sessionId) {
+		return jwtDecoderService.getUserIdFromToken(sessionId);
 	}
 
 

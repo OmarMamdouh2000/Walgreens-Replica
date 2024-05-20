@@ -16,7 +16,7 @@ import java.util.Date;
                 .setSubject(userId)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + 1000 * 60 * 60 * 10)) // 10 hours validity
-                .signWith(SignatureAlgorithm.HS256, "secret")
+                .signWith(SignatureAlgorithm.HS256, "secretagmadnasflguc1234omarmamdouh1234base256key")
                 .compact();
     }
 
@@ -24,7 +24,7 @@ import java.util.Date;
     public  String getUserIdFromToken(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey("secret")
+                    .setSigningKey("secretagmadnasflguc1234omarmamdouh1234base256key")
                     .parseClaimsJws(token)
                     .getBody();
             return claims.getSubject();
