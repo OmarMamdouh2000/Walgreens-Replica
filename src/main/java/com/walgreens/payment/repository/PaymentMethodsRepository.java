@@ -14,7 +14,7 @@ public interface PaymentMethodsRepository extends JpaRepository<PaymentMethodsDt
     @Procedure(name = "get_customer")
     String get_customer(@Param("p_customer_uuid") UUID customerUuid);
 
-
+    @Procedure(name = "create_payment_method")
     void create_payment_method(
             @Param("p_payment_method_uuid") UUID paymentMethodUuid,
             @Param("p_customer_uuid") UUID customerUuid,
@@ -31,7 +31,10 @@ public interface PaymentMethodsRepository extends JpaRepository<PaymentMethodsDt
     UUID get_default_payment_method(
             @Param("p_customer_uuid") UUID customerUuid
     );
-
+    @Procedure(name = "has_funds_default_payment_method")
+        boolean has_funds_default_payment_method(
+                @Param("p_customer_uuid") UUID customerUuid
+        );
 
     @Procedure(name = "check_has_funds")
     boolean check_has_funds(@Param("p_payment_method_uuid") UUID paymentMethodUuid);

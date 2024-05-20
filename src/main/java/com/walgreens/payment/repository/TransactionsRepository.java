@@ -4,11 +4,13 @@ import com.walgreens.payment.model.TransactionsDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Repository
 public interface TransactionsRepository extends JpaRepository<TransactionsDto, UUID> {
 
     @Procedure(name = "create_a_transaction")

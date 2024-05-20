@@ -1,8 +1,17 @@
 services:
+  springboot-payment:
+    ports:
+      - 9095:9095
+    build:
+      context: .
+      args:
+        JAR_FILE: /Payment-Service.jar
+    restart: always
   db:
     container_name: postgres
     image: postgres
     environment:
+      POSTGRES_DB: paymentsstripe
       POSTGRES_USER: paymentcluster
       POSTGRES_PASSWORD: password
       PGDATA: /data/postgres
@@ -10,8 +19,6 @@ services:
       - db:/data/postgres
     ports:
       - "5332:5432"
-    networks:
-      - db
     restart: unless-stopped
 networks:
   db:

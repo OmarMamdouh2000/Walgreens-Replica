@@ -13,6 +13,7 @@ public class CheckPaymentMethodProcessor extends Processor{
     public void process() {
         CheckPaymentMethodCommand checkPaymentMethodCommand = (CheckPaymentMethodCommand) getCommand();
         Map<String, String> message = getMessageInfo();
+        System.out.println(message.get(Keys.customerUuid));
         checkPaymentMethodCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
         checkPaymentMethodCommand.setCartUuid(UUID.fromString(message.get(Keys.cartUuid)));
         checkPaymentMethodCommand.setAmount(Double.parseDouble(message.get(Keys.paymentAmount)));
