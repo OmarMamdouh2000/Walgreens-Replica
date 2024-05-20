@@ -46,7 +46,8 @@ public class ProceedToCheckOutCommand implements Command {
             return "User not found or Invalid Token";
         CartTable userCart = null;
         ObjectMapper objectMapper = new ObjectMapper();
-        if(session!=null){
+        
+        if(session!=null &&!session.isEmpty()){
             
             userCart = objectMapper.convertValue(session, CartTable.class);
         }else{  
@@ -60,6 +61,7 @@ public class ProceedToCheckOutCommand implements Command {
         request.put("request", "CheckPaymentMethod");
         request.put("customerUuid", user);
         request.put("paymentAmount", userCart.getTotalAmount()+"");
+        System.out.println(userCart);
         request.put("cartUuid", userCart.getId().toString());
         request.put("cartItems", userCart.getItems());
 

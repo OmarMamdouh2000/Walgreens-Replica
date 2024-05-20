@@ -52,7 +52,7 @@ public class UpdateItemCountCommandCache implements Command{
         if(userId==null)
             return "User not found or Invalid Token";
         CartTable oldCart=null;
-        if(sessionCart !=null) {
+        if(sessionCart !=null && !sessionCart.isEmpty()) {
             oldCart = objectMapper.convertValue(sessionCart, CartTable.class);
         }else{
             oldCart=cartRepo.getCart(UUID.fromString(userId));

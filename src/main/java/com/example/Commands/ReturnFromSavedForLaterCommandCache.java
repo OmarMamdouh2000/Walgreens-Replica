@@ -45,7 +45,7 @@ public class ReturnFromSavedForLaterCommandCache implements Command {
             return "User not found or Invalid Token";
         CartTable oldCart=null;
         ObjectMapper objectMapper = new ObjectMapper();
-        if(session!=null){
+        if(session!=null &&!session.isEmpty()){
             oldCart = objectMapper.convertValue(session, CartTable.class);
         }else{
             oldCart=cartRepo.getCart(UUID.fromString(userId));
