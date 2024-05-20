@@ -48,6 +48,8 @@ public class ApplyPromo implements Command{
         String sessionId = (String) data.get("sessionId");
 
         String user=(String)data.get("userId");
+        if(user==null)
+            return "User not found or Invalid Token";
         UUID userID = UUID.fromString(user);
 
         String promoCode = (String) data.get("promoCode");

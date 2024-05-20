@@ -44,6 +44,8 @@ public class AddToSavedForLaterCommandCache implements Command {
         String sessionId = (String)data.get("sessionId");
         Map<String, Object> session = sessionCache.getSessionSection(sessionId, "cart");
         String userId=(String) data.get("userId");
+        if(userId==null)
+            return "User not found or Invalid Token";
         ObjectMapper objectMapper = new ObjectMapper();
         CartTable oldCart =null;
         if(session !=null) {

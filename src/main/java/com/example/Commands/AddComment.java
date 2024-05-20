@@ -42,7 +42,10 @@ public class AddComment implements Command{
         String sessionId = (String) data.get("sessionId");
 
         String user=(String)data.get("userId");
+        if(user==null)
+            return "User not found or Invalid Token";
         UUID userId = UUID.fromString(user);
+        
 
         String itemString = (String) data.get("itemId");
         UUID itemID = UUID.fromString(itemString);

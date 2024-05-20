@@ -49,6 +49,8 @@ public class UpdateItemCountCommandCache implements Command{
             return "invalid count";
         }
         String userId=(String) data.get("userId");
+        if(userId==null)
+            return "User not found or Invalid Token";
         CartTable oldCart=null;
         if(sessionCart !=null) {
             oldCart = objectMapper.convertValue(sessionCart, CartTable.class);

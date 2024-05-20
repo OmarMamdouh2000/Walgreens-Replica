@@ -44,6 +44,8 @@ public class UpdateItemCountCommand implements Command{
             return "invalid count";
         }
         String userId=(String) data.get("userId");
+        if(userId==null)
+            return "User not found or Invalid Token";
         CartTable oldCart=cartRepo.getCart(UUID.fromString(userId));
         List<CartItem> oldItems=oldCart.getItems();
         UUID cartId=oldCart.getId();

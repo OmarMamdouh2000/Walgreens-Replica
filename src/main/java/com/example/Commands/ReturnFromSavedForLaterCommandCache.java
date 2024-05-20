@@ -41,6 +41,8 @@ public class ReturnFromSavedForLaterCommandCache implements Command {
         String sessionId=(String)data.get("sessionId");
         Map<String, Object> session = sessionCache.getSessionSection(sessionId, "cart");
         String userId=(String) data.get("userId");
+        if(userId==null)
+            return "User not found or Invalid Token";
         CartTable oldCart=null;
         ObjectMapper objectMapper = new ObjectMapper();
         if(session!=null){

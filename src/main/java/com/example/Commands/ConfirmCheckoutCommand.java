@@ -43,6 +43,8 @@ public class ConfirmCheckoutCommand implements Command {
     public Object execute(Map<String, Object> data) throws Exception {
 
         String user=(String)data.get("userId");
+        if(user==null)
+            return "User not found or Invalid Token";
         String sessionId=(String)data.get("sessionId");
         ObjectMapper objectMapper = new ObjectMapper();
         CartTable userCart = cartRepo.getCart(UUID.fromString(user));;

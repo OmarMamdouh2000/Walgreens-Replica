@@ -37,6 +37,8 @@ public class ReturnFromSavedForLaterCommand implements Command {
     public Object execute(Map<String, Object> data) {
         String itemId=(String)data.get("itemId");
         String userId=(String)data.get("userId");
+        if(userId==null)
+            return "User not found or Invalid Token";
         CartTable oldCart=cartRepo.getCart(UUID.fromString(userId));
         List<CartItem> oldItems=oldCart.getItems();
         List<CartItem> newSaved=oldCart.getSavedForLaterItems();

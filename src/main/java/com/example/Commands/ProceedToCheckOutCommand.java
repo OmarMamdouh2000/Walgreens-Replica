@@ -42,6 +42,8 @@ public class ProceedToCheckOutCommand implements Command {
         Map<String,Object> session = sessionCache.getSessionSection((String)data.get("sessionId"), "cart");
         String sessionId=(String)data.get("sessionId");
         String user = (String)data.get("userId");
+        if(user==null)
+            return "User not found or Invalid Token";
         CartTable userCart = null;
         ObjectMapper objectMapper = new ObjectMapper();
         if(session!=null){

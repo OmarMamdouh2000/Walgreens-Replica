@@ -44,6 +44,8 @@ public class AddItem implements Command{
 
         //TODO: data is the product from products
         String user=(String)data.get("userId");
+        if(user==null)
+            return "User not found or Invalid Token";
         UUID userId = UUID.fromString(user);
 
         String itemId = (String) data.get("itemId");
