@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Categories;
 import com.example.demo.cassandraRepositories.BrandsRepo;
@@ -13,16 +14,18 @@ import com.example.demo.cassandraRepositories.ProductsRepo;
 
 public class getBrandCommand implements Command {
 	
+	private FirebaseService firebaseService;
 	private CategoriesRepo catRepo;
 	private ProductsRepo prodRepo;
 	private BrandsRepo brandRepo;
 	
 	@Autowired
-	public getBrandCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
+	public getBrandCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo, FirebaseService firebaseService) 
 	{
 		this.catRepo=catRepo;
 		this.prodRepo = prodRepo;
 		this.brandRepo = brandRepo;
+		this.firebaseService = firebaseService;
 	}
 	
 	@Override

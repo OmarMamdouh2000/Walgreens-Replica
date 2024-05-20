@@ -7,22 +7,26 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraModels.Pobject;
 import com.example.demo.cassandraRepositories.BrandsRepo;
 import com.example.demo.cassandraRepositories.CategoriesRepo;
 import com.example.demo.cassandraRepositories.ProductsRepo;
 
 public class addBrandCommand implements Command{
+	
+	private FirebaseService firebaseService;
 	private CategoriesRepo catRepo;
 	private ProductsRepo prodRepo;
 	private BrandsRepo brandRepo;
 	
 	@Autowired
-	public addBrandCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
+	public addBrandCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo, FirebaseService firebaseService) 
 	{
 		this.catRepo=catRepo;
 		this.prodRepo = prodRepo;
 		this.brandRepo = brandRepo;
+		this.firebaseService = firebaseService;
 	}
 	
 	@Override
