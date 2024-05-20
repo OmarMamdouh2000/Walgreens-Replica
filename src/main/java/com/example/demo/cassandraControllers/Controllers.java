@@ -106,22 +106,9 @@ public class Controllers {
 	}
 	
 	@PostMapping("/addCategory")
-	public void addCategory(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image)
+	public void addCategory(@RequestBody Map<String, Object> body)
 	{
-		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addCategoryCase");
-		body.putAll(all);
-		
-		UUID randomId = Uuids.timeBased();
-		String randomIdString = randomId.toString();
-		try {
-			String x = firebaseService.uploadPhoto(randomIdString, image);
-			System.out.println(x);
-			body.put("image", randomIdString);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
