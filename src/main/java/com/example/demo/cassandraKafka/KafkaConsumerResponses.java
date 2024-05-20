@@ -146,6 +146,7 @@ public class KafkaConsumerResponses {
 							data.put("discount", Double.parseDouble(product.getDiscount()));
 						else
 						data.put("discount", 0.0);
+						data.put("itemName", product.getName());
 						System.out.println(data);
 						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data));
 					}catch(Exception e){
