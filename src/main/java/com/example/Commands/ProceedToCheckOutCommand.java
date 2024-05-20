@@ -54,14 +54,23 @@ public class ProceedToCheckOutCommand implements Command {
             sessionCache.createSession(sessionId, "cart", objectMapper.convertValue(userCart, Map.class));
         }
         Map<String, Object> request = new HashMap<>();
+        
+        
+        //------------ karim integration
         request.put("commandName", "Checkout");
         request.put("data", userCart);
         String userCartString = objectMapper.writeValueAsString(request);
-
-        //TODO: Publish to Payment Service Kafka
         kafkaProducer.publishToTopic("payment", userCartString);
-        //or Call API to payment service
-        return "Checkout Request Sent";
+        return "Proceed to checkout request sent";
+
+
+        //---------- no integration
+        // request.put("commandName", "ConfirmCheckoutCommand");
+        // request.put("transactionNumber",UUID.randomUUID().toString());
+        // String userCartString = objectMapper.writeValueAsString(request);
+        // kafkaProducer.publishToTopic("cartRequests", userCartString);
+        // return "Proceed to checkout request sent";
+
         
     }
 
