@@ -42,7 +42,6 @@ public class PaymentController {
     private KafkaPublisher kafkaPublisher;
 
 
-
     @Autowired
     public PaymentController(CreateCustomerCommand createCustomerCommand,
                              AddPaymentMethodCommand addPaymentMethodCommand,
@@ -104,14 +103,14 @@ public class PaymentController {
 
 
     @PostMapping("/addPaymentMethod")
-    public String addPaymentMethod(UUID customerUuid, String cardNumber, String expiryMonth, String expiryYear, String cvv, String cardholderName, boolean isDefault, boolean hasFunds){
+    public String addPaymentMethod(UUID customerUuid, String cardNumber, String expiryMonth, String expiryYear, String cvv, String cardholderName, boolean isDefault, boolean hasFunds) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
-                         "request", "AddPaymentMethod",
+                            "request", "AddPaymentMethod",
                             Keys.customerUuid, customerUuid,
                             Keys.cardNumber, cardNumber,
                             Keys.expiryMonth, expiryMonth,
@@ -140,18 +139,18 @@ public class PaymentController {
     }
 
     @PostMapping("/viewPaymentMethods")
-    public Object viewPaymentMethods(UUID customerUuid){
+    public Object viewPaymentMethods(UUID customerUuid) {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(Map.of(
-                    "request", "ViewPaymentMethods",
-                    Keys.customerUuid, customerUuid
+                            "request", "ViewPaymentMethods",
+                            Keys.customerUuid, customerUuid
                     )
             );
-            kafkaPublisher.publish("payment",jsonString);
+            kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }  catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -162,20 +161,20 @@ public class PaymentController {
     }
 
     @PostMapping("/viewBalance")
-    public String viewBalance(UUID customerUuid){
+    public String viewBalance(UUID customerUuid) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
                             "request", "ViewBalance",
                             Keys.customerUuid, customerUuid)
 
             );
-            kafkaPublisher.publish("payment",jsonString);
+            kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }  catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -185,19 +184,19 @@ public class PaymentController {
     }
 
     @PostMapping("/viewLoyaltyPoints")
-    public String viewLoyaltyPoints(UUID customerUuid){
+    public String viewLoyaltyPoints(UUID customerUuid) {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
                             "request", "ViewLoyaltyPoints",
                             Keys.customerUuid, customerUuid)
 
             );
-            kafkaPublisher.publish("payment",jsonString);
+            kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }  catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -207,11 +206,11 @@ public class PaymentController {
     }
 
     @PostMapping("/createCheckout")
-    public String createCheckout(UUID customerUuid, UUID couponUuid){
+    public String createCheckout(UUID customerUuid, UUID couponUuid) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
                             "request", "CreateCheckout",
@@ -221,9 +220,9 @@ public class PaymentController {
                     )
 
             );
-            kafkaPublisher.publish("payment",jsonString);
+            kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }  catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -234,11 +233,11 @@ public class PaymentController {
     }
 
     @PostMapping("/createCoupon")
-    public String createCoupon(String name, BigDecimal percentOff, Duration duration, Long duration_in_months){
+    public String createCoupon(String name, BigDecimal percentOff, Duration duration, Long duration_in_months) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
                             "request", "PayUsingPaymentMethods",
@@ -250,7 +249,7 @@ public class PaymentController {
             );
             kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -263,10 +262,10 @@ public class PaymentController {
     }
 
     @PostMapping("/payUsingPaymentMethod")
-    public String payUsingPaymentMethod(UUID customerUuid, UUID cartUuid, UUID paymentMethodUuid, Double amount){
+    public String payUsingPaymentMethod(UUID customerUuid, UUID cartUuid, UUID paymentMethodUuid, Double amount) {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
-        try{
+        try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
                             "request", "PayUsingPaymentMethods",
@@ -279,7 +278,7 @@ public class PaymentController {
             );
             kafkaPublisher.publish("payment", jsonString);
             return "success";
-        }catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -291,7 +290,6 @@ public class PaymentController {
     }
 
 
-
     @PostMapping("/webhook")
     public void handleStripeEvent(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
         webhookService.setPayload(payload);
@@ -300,9 +298,4 @@ public class PaymentController {
         System.out.println(stringResponseEntity.toString());
 
     }
-
-
-
-
-
 }

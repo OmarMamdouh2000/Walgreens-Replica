@@ -27,6 +27,8 @@ public class Keys {
     public static final String paymentMethodUuid = "paymentMethodUuid";
     public static final String paymentAmount = "paymentAmount";
     public static final String cartUuid = "cartUuid";
+    public static final String cartItems = "cartItems";
+
 
 
 

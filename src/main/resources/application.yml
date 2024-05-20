@@ -23,7 +23,7 @@ spring:
   main:
     web-application-type: servlet
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: host.docker.internal:29092,host.docker.internal:39092,host.docker.internal:49092
 
 
 
