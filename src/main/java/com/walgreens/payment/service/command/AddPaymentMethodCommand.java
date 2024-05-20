@@ -1,10 +1,13 @@
 package com.walgreens.payment.service.command;
 
+import com.walgreens.payment.controller.PaymentController;
 import com.walgreens.payment.repository.PaymentMethodsRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jasypt.util.text.AES256TextEncryptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,8 @@ public class AddPaymentMethodCommand implements Command{
     private String cvv;
     private String cardholderName;
     private Boolean isDefault;
+
+    Logger logger= LoggerFactory.getLogger(AddPaymentMethodCommand.class);
 
     @Autowired
     private PaymentMethodsRepository paymentMethodsRepository;
@@ -54,6 +59,8 @@ public class AddPaymentMethodCommand implements Command{
                 cardholderName,
                 isDefault
         );
+
+        logger.trace("Payment Method Added");
 
     }
 }

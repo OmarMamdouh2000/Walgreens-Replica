@@ -1,11 +1,14 @@
 package com.walgreens.payment.service.command;
 
+import com.walgreens.payment.controller.PaymentController;
 import com.walgreens.payment.exceptions.InsufficientFundsException;
 import com.walgreens.payment.repository.PaymentMethodsRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
     @Autowired
     private CreateATransactionCommand createATransactionCommand;
 
+    Logger logger= LoggerFactory.getLogger(PayUsingPaymentMethodsCommand.class);
 
 
 
@@ -48,10 +52,10 @@ public class PayUsingPaymentMethodsCommand implements Command {
             createATransactionCommand.setAmount(amount);
             createATransactionCommand.setTransactionTime(LocalDateTime.now());
             createATransactionCommand.execute();
-
+            logger.info("Payment Methods");
 
         }catch(InsufficientFundsException e){
-            log.error("ERROR: " + e.getMessage());
+            logger.error("ERROR: " + e.getMessage());
         }
 
     }

@@ -6,6 +6,8 @@ import com.walgreens.payment.service.command.*;
 
 
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/stripe")
 public class PaymentController {
+
 
 
     private final CreateCustomerCommand createCustomerCommand;
@@ -70,6 +73,7 @@ public class PaymentController {
         createCustomerCommand.setName(name);
         createCustomerCommand.setEmail(email);
         createCustomerCommand.execute();
+
     }
 
     @PostMapping("/addPaymentMethod")
@@ -83,24 +87,28 @@ public class PaymentController {
         addPaymentMethodCommand.setIsDefault(isDefault);
         addPaymentMethodCommand.setIsDefault(isDefault);
         addPaymentMethodCommand.execute();
+
     }
 
     @PostMapping("/viewPaymentMethods")
     public void viewPaymentMethods(UUID customerUuid){
         viewPaymentMethodsCommand.setCustomerUuid(customerUuid);
         viewPaymentMethodsCommand.execute();
+
     }
 
     @PostMapping("/viewBalance")
     public void viewBalance(UUID customerUuid){
         viewBalanceCommand.setCustomerUuid(customerUuid);
         viewBalanceCommand.execute();
+
     }
 
     @PostMapping("/viewLoyaltyPoints")
     public void viewLoyaltyPoints(UUID customerUuid){
         viewLoyaltyPointsCommand.setCustomerUuid(customerUuid);
         viewLoyaltyPointsCommand.execute();
+
     }
 
     @PostMapping("/createCheckout")
@@ -108,6 +116,7 @@ public class PaymentController {
         createCheckoutCommand.setCustomerUuid(customerUuid);
         createCheckoutCommand.setCouponUuid(couponUuid);
         createCheckoutCommand.execute();
+
     }
 
     @PostMapping("/createCoupon")
@@ -117,6 +126,7 @@ public class PaymentController {
         createCouponCommand.setDuration(duration);
         createCouponCommand.setDuration_in_months(duration_in_months);
         createCouponCommand.execute();
+
     }
 
     @PostMapping("/payUsingPaymentMethod")
@@ -126,6 +136,7 @@ public class PaymentController {
         payUsingPaymentMethodsCommand.setPaymentMethodUuid(paymentMethodUuid);
         payUsingPaymentMethodsCommand.setAmount(amount);
         payUsingPaymentMethodsCommand.execute();
+
     }
 
 

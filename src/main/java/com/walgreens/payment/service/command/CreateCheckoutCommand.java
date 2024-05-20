@@ -5,6 +5,7 @@ import com.stripe.model.Coupon;
 import com.stripe.model.Customer;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.walgreens.payment.controller.PaymentController;
 import com.walgreens.payment.model.ProductsDto;
 import com.walgreens.payment.repository.CouponRepository;
 import com.walgreens.payment.repository.CustomerRepository;
@@ -13,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +38,7 @@ public class CreateCheckoutCommand implements Command{
     private UUID cartUuid;
 
 
-
+    Logger logger= LoggerFactory.getLogger(CreateCheckoutCommand.class);
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -124,9 +127,10 @@ public class CreateCheckoutCommand implements Command{
 
             System.out.println(response.getSessionUrl());
 
+            logger.info("Checking out");
 
         }catch (StripeException e){
-            log.error("Error in command CreateCheckoutCommand " + e.getMessage());
+            logger.error("Error in command CreateCheckoutCommand " + e.getMessage());
 
 
         }
