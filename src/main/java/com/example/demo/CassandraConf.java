@@ -16,7 +16,7 @@ public class CassandraConf extends AbstractCassandraConfiguration {
 	 @Bean
 	    public CqlSessionFactoryBean session() {
 	        CqlSessionFactoryBean session = new CqlSessionFactoryBean();
-	        session.setContactPoints("127.0.0.1:9042");
+	        session.setContactPoints("host.docker.internal:9042");
 	        session.setPort(9042);
 	        session.setLocalDatacenter("datacenter1");
 	        session.setKeyspaceName(getKeyspaceName());

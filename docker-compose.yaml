@@ -1,0 +1,21 @@
+version: '3'
+services:
+  springboot-product:
+    ports:
+      - 8080:8080
+    build:
+      context: .
+      args:
+        JAR_FILE: /Product-Service.jar
+    restart: always
+    
+
+  cassandradbproduct:
+    image: cassandra
+    container_name: cassandraProduct
+    ports:
+      - "9042:9042"
+  
+networks:
+  kafka-net:
+    driver: bridge
