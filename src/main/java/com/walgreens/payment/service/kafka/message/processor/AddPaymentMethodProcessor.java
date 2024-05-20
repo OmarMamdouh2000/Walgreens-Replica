@@ -10,7 +10,7 @@ public class AddPaymentMethodProcessor extends Processor{
     @Override
     public void process() {
         AddPaymentMethodCommand addPaymentMethodCommand = (AddPaymentMethodCommand) getCommand();
-        Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
+        Map<String, String> messageInfo = getMessageInfo();
         addPaymentMethodCommand.setCustomerUuid(UUID.fromString(messageInfo.get(Keys.customerUuid)));
         addPaymentMethodCommand.setCardNumber(messageInfo.get(Keys.cardNumber));
         addPaymentMethodCommand.setExpiryMonth(messageInfo.get(Keys.expiryMonth));
@@ -18,6 +18,8 @@ public class AddPaymentMethodProcessor extends Processor{
         addPaymentMethodCommand.setCvv(messageInfo.get(Keys.cvv));
         addPaymentMethodCommand.setCardholderName(messageInfo.get(Keys.cardholderName));
         addPaymentMethodCommand.setIsDefault(Boolean.valueOf(messageInfo.get(Keys.isDefault)));
+        addPaymentMethodCommand.setHasFunds(Boolean.valueOf(messageInfo.get(Keys.hasFunds)));
+
 
 
     }

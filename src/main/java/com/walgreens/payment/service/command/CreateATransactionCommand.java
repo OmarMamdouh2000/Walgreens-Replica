@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class CreateATransactionCommand implements Command{
     private UUID cartUuid;
     private UUID paymentMethodUuid;
     private String sessionId;
-    private LocalDateTime transactionTime;
+    private Timestamp transactionTime;
     private Double Amount;
 
     @Autowired
@@ -39,7 +40,7 @@ public class CreateATransactionCommand implements Command{
     @Override
     public void execute() {
         transactionUuid = UUID.randomUUID();
-        transactionsRepository.add_a_transaction(
+        transactionsRepository.create_a_transaction(
                 transactionUuid,
                 customerUuid,
                 cartUuid,
@@ -48,6 +49,8 @@ public class CreateATransactionCommand implements Command{
                 transactionTime,
                 Amount
         );
+
+
 
     }
 }

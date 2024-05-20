@@ -1,13 +1,13 @@
 
 {
-  "addPaymentMethodCommand": "AddPaymentMethod",
-  "createCheckoutCommand": "CreateCheckout",
-  "createCouponCommand": "CreateCoupon",
-  "createCustomerCommand": "CreateCustomer",
-  "customerApplyCouponCommand": "CustomerApplyCoupon",
-  "payUsingPaymentMethodsCommand": "PayUsingPaymentMethods",
-  "viewBalanceCommand": "ViewBalance",
-  "viewLoyaltyPointsCommand": "ViewLoyaltyPoints",
-  "viewPaymentMethodsCommand": "ViewPaymentMethods"
-
+  "AddPaymentMethod": "addPaymentMethodCommand",
+  "CreateCheckout": "createCheckoutCommand",
+  "CreateCoupon": "createCouponCommand",
+  "CustomerApplyCoupon": "customerApplyCouponCommand",
+  "PayUsingPaymentMethods": "payUsingPaymentMethodsCommand",
+  "ViewBalance": "viewBalanceCommand",
+  "ViewLoyaltyPoints": "viewLoyaltyPointsCommand",
+  "ViewPaymentMethods": "viewPaymentMethodsCommand",
+  "CreateCustomer": "createCustomerCommand",
+  "CheckPaymentMethod": "checkPaymentMethodCommand"
 }

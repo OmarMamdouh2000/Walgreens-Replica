@@ -11,7 +11,7 @@ public class ViewLoyaltyPointsProcessor extends Processor{
     @Override
     public void process() {
         ViewLoyaltyPointsCommand viewLoyaltyPointsCommand = (ViewLoyaltyPointsCommand) getCommand();
-        Map<String, String> message = getMessageInfo().get(Keys.body);
+        Map<String, String> message = getMessageInfo();
 
         viewLoyaltyPointsCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
     }

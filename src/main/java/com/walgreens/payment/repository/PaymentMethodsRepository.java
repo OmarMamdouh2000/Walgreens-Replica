@@ -14,7 +14,7 @@ public interface PaymentMethodsRepository extends JpaRepository<PaymentMethodsDt
     @Procedure(name = "get_customer")
     String get_customer(@Param("p_customer_uuid") UUID customerUuid);
 
-    @Procedure(name = "create_payment_method")
+
     void create_payment_method(
             @Param("p_payment_method_uuid") UUID paymentMethodUuid,
             @Param("p_customer_uuid") UUID customerUuid,
@@ -23,7 +23,14 @@ public interface PaymentMethodsRepository extends JpaRepository<PaymentMethodsDt
             @Param("p_expiry_year") String expiryYear,
             @Param("p_cvv") String cvv,
             @Param("p_cardholder_name") String cardholderName,
-            @Param("p_is_default") Boolean isDefault);
+            @Param("p_is_default") Boolean isDefault,
+            @Param("p_has_funds") Boolean hasFunds
+    );
+
+    @Procedure(name = "get_default_payment_method")
+    UUID get_default_payment_method(
+            @Param("p_customer_uuid") UUID customerUuid
+    );
 
 
     @Procedure(name = "check_has_funds")

@@ -35,6 +35,7 @@ public class PaymentInvoker {
             Processor processor = (Processor) processorClass.getDeclaredConstructor().newInstance();
             Command command = (Command) applicationContext.getBean(commandName);
             processor.init(command,body);
+
             processor.process();
             command.execute();
         } catch (Exception e) {

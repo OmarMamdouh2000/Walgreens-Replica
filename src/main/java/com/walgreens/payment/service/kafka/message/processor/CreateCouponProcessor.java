@@ -13,7 +13,7 @@ public class CreateCouponProcessor extends Processor {
     public void process() {
 
         CreateCouponCommand createCouponCommand = (CreateCouponCommand) getCommand();
-        Map<String, String> message = getMessageInfo().get(Keys.body);
+        Map<String, String> message = getMessageInfo();
         createCouponCommand.setName(message.get(Keys.couponName));
         BigDecimal bigDecimal = new BigDecimal(message.get(Keys.percentOff));
         createCouponCommand.setPercentOff(bigDecimal);

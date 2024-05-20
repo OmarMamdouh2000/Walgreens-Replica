@@ -11,6 +11,8 @@ public class Keys {
     public static final String cvv = "cvv";
     public static final String cardholderName = "cardholderName";
     public static final String isDefault = "isDefault";
+    public static final String hasFunds = "hasFunds";
+
 
     public static final String couponUuid = "couponUuid";
 

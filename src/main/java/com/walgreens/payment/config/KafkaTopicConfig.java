@@ -8,9 +8,9 @@ public class KafkaTopicConfig {
 
 
     @Bean
-    public NewTopic amigoscodeTopic(){
+    public NewTopic paymentTopic(){
         return TopicBuilder
-                .name("amigoscode")
+                .name("payment")
                 .build();
     }
 }

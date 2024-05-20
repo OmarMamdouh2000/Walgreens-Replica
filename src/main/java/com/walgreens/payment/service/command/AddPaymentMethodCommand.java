@@ -1,11 +1,13 @@
 package com.walgreens.payment.service.command;
 
 import com.walgreens.payment.repository.PaymentMethodsRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jasypt.util.text.AES256TextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,10 +26,22 @@ public class AddPaymentMethodCommand implements Command{
     private String cvv;
     private String cardholderName;
     private Boolean isDefault;
+    private Boolean hasFunds;
+
+    @Value("${encryption.secret.key}")
+    private String encryptionPassword;
 
     @Autowired
     private PaymentMethodsRepository paymentMethodsRepository;
+
+
     private AES256TextEncryptor textEncryptor;
+
+    @PostConstruct
+    public void init() {
+        textEncryptor = new AES256TextEncryptor();
+        textEncryptor.setPassword(encryptionPassword);
+    }
 
     public String encryptCardDetails(String cardNumber) {
         return textEncryptor.encrypt(cardNumber);
@@ -43,7 +57,7 @@ public class AddPaymentMethodCommand implements Command{
         expiryMonth = expiryMonth.substring(expiryMonth.length() - 2);
         expiryYear = expiryYear.substring(expiryYear.length() - 2);
         paymentMethodUuid = UUID.randomUUID();
-
+        System.out.println(hasFunds);
         paymentMethodsRepository.create_payment_method(
                 paymentMethodUuid,
                 customerUuid,
@@ -52,7 +66,8 @@ public class AddPaymentMethodCommand implements Command{
                 expiryYear,
                 encryptCardDetails(cvv),
                 cardholderName,
-                isDefault
+                isDefault,
+                hasFunds
         );
 
     }

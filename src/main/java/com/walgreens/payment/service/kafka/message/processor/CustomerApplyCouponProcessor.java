@@ -10,7 +10,7 @@ public class CustomerApplyCouponProcessor extends Processor{
     @Override
     public void process() {
         CustomerApplyCouponCommand customerApplyCouponCommand = (CustomerApplyCouponCommand) getCommand();
-        Map<String, String> message = getMessageInfo().get(Keys.body);
+        Map<String, String> message = getMessageInfo();
         customerApplyCouponCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
         customerApplyCouponCommand.setCouponUuid(UUID.fromString(message.get(Keys.couponUuid)));
 

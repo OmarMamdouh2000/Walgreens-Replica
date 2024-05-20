@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -46,7 +48,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
             createATransactionCommand.setCustomerUuid(customerUuid);
             createATransactionCommand.setCartUuid(cartUuid);
             createATransactionCommand.setAmount(amount);
-            createATransactionCommand.setTransactionTime(LocalDateTime.now());
+            createATransactionCommand.setTransactionTime(Timestamp.from(Instant.now()));
             createATransactionCommand.execute();
 
 

@@ -12,11 +12,14 @@ public class PayUsingPaymentMethodsProcessor extends Processor{
     public void process() {
 
         PayUsingPaymentMethodsCommand payUsingPaymentMethodsCommand = (PayUsingPaymentMethodsCommand) getCommand();
-        Map<String, String> message = getMessageInfo().get(Keys.body);
+        Map<String, String> message = getMessageInfo();
+
+        payUsingPaymentMethodsCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
+
+        payUsingPaymentMethodsCommand.setCartUuid(UUID.fromString(message.get(Keys.cartUuid)));
 
         payUsingPaymentMethodsCommand.setPaymentMethodUuid(UUID.fromString(message.get(Keys.paymentMethodUuid)));
         payUsingPaymentMethodsCommand.setAmount(Double.valueOf(message.get(Keys.paymentAmount)));
-        payUsingPaymentMethodsCommand.setCartUuid(UUID.fromString(message.get(Keys.cartUuid)));
 
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +40,9 @@ public class WebhookService {
     @Autowired
     CreateATransactionCommand createATransactionCommand;
 
+    
     public ResponseEntity<String> handleEvent() {
+
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
 

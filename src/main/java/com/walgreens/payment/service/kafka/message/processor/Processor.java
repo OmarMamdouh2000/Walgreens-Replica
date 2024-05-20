@@ -7,14 +7,14 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.*;
 
 @Getter
 public abstract class Processor {
     private Command command;
     private JsonNode message;
-    private Map<String,Map<String, String>> messageInfo;
+    private Map<String, String> messageInfo = new HashMap<>();
     public abstract void process();
 
     public void init(Command command, JsonNode message) {
@@ -24,7 +24,18 @@ public abstract class Processor {
     }
 
     public void loadMessageInfo() {
-        this.messageInfo =  getNodes(List.of("params","body"));
+        if (message.isObject()) {
+            Iterator<Entry<String, JsonNode>> fields = message.fields();
+            while (fields.hasNext()) {
+                Entry<String, JsonNode> field = fields.next();
+
+                messageInfo.put(field.getKey(), field.getValue().asText());
+            }
+        } else {
+            System.out.println("Provided JsonNode is not an ObjectNode");
+        }
+
+
 
     }
 
