@@ -142,10 +142,12 @@ public class KafkaConsumerResponses {
 						Products product = objectMapper.convertValue(data.get("data"), Products.class);
 						System.out.println("Response: " + product.toString());
 						data.put("itemPrice", product.getPrice());
+						
 						if(product.getDiscount()!="" && !product.getDiscount().isEmpty())
 							data.put("discount", Double.parseDouble(product.getDiscount()));
 						else
-						data.put("discount", 0.0);
+							data.put("discount", 0.0);
+
 						data.put("itemName", product.getName());
 						System.out.println(data);
 						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data));

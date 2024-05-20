@@ -18,28 +18,18 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Products {
 
-    @PrimaryKey
-    private UUID id;
-    private String name;
-    private String image;
-    private double price;
-    private String discount;
-    private String description;
-    private UUID brand;
-    private UUID parentCategory;
-    private boolean sale;
-    private String productType;
-    private ProductSize sizeList;
-    private String customMessage;
-    private boolean inStore;
-    private boolean sameDayDelivery;
-    private boolean shipping;
-    private int inventory;
-    private int pricePerUnit;
-    private String ingredients;
-    private String warnings;
-    private String frequentlyBoughtWith;
-    private boolean refundable;
+	@PrimaryKey
+	private UUID id;
+	private String name;
+	private String image;
+	private double price;
+	private String discount;
+	private String description;
+	private UUID brand;
+	private UUID parentCategory;
+	private boolean sale;
+	private int inventory;
+	private boolean refundable;
 
 //    public Products(UUID id, String name, String description, int price, String image, UUID parentCategory) {
 //        this.id = id;
@@ -114,14 +104,6 @@ public class Products {
 		this.sale = sale;
 	}
 
-	public String getProductType() {
-		return productType;
-	}
-
-	public void setProductType(String productType) {
-		this.productType = productType;
-	}
-
 	public UUID getBrand() {
 		return brand;
 	}
@@ -130,84 +112,12 @@ public class Products {
 		this.brand = brand;
 	}
 
-	public ProductSize getSizeList() {
-		return sizeList;
-	}
-
-	public void setSizeList(ProductSize sizeList) {
-		this.sizeList = sizeList;
-	}
-
-	public String getCustomMessage() {
-		return customMessage;
-	}
-
-	public void setCustomMessage(String customMessage) {
-		this.customMessage = customMessage;
-	}
-
-	public boolean isInStore() {
-		return inStore;
-	}
-
-	public void setInStore(boolean inStore) {
-		this.inStore = inStore;
-	}
-
-	public boolean isSameDayDelivery() {
-		return sameDayDelivery;
-	}
-
-	public void setSameDayDelivery(boolean sameDayDelivery) {
-		this.sameDayDelivery = sameDayDelivery;
-	}
-
-	public boolean isShipping() {
-		return shipping;
-	}
-
-	public void setShipping(boolean shipping) {
-		this.shipping = shipping;
-	}
-
 	public int getInventory() {
 		return inventory;
 	}
 
 	public void setInventory(int inventory) {
 		this.inventory = inventory;
-	}
-
-	public int getPricePerUnit() {
-		return pricePerUnit;
-	}
-
-	public void setPricePerUnit(int pricePerUnit) {
-		this.pricePerUnit = pricePerUnit;
-	}
-
-	public String getIngredients() {
-		return ingredients;
-	}
-
-	public void setIngredients(String ingredients) {
-		this.ingredients = ingredients;
-	}
-
-	public String getWarnings() {
-		return warnings;
-	}
-
-	public void setWarnings(String warnings) {
-		this.warnings = warnings;
-	}
-
-	public String getFrequentlyBoughtWith() {
-		return frequentlyBoughtWith;
-	}
-
-	public void setFrequentlyBoughtWith(String frequentlyBoughtWith) {
-		this.frequentlyBoughtWith = frequentlyBoughtWith;
 	}
 
 	public boolean isRefundable() {
