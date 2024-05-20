@@ -40,8 +40,7 @@ public class ReturnFromSavedForLaterCommandCache implements Command {
         String itemId=(String)data.get("itemId");
         String sessionId=(String)data.get("sessionId");
         Map<String, Object> session = sessionCache.getSessionSection(sessionId, "cart");
-        Map<String, Object> sessionUser = sessionCache.getSessionSection(sessionId, "user");
-        String userId=(String) sessionUser.get("userId");
+        String userId=(String) data.get("userId");
         CartTable oldCart=null;
         ObjectMapper objectMapper = new ObjectMapper();
         if(session!=null){

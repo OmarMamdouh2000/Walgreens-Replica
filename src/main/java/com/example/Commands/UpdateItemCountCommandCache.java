@@ -42,14 +42,13 @@ public class UpdateItemCountCommandCache implements Command{
         String itemId=(String)data.get("itemId");
         String sessionId=(String)data.get("sessionId");
         Map<String, Object> sessionCart = sessionCache.getSessionSection(sessionId, "cart");
-        Map<String, Object> sessionUser = sessionCache.getSessionSection(sessionId, "user");
         ObjectMapper objectMapper = new ObjectMapper();
         int count=(int)data.get("itemCount");
 	   
         if(count<0) {
             return "invalid count";
         }
-        String userId=(String) sessionUser.get("userId");
+        String userId=(String) data.get("userId");
         CartTable oldCart=null;
         if(sessionCart !=null) {
             oldCart = objectMapper.convertValue(sessionCart, CartTable.class);

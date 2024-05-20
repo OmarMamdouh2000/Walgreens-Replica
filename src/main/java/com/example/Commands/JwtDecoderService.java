@@ -1,26 +1,35 @@
 package com.example.Commands;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 @Service
  public class JwtDecoderService {
 
-    public Claims decodeJwtToken(String token, String secretKey) {
+     public  String generateToken(String userId) {
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+                .setSubject(userId)
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + 1000 * 60 * 60 * 10)) // 10 hours validity
+                .signWith(SignatureAlgorithm.HS256, "secret")
+                .compact();
+    }
+
+
+    public  String getUserIdFromToken(String token) {
         try {
-            Jws<Claims> jws = Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
-                    .build()
-                    .parseClaimsJws(token);
-            return jws.getBody();
+            Claims claims = Jwts.parser()
+                    .setSigningKey("secret")
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
         } catch (Exception e) {
-            // Handle exception (e.g., invalid token)
-//            e.printStackTrace();
             return null;
-            
-            
         }
     }
 }

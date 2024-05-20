@@ -57,7 +57,7 @@ public class ProceedToCheckOutCommand implements Command {
         String userCartString = objectMapper.writeValueAsString(request);
 
         //TODO: Publish to Payment Service Kafka
-        //kafkaProducer.publishToTopic("paymentRequests", userCartString);
+        kafkaProducer.publishToTopic("payment", userCartString);
         //or Call API to payment service
         return "Checkout Request Sent";
         

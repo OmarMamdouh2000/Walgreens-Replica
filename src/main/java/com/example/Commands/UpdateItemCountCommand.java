@@ -38,7 +38,6 @@ public class UpdateItemCountCommand implements Command{
     public Object execute(Map<String,Object> data) {
         
         String itemId=(String)data.get("itemId");
-        String token=(String)data.get("token");
         int count=(int)data.get("itemCount");
 	   
         if(count<0) {

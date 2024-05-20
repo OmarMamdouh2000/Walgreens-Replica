@@ -33,17 +33,25 @@ public class CartController {
 
 	@Autowired
 	private SessionCache sessionCache;
+	@GetMapping("/getToken")
+	public String getToken() {
+		return jwtDecoderService.generateToken("235772bd-f0de-41ee-8280-642a5bdf837f");
+	}
+	@GetMapping("/getUserId")
+	public String getUserId(@RequestParam String token) {
+		return jwtDecoderService.getUserIdFromToken(token);
+	}
 
 
 	@GetMapping("/hello")
 	public String hello() {
 		return "hello";
 	}
-	@GetMapping("/storeSessionUser")
-	public void storeSessionUser(){						
-		// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
-		sessionCache.createSession("1234", "user", Map.of("userId", "235772bd-f0de-41ee-8280-642a5bdf837f", "email", "ziad@gmail", "username", "ziad"));
-	}
+	// @GetMapping("/storeSessionUser")
+	// public void storeSessionUser(){						
+	// 	// sessionCache.createSession("1234", "87033e74-dc2f-4672-87ba-6fdd0024d4d1", "user", "ziad@gmail", "ziad", "ziad");
+	// 	sessionCache.createSession("1234", "user", Map.of("userId", "235772bd-f0de-41ee-8280-642a5bdf837f", "email", "ziad@gmail", "username", "ziad"));
+	// }
 
 	@GetMapping("/storeSessionCart")
 	public void storeSessionCart(){
@@ -62,7 +70,7 @@ public class CartController {
 
 	@GetMapping("/getCart")
 	public Object getCart(@RequestParam String sessionId) {
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -79,7 +87,7 @@ public class CartController {
 	@PostMapping("/editItemCount")
 	public String editItemCount(@RequestParam String sessionId,@RequestBody Map<String,Object> data) {
 
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("userId", userId);
 		data.put("commandName", "UpdateItemCountCommandCache");
 		data.put("sessionId", sessionId);
@@ -97,7 +105,7 @@ public class CartController {
 	}
 	@PostMapping("/addItemToSavedLater")
 	public String addItemToSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("userId", userId);
 		data.put("commandName", "AddToSavedForLaterCache");
 		data.put("sessionId", sessionId);
@@ -115,7 +123,7 @@ public class CartController {
 	}
 	@PostMapping("/returnItemFromSavedLater")
 	public String returnItemFromSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("userId", userId);
 		data.put("commandName", "ReturnFromSavedForLaterCache");
 		data.put("sessionId", sessionId);
@@ -134,7 +142,7 @@ public class CartController {
 
 	@PostMapping("/removeItem")
 	public Object removeItemFromCart(@RequestParam String sessionId ,@RequestBody Map<String, Object> data) throws Exception {
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "RemoveItem");
@@ -152,7 +160,7 @@ public class CartController {
 
 	@PostMapping("/changeOrderType")
 	public Object setOrderType(@RequestParam String sessionId, @RequestBody Map<String, Object> data) throws Exception{
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ChangeOrderType");
@@ -171,7 +179,7 @@ public class CartController {
 
 	@PostMapping("/applyPromo")
 	public Object applyPromo(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ApplyPromo");
@@ -192,7 +200,7 @@ public class CartController {
 	@PostMapping("/addItem")
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "GetProductForCartCommand");
@@ -213,7 +221,7 @@ public class CartController {
 
 	@PostMapping("/addComment")
 	public Object addComment(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "AddComment");
@@ -232,7 +240,7 @@ public class CartController {
 
 	@PostMapping("/proceedToCheckOut")
 	public Object proceedToCheckOut(@RequestParam String sessionId){
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -248,7 +256,7 @@ public class CartController {
 	public Object confirmCheckout(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		String userId=sessionCache.getSessionSection(sessionId, "user").get("userId").toString();
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("userId", userId);
 		data.put("commandName", "ConfirmCheckoutCommand");
 		try {
