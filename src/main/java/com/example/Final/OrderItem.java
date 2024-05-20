@@ -9,6 +9,7 @@ public class OrderItem {
 
     private UUID itemId;
     private int itemCount;
+    private String itemName;
     private double purchasedPrice;
     private String deliveryType;
     private String comment;
@@ -29,6 +30,12 @@ public class OrderItem {
 
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
+    }
+    public String getItemName() {
+        return itemName;
+    }
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public double getPurchasedPrice() {
