@@ -50,6 +50,7 @@ public class AddItem implements Command{
 
         String itemId = (String) data.get("itemId");
         int itemCount = (int) data.get("itemCount");
+        String itemName=(String) data.get("itemName");
 
         double itemPrice = (double) data.get("itemPrice");
         String deliveryType = (String) data.get("deliveryType");
@@ -77,6 +78,7 @@ public class AddItem implements Command{
             item_to_be_added.setItemCount(itemCount);
             item_to_be_added.setDeliveryType(first_item_deliveryType);
             item_to_be_added.setPurchasedPrice(itemPrice);
+            item_to_be_added.setItemName(itemName);
             Cart_Items.add(item_to_be_added);
             if(Objects.equals(Cart.getAppliedPromoCodeId(), ' ')) {
                 double newAmount = itemPrice * (1 - Cart.getPromoCodeAmount() / 100);
@@ -92,6 +94,7 @@ public class AddItem implements Command{
             item_to_be_added.setItemCount(itemCount);
             item_to_be_added.setDeliveryType(deliveryType);
             item_to_be_added.setPurchasedPrice(itemPrice);
+            item_to_be_added.setItemName(itemName);
             Cart_Items.add(item_to_be_added);
             if(Objects.equals(Cart.getAppliedPromoCodeId(), ' ')) {
                 double newAmount = itemPrice * (1 - Cart.getPromoCodeAmount() / 100);
