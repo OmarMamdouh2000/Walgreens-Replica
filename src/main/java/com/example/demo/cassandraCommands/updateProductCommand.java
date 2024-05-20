@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Categories;
 import com.example.demo.cassandraModels.Pobject;
@@ -19,17 +20,19 @@ import com.example.demo.cassandraRepositories.ProductsRepo;
 @Service
 public class updateProductCommand implements Command{
 
+	private FirebaseService firebaseService;
 	private CategoriesRepo catRepo;
 	private ProductsRepo prodRepo;
 	private BrandsRepo brandRepo;
 	
 	
 	@Autowired
-	public updateProductCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
+	public updateProductCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo, FirebaseService firebaseService) 
 	{
 		this.catRepo=catRepo;
 		this.prodRepo = prodRepo;
 		this.brandRepo = brandRepo;
+		this.firebaseService = firebaseService;
 	}
 	
 	@Override

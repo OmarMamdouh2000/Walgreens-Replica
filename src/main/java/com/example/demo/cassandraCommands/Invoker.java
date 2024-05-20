@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraRepositories.BrandsRepo;
 import com.example.demo.cassandraRepositories.CategoriesRepo;
 import com.example.demo.cassandraRepositories.ProductsRepo;
@@ -23,7 +24,10 @@ public class Invoker {
         private ProductsRepo prodRepo;
         @Autowired
         private BrandsRepo brandRepo;
-
+        @Autowired
+        private FirebaseService firebaseService;
+        
+        
         public Invoker() {
                 commandMap = new HashMap<>();
                 // Categories
@@ -60,9 +64,9 @@ public class Invoker {
                                 String className = commandMap.get(commandName);
                                 Class<?> class1 = Class.forName(className);
                                 Constructor<?> constructor = class1.getDeclaredConstructor(CategoriesRepo.class,
-                                                ProductsRepo.class, BrandsRepo.class); // replace with your parameter
+                                                ProductsRepo.class, BrandsRepo.class, FirebaseService.class); // replace with your parameter
                                                                                        // types
-                                Object instance = constructor.newInstance(catRepo, prodRepo, brandRepo); // replace with
+                                Object instance = constructor.newInstance(catRepo, prodRepo, brandRepo, firebaseService); // replace with
                                                                                                          // your actual
                                                                                                          // parameters
                                 // If your class has a method you want to invoke, you can do so like this:

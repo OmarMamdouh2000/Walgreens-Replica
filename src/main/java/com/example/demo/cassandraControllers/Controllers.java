@@ -1,7 +1,9 @@
 package com.example.demo.cassandraControllers;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,11 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.datastax.oss.driver.api.core.uuid.Uuids;
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraKafka.KafkaProducer;
 
 
@@ -24,7 +30,8 @@ public class Controllers {
 	
 	@Autowired
 	private KafkaProducer kafkaProducerRequest;
-	
+	@Autowired
+	FirebaseService firebaseService;
 	// --------------------------------------------- CATEGORIES ------------------------------------------------
 	
 	@GetMapping("/listCategories")
@@ -99,9 +106,22 @@ public class Controllers {
 	}
 	
 	@PostMapping("/addCategory")
-	public void addCategory(@RequestBody Map<String, Object> body)
+	public void addCategory(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image)
 	{
+		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addCategoryCase");
+		body.putAll(all);
+		
+		UUID randomId = Uuids.timeBased();
+		String randomIdString = randomId.toString();
+		try {
+			String x = firebaseService.uploadPhoto(randomIdString, image);
+			System.out.println(x);
+			body.put("image", randomIdString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
@@ -194,10 +214,23 @@ public class Controllers {
 		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
 	}
 	
+	
 	@PostMapping("/addProduct")
-    public void addProduct(@RequestBody Map<String, Object> body) 
+    public void addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image) 
 	{
+		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addProductCase");
+		body.putAll(all);
+		
+		UUID randomId = Uuids.timeBased();
+		String randomIdString = randomId.toString();
+		try {
+			firebaseService.uploadPhoto(randomIdString, image);
+			body.put("image", randomIdString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;

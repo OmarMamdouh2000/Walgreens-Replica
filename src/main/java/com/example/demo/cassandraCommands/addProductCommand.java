@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
+import com.example.demo.cassandraFirebase.FirebaseService;
 import com.example.demo.cassandraModels.Brands;
 import com.example.demo.cassandraModels.Categories;
 import com.example.demo.cassandraModels.Pobject;
-import com.example.demo.cassandraModels.Products;
 import com.example.demo.cassandraRepositories.BrandsRepo;
 import com.example.demo.cassandraRepositories.CategoriesRepo;
 import com.example.demo.cassandraRepositories.ProductsRepo;
@@ -20,17 +20,19 @@ import com.example.demo.cassandraRepositories.ProductsRepo;
 @Service
 public class addProductCommand implements Command{
 	
+	private FirebaseService firebaseService;
 	private CategoriesRepo catRepo;
 	private ProductsRepo prodRepo;
 	private BrandsRepo brandRepo;
 	
 	
 	@Autowired
-	public addProductCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo) 
+	public addProductCommand(CategoriesRepo catRepo, ProductsRepo prodRepo, BrandsRepo brandRepo, FirebaseService firebaseService) 
 	{
 		this.catRepo=catRepo;
 		this.prodRepo = prodRepo;
 		this.brandRepo = brandRepo;
+		this.firebaseService = firebaseService;
 	}
 	
 	@Override
@@ -41,12 +43,13 @@ public class addProductCommand implements Command{
 			UUID categoryId = null;
 			UUID productId = Uuids.timeBased();
 		    String productName = "";
-		    String productImage = "";
-		    double productPrice = 0;
+		    String productImage = null;
+		    double productPrice = 0.0;
 		    String productDiscount = "";
 		    String productDescription = "";
 		    UUID brandId = null;
 		    String brandName = "";
+		    String randomIdString = "";
 		    
 		    
 		    if(body.containsKey("parentcategory"))
@@ -63,7 +66,7 @@ public class addProductCommand implements Command{
 		    }
 		    if(body.containsKey("price"))
 		    {
-		    	productPrice = (double)body.get("price");
+		    	productPrice = Double.parseDouble((String) body.get("price"));
 		    }
 		    if(body.containsKey("discount"))
 		    {
@@ -114,6 +117,7 @@ public class addProductCommand implements Command{
 		    }
 		    
 		    prodRepo.addProductRepo(productId, productName, productImage, productPrice, productDiscount, productDescription, brandId, categoryId);
+		    System.out.print(randomIdString);
 			return("Success");
 		}
 		return("Failed");
