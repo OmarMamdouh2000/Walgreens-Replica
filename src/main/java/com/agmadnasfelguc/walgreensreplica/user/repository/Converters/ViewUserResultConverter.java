@@ -9,13 +9,15 @@ import java.util.Map;
 
 public class ViewUserResultConverter {
     public static ViewUserResult convertTupleToDTO(Map<String, Object> tuple) {
+        if(tuple == null){
+            return null;
+        }
         ViewUserResult userDTO = new ViewUserResult();
         userDTO.setUserId(String.valueOf(tuple.get("user_id")));
         userDTO.setEmail(String.valueOf(tuple.get("email")));
         userDTO.setRole(String.valueOf(tuple.get("role")));
         userDTO.setStatus(String.valueOf(tuple.get("status")));
         userDTO.setEmailVerified(Boolean.parseBoolean(String.valueOf(tuple.get("email_verified"))));
-        userDTO.setTwoFactorAuthEnabled(Boolean.parseBoolean(String.valueOf(tuple.get("TwoFactorAuth_Enabled"))));
         userDTO.setFirstName(String.valueOf(tuple.get("first_name")));
         userDTO.setLastName(String.valueOf(tuple.get("last_name")));
         if (!tuple.get("address").equals("")) {

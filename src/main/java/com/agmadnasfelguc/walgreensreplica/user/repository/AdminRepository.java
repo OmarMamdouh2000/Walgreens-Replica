@@ -34,4 +34,5 @@ public interface AdminRepository extends JpaRepository<Admin, UUID>{
 
     @Query(value = "SELECT * FROM get_all_users()", nativeQuery = true)
     List<Tuple> getAllUsers();
+
 }

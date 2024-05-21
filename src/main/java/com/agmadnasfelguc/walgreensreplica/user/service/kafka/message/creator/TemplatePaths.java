@@ -29,6 +29,9 @@ public class TemplatePaths {
 
     public static final String uploadImagePath = basePath + "UploadImage.json";
 
+    public static final String viewUserPath = basePath + "ViewUser.json";
+
+
     public static final String responsePath = "messageTemplates/userManagement/response/Response.json";
 
 

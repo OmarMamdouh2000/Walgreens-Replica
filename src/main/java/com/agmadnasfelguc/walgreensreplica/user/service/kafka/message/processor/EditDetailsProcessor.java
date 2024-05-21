@@ -16,7 +16,7 @@ public class EditDetailsProcessor extends Processor {
         EditDetailsCommand typeCastedCommand = (EditDetailsCommand) getCommand();
         Map<String, String> paramsInfo = getMessageInfo().get(Keys.params);
         Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
-        typeCastedCommand.setSessionID(paramsInfo.get(Keys.sessionId));
+        typeCastedCommand.setSessionId(paramsInfo.get(Keys.sessionId));
         if (!messageInfo.get(Keys.dateOfBirth).equals("placeholder")){
             typeCastedCommand.setDateOfBirth(formatDate(messageInfo.get(Keys.dateOfBirth)));
         }

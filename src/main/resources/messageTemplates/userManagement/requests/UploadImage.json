@@ -3,9 +3,7 @@
     "sessionId": "placeholder"
   },
   "body": {
-    "image": {
-
-    }
+    "imageId": "placeholder"
   },
   "request": "UploadImage"
 }

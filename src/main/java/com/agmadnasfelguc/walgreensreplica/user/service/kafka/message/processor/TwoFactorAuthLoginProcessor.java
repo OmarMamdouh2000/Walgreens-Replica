@@ -16,12 +16,8 @@ public class TwoFactorAuthLoginProcessor extends Processor {
         Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
 
         typeCastedCommand.setUserId(paramsInfo.get(Keys.userId));
-        typeCastedCommand.setEmail(messageInfo.get(Keys.email));
         typeCastedCommand.setOtp(messageInfo.get(Keys.otp));
-        typeCastedCommand.setFirstName(messageInfo.get(Keys.firstName));
-        typeCastedCommand.setLastName(messageInfo.get(Keys.lastName));
-        typeCastedCommand.setRole(messageInfo.get(Keys.role));
-        typeCastedCommand.setEmailVerified(Boolean.parseBoolean(messageInfo.get(Keys.emailVerified)));
+        typeCastedCommand.setEmail(messageInfo.get(Keys.email));
 
 
 

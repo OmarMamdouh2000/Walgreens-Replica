@@ -13,6 +13,7 @@ public class VerifyMailCheckOtpProcessor extends Processor {
         Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
         typeCastedCommand.setSessionId(paramsInfo.get(Keys.sessionId));
         typeCastedCommand.setOtp(messageInfo.get(Keys.otp));
+        typeCastedCommand.setEmail(messageInfo.get(Keys.email));
 
     }
 }

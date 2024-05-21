@@ -3,11 +3,8 @@
         "userId": "placeholder"
     },
     "body": {
-        "email": "placeholder",
         "otp": "placeholder",
-        "firstName": "placeholder",
-        "lastName": "placeholder",
-        "role": "placeholder"
+        "email": "placeholder"
     },
     "request": "TwoFactorAuthLogin"
 }

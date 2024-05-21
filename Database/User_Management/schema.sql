@@ -1,5 +1,4 @@
 create type "Role" as enum (
-  'Adminstrator',
   'Customer',
   'Pharmacist'
 );
@@ -14,10 +13,11 @@ create type "Status" as enum(
 'Banned'
 );
 
+
 CREATE TABLE "User" (
   "id" UUID PRIMARY KEY,
   "email" varchar UNIQUE NOT NULL,
-  "password" varchar NOT NULL,
+  "password" text NOT NULL,
   "role" "Role" NOT NULL,
   "status" "Status" NOT NULL,
   "email_verified" boolean DEFAULT false,

@@ -3,6 +3,8 @@ import com.agmadnasfelguc.walgreensreplica.user.cache.OTPTypes;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.LoginResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.LoginResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
+import com.agmadnasfelguc.walgreensreplica.user.service.Utils.JwtUtil;
+import com.agmadnasfelguc.walgreensreplica.user.service.Utils.PasswordHasher;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.CreateSessionCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.GenerateOTPCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
@@ -10,83 +12,80 @@ import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
 import lombok.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Service
-@Data
-@NoArgsConstructor
+@Slf4j
 public class LoginUserCommand extends Command {
+    @Setter
     private String email;
+    @Setter
     private String password;
-    private String userId;
+
+    private UUID userId;
     private String sessionId;
 
-    private UserRepository userRepository;
-    private Command createSessionCommand;
-    private Command generateOTPCommand;
-
-    Logger logger = LoggerFactory.getLogger(LoginUserCommand.class);
 
     @Autowired
-    public LoginUserCommand(UserRepository userRepository, Command createSessionCommand, Command generateOTPCommand) {
-        this.userRepository = userRepository;
-        this.createSessionCommand = createSessionCommand;
-        this.generateOTPCommand = generateOTPCommand;
-    }
+    private UserRepository userRepository;
+    @Autowired
+    private CreateSessionCommand createSessionCommand;
+    @Autowired
+    private GenerateOTPCommand generateOTPCommand;
+
 
     @Override
     public void execute() {
         try{
-            Tuple result = userRepository.loginUser(email, password);
-            LoginResult response = LoginResultConverter.convertTupleToLoginResult(result);
-
-            this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
+            Tuple result = userRepository.loginUser(email, PasswordHasher.hashPassword(password));
+            LoginResult loginResult = LoginResultConverter.convertTupleToLoginResult(result);
+            userId = loginResult.getUserId();
+            this.setState(new ResponseStatus(ResponseState.valueOf(loginResult.getStatus()), loginResult.getMessage()));
             if(!this.getState().getStatus().equals(ResponseState.Failure)){
-                this.userId = response.getUserId().toString();
                 if(this.getState().getStatus().equals(ResponseState.Pending)){
-                    setUpGenerateOtpCommandAndExecute(response);
+                    setUpGenerateOtpCommandAndExecute();
                 }
                 else{
-                    setUpCreateSessionCommandAndExecute(response);
-                    this.sessionId = ((CreateSessionCommand) createSessionCommand).getSessionId();
+                    setUpCreateSessionCommandAndExecute();
+                    this.setState(createSessionCommand.getState());
                 }
+            }
+            else{
+                this.setState(new ResponseStatus(ResponseState.Failure, loginResult.getMessage()));
             }
 
         }catch(Exception e){
-            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            e.printStackTrace();
+            ResponseFormulator.formulateException(this,e);
         }
         if(this.getState().getStatus().equals(ResponseState.Success)) {
-            ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("sessionId", sessionId));
+            ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("sessionId", sessionId));
         } else {
-            ResponseFormulator.formulateResponse(logger, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
+            if(this.getState().getStatus().equals(ResponseState.Pending)){
+                ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("userId", userId));
+            }
+            else {
+                ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
+            }
         }
 
     }
 
-    private void setUpGenerateOtpCommandAndExecute(LoginResult response){
-        ((GenerateOTPCommand)generateOTPCommand).setEmail(email);
-        ((GenerateOTPCommand)generateOTPCommand).setOtpType(OTPTypes.TWOFACTORAUTH);
-        ((GenerateOTPCommand)generateOTPCommand).setFirstName(response.getFirst_name());
-        ((GenerateOTPCommand)generateOTPCommand).setLastName(response.getLast_name());
-        ((GenerateOTPCommand)generateOTPCommand).setSubject("Log in to your account");
+    private void setUpGenerateOtpCommandAndExecute(){
+        generateOTPCommand.setEmail(email);
+        generateOTPCommand.setOtpType(OTPTypes.TWOFACTORAUTH);
+        generateOTPCommand.setSubject("Log in to your account");
         generateOTPCommand.execute();
     }
 
-    private void setUpCreateSessionCommandAndExecute(LoginResult response){
-        ((CreateSessionCommand) createSessionCommand).setEmail(email);
-        ((CreateSessionCommand) createSessionCommand).setUserId(userId);
-        ((CreateSessionCommand) createSessionCommand).setSessionId(response.getImageId());
-        ((CreateSessionCommand) createSessionCommand).setRole(response.getRole());
-        ((CreateSessionCommand) createSessionCommand).setFirstName(response.getFirst_name());
-        ((CreateSessionCommand) createSessionCommand).setLastName(response.getLast_name());
-        ((CreateSessionCommand) createSessionCommand).setEmailVerified(response.isEmail_verified());
+    private void setUpCreateSessionCommandAndExecute(){
+        sessionId = JwtUtil.generateToken(String.valueOf(userId));
+        createSessionCommand.setSessionId(sessionId);
         createSessionCommand.execute();
     }
 }

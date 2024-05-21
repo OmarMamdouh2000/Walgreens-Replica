@@ -10,7 +10,6 @@ public class ViewUserResult {
     private String role;
     private String status;
     private boolean emailVerified;
-    private boolean twoFactorAuthEnabled;
     private String firstName;
     private String lastName;
     private String address;

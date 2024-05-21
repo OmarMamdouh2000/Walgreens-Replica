@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres_database:
     image: postgres:13
@@ -25,9 +27,17 @@ services:
     image: redis:latest
     environment:
       - REDIS_PASSWORD=root
-    command: ["redis-server", "--requirepass", "root"]
+    command: ["redis-server", "--requirepass", "root", "--maxmemory-policy", "volatile-lru"]
     ports:
       - "6379:6379"
+
+  otp_redis:  # New Redis instance dedicated for OTPs
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=otp_secret
+    command: ["redis-server", "--requirepass", "otp_secret", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "6380:6379"  # Note: Different port to avoid conflict with the other Redis instance
 
 volumes:
   walgreens_user_managmenet_postgres:

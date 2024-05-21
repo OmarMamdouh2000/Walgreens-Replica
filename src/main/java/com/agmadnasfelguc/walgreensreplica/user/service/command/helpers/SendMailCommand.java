@@ -4,8 +4,7 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import lombok.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,47 +19,37 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Service
-@Data
+@Slf4j
 public class SendMailCommand extends Command {
 
+    @Setter
     private String subject;
+    @Setter
     private String OTP;
-    private boolean emailSent = false;
+    @Setter
     private String email;
-    private String firstName;
-    private String lastName;
 
 
     @Autowired
     private JavaMailSender mailSender;
 
-    Logger logger = LoggerFactory.getLogger(SendMailCommand.class);
-
     @Override
     public void execute() {
         try {
             sendMail();
-            if(emailSent) {
-                this.setState(new ResponseStatus(ResponseState.Success, "Email sent successfully"));
-                logger.info("Email sent successfully");
-            } else {
-                this.setState(new ResponseStatus(ResponseState.Failure, "Could not open HTML file"));
-                logger.error("Could not open HTML file");
-            }
         } catch (Exception e) {
-            this.setState(new ResponseStatus(ResponseState.Failure, e.getMessage()));
-            logger.error(e.getMessage());
+            ResponseFormulator.formulateException(this, e);
         }
+        ResponseFormulator.formulateLogger(log, this.getState());
     }
+
 
     private void sendMail(){
         String htmlBody = readHtmlFile();
-        if(htmlBody == null) {
-            logger.error("Html body is null");
+        if (htmlBody == null) {
+            this.setState(new ResponseStatus(ResponseState.Failure, "Error with reading HTML file"));
             return;
         }
-        htmlBody = htmlBody.replace("${firstName}", firstName);
-        htmlBody = htmlBody.replace("${lastName}", lastName);
         htmlBody = htmlBody.replace("${otpPurpose}", subject.toLowerCase());
         htmlBody = htmlBody.replace("${otp}", OTP);
         String finalHtmlBody = htmlBody;
@@ -72,17 +61,17 @@ public class SendMailCommand extends Command {
             messageHelper.setText(finalHtmlBody, true);
         };
         mailSender.send(messagePreparator);
-        emailSent = true;
+        this.setState(new ResponseStatus(ResponseState.Success, "Email sent successfully"));
     }
 
     private String readHtmlFile() {
         InputStream inputStream = SendMailCommand.class.getClassLoader().getResourceAsStream("templates/OTP.html");
         if (inputStream == null) {
-            logger.error("Template not found");
+            log.error("HTML Template not found");
             return null;
         } else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            logger.info("Reading HTML file");
+            log.info("Reading HTML file");
             return reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
         }

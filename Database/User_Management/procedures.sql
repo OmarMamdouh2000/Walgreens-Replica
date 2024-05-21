@@ -12,24 +12,26 @@ CREATE OR REPLACE FUNCTION register_user(
     p_first_name VARCHAR,
     p_last_name VARCHAR,
     p_email VARCHAR,
-    p_password VARCHAR
+    p_password text
 )
-RETURNS VARCHAR
+RETURNS text
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_user_id UUID;
 BEGIN
     INSERT INTO "User" ("id", "email", "password", "status", "role")
-    VALUES (gen_random_uuid(), p_email, p_password, 'Active','Customer')
+    VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Customer')
     RETURNING "id" INTO v_user_id;
 
     INSERT INTO "Customer" ("id", "first_name", "last_name")
     VALUES (v_user_id, p_first_name, p_last_name);
 
-    RETURN 'Successfully registered user';
+    RETURN 'User Registered Successfully'; -- Return the hashed password
 END;
 $$;
+
+
 
 -- Function: edit_personal_details
 /*
@@ -161,8 +163,8 @@ Returns: Status message indicating the result of the operation (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION change_password(
     p_user_id UUID,
-    p_old_password VARCHAR,
-    p_new_password VARCHAR,
+    p_old_password text,
+    p_new_password text,
     OUT status VARCHAR,
     OUT message VARCHAR
 )
@@ -203,7 +205,7 @@ Returns: Status message indicating the result of the operation (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION update_password(
     p_email VARCHAR,
-    p_new_password VARCHAR,
+    p_new_password text,
     OUT status VARCHAR,
     OUT message VARCHAR
 )
@@ -264,7 +266,7 @@ Returns: Status message indicating the result of the operation (VARCHAR).
 */
 CREATE OR REPLACE FUNCTION change_email(
     p_user_id UUID,
-    p_password VARCHAR,
+    p_password text,
     p_new_email VARCHAR,
     OUT status VARCHAR,
     OUT message VARCHAR
@@ -273,7 +275,7 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_current_password VARCHAR;
+    v_current_password text;
 BEGIN
     SELECT password INTO v_current_password
     FROM "User"
@@ -295,6 +297,7 @@ BEGIN
     END IF;
 END;
 $$;
+
 
 
 -- Function: update_TwoFactorAuth_Enabled
@@ -359,7 +362,7 @@ Returns: Status message indicating successful addition of the administrator (VAR
 */
 CREATE OR REPLACE FUNCTION add_admin(
     v_username VARCHAR,
-    v_password VARCHAR
+    v_password text
 )
 RETURNS VARCHAR
 LANGUAGE plpgsql
@@ -385,7 +388,7 @@ CREATE OR REPLACE FUNCTION add_pharmacist(
     p_first_name VARCHAR,
     p_last_name VARCHAR,
     p_email VARCHAR,
-    p_password VARCHAR
+    p_password text
 )
 RETURNS VARCHAR
 LANGUAGE plpgsql
@@ -477,88 +480,44 @@ Notes:
 */
 CREATE OR REPLACE FUNCTION login(
     p_email VARCHAR,
-    p_password VARCHAR,
+    p_password TEXT,
     OUT user_id UUID,
     OUT status VARCHAR,
-    OUT message VARCHAR,
-    OUT role VARCHAR,
-    OUT first_name VARCHAR,
-    OUT last_name VARCHAR,
-    OUT email VARCHAR,
-    OUT email_verified BOOLEAN,
-    OUT image_id UUID
+    OUT message VARCHAR
 )
 RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
+    v_HashedPassword TEXT;
     v_TwoFactorAuth_Enabled BOOLEAN;
 BEGIN
-    -- Initial user check
-    SELECT U.id, U.status, U.role, U."TwoFactorAuth_Enabled", U."email_verified", U.image_id
-    INTO user_id, status, role, v_TwoFactorAuth_Enabled, email_verified, image_id
+    -- Retrieve hashed password and 2FA status
+    SELECT U.id, U.password, U."TwoFactorAuth_Enabled"
+    INTO user_id, v_HashedPassword, v_TwoFactorAuth_Enabled
     FROM "User" U
-    WHERE U.email = p_email AND U.password = p_password;
+    WHERE U.email = p_email;
 
-    -- Check if user was found
-    IF NOT FOUND THEN
+    -- Check if user was found and verify password
+    IF user_id IS NULL THEN
         status := 'Failure';
-        message := 'Wrong Email or Password';
-        user_id := NULL;
-        first_name := NULL;
-        last_name := NULL;
-        email := NULL;
-    ELSE
-        IF status = 'Banned' THEN
-            status := 'Failure';
-            message := 'Account is banned';
-            user_id := NULL;
-            first_name := NULL;
-            last_name := NULL;
-            email := NULL;
-            RETURN;
+        message := 'User not found';
+    ELSIF p_password = v_HashedPassword THEN
+        IF v_TwoFactorAuth_Enabled THEN
+            status := 'Pending';
+            message := '2FA pending. Please complete the authentication.';
         ELSE
-            -- Depending on the role, fetch additional data from different tables
-            IF role = 'Pharmacist' THEN
-                SELECT P.first_name, P.last_name
-                INTO first_name, last_name
-                FROM "Pharmacist" P
-                WHERE P.id = user_id;
-            ELSIF role = 'Customer' THEN
-                SELECT C.first_name, C.last_name
-                INTO first_name, last_name
-                FROM "Customer" C
-                WHERE C.id = user_id;
-            ELSE
-                first_name := NULL;
-                last_name := NULL;
-            END IF;
-
-            IF v_TwoFactorAuth_Enabled THEN
-                status := 'Pending';
-                message := '2FA pending. Please complete the authentication.';
-                email := p_email;
-            ELSE
-                status := 'Success';
-                message := 'Logged in successfully';
-                email := p_email;
-            END IF;
+            status := 'Success';
+            message := 'Logged in successfully';
         END IF;
+    ELSE
+        status := 'Failure';
+        message := 'Wrong Password';
     END IF;
 END;
 $$;
 
 
-
-
--- Function: get_all_users
-/*
-Description: Authenticates an administrator login attempt by verifying username and password.
-Parameters:
-- username: Username of the administrator attempting to log in (VARCHAR).
-- password: Password provided by the administrator attempting to log in (VARCHAR).
-Returns: Status message indicating the outcome of the login attempt (VARCHAR).
-*/
 -- Function: get_all_users
 /*
 Description: Authenticates an administrator login attempt by verifying username and password.
@@ -574,7 +533,6 @@ RETURNS TABLE(
     "role" "Role",
     "status" "Status",
     email_verified BOOLEAN,
-    "TwoFactorAuth_Enabled" BOOLEAN,
     first_name VARCHAR,
     last_name VARCHAR,
     address VARCHAR,
@@ -594,7 +552,6 @@ BEGIN
         u.role,
         u.status,
         u.email_verified,
-        u."TwoFactorAuth_Enabled",
         COALESCE(c.first_name, p.first_name, '') AS first_name,
         COALESCE(c.last_name, p.last_name, '') AS last_name,
         COALESCE(c.address, '') AS address,
@@ -606,9 +563,10 @@ BEGIN
     FROM "User" u
     LEFT JOIN "Customer" c ON u.id = c.id
     LEFT JOIN "Pharmacist" p ON u.id = p.id
-    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id;
+    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id
 END;
 $$;
+
 
 
 -- Function: get_user
@@ -625,7 +583,6 @@ RETURNS TABLE(
     "role" "Role",
     "status" "Status",
     email_verified BOOLEAN,
-    "TwoFactorAuth_Enabled" BOOLEAN,
     first_name VARCHAR,
     last_name VARCHAR,
     address VARCHAR,
@@ -645,7 +602,6 @@ BEGIN
         u.role,
         u.status,
         u.email_verified,
-        u."TwoFactorAuth_Enabled",
         COALESCE(c.first_name, p.first_name, '') AS first_name,
         COALESCE(c.last_name, p.last_name, '') AS last_name,
         COALESCE(c.address, '') AS address,
@@ -661,6 +617,47 @@ BEGIN
     WHERE u.id = p_id;
 END;
 $$;
+
+-- Function: Login_Admin
+/*
+Description: Authenticates an administrator login attempt by verifying username and password.
+Parameters:
+- username: Username of the administrator attempting to log in (VARCHAR).
+- password: Password provided by the administrator attempting to log in (VARCHAR).
+Returns: Status message indicating the outcome of the login attempt (VARCHAR).
+*/
+CREATE OR REPLACE FUNCTION login_admin(
+    p_username VARCHAR,
+    p_password text,
+    OUT admin_id UUID,
+    OUT status VARCHAR,
+    OUT message VARCHAR
+)
+RETURNS record
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_current_password text;  -- Declaration of the variable
+BEGIN
+    SELECT A.id, A.password
+    INTO admin_id, v_current_password
+    FROM "Administrator" A
+    WHERE A.username = p_username;
+
+    IF NOT FOUND THEN
+        status := 'Failure';
+        message := 'User not found';
+    ELSIF p_password = v_current_password THEN
+        status := 'Success';
+        message := 'Logged in successfully';
+    ELSE
+        status := 'Failure';
+        message := 'Wrong password';
+    END IF;
+END;
+$$;
+
+
 
 
 

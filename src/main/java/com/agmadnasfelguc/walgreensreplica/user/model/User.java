@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "\"User\"")
 public class User {
     @Id
-    private String id;
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String email;
