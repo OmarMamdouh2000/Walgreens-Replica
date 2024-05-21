@@ -129,7 +129,7 @@ public class updateProductCommand implements Command{
 			
 			if(body.containsKey("price"))
 			{
-				newProductPrice = (double)body.get("price");
+				newProductPrice = (double) body.get("price");
 				
 				if(product.getParentCategory() != null)
 				{

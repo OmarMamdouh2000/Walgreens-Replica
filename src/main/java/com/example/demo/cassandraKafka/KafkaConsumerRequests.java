@@ -3,6 +3,8 @@ package com.example.demo.cassandraKafka;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ public class KafkaConsumerRequests {
 	Invoker invoker=new Invoker();
 	@Autowired
 	KafkaProducer kafkaProducer;
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 	
 	@KafkaListener(topics="ProductsRequests",groupId = "KafkaGroupRequestProduct")
+	
 	public void consumeMessage(String message) {
 		try {
-			System.out.println("Request: "+message);
+			logger.info("Request: "+message);
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
 			ObjectMapper objectMapper = new ObjectMapper();
