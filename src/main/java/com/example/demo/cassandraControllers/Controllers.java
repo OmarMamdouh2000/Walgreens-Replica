@@ -26,12 +26,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.example.demo.cassandraFirebase.FirebaseService;
+import com.example.demo.cassandraJwt.JwtUtil;
+
 import org.springframework.messaging.Message;
 
 
 @RestController
 public class Controllers {
-	
 	
 	@Autowired
 	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
@@ -133,8 +134,16 @@ public class Controllers {
 	}
 	
 	@DeleteMapping("/deleteCategory/{categoryId}")
-	public String deleteCategory(@PathVariable Object categoryId)
+	public String deleteCategory(@PathVariable Object categoryId, @RequestParam("sessionId") String sessionId)
 	{
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", categoryId);
 		body.put("commandName", "deleteCategoryCase");
@@ -164,8 +173,17 @@ public class Controllers {
 	}
 	
 	@PostMapping("/addCategory")
-	public String addCategory(@RequestBody Map<String, Object> body)
+	public String addCategory(@RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId)
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		body.put("commandName", "addCategoryCase");
 		
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -193,8 +211,17 @@ public class Controllers {
 	}
 	
 	@PutMapping("/updateCategory/{categoryId}")
-	public String updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public String updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId)
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		body.put("parameter", categoryId);
 		body.put("commandName", "updateCategoryCase");
 		
@@ -294,8 +321,17 @@ public class Controllers {
 	}
 	
 	@DeleteMapping("/deleteProduct/{productId}")
-	public String deleteProduct(@PathVariable Object productId) 
+	public String deleteProduct(@PathVariable Object productId, @RequestParam("sessionId") String sessionId) 
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", productId);
 		body.put("commandName", "deleteProductCase");
@@ -326,8 +362,17 @@ public class Controllers {
 	
 	
 	@PostMapping("/addProduct")
-    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image) 
+    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image, @RequestParam("sessionId") String sessionId) 
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addProductCase");
 		body.putAll(all);
@@ -367,8 +412,16 @@ public class Controllers {
    	}
 	
 	@PutMapping("/updateProduct/{productId}")
-	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) 
+	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId) 
 	{
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		body.put("parameter", productId);
 		body.put("commandName", "updateProductCase");
 		
@@ -495,8 +548,17 @@ public class Controllers {
 	}
 	
 	@DeleteMapping("/deleteBrand/{brandId}")
-	public String deleteBrand(@PathVariable Object brandId)
+	public String deleteBrand(@PathVariable Object brandId, @RequestParam("sessionId") String sessionId)
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", brandId);
 		body.put("commandName", "deleteBrandCase");
@@ -526,8 +588,17 @@ public class Controllers {
 				   }
 	}
 	@PostMapping("/addBrand")
-	public String addBrand(@RequestBody Map<String, Object> body)
+	public String addBrand(@RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId)
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		body.put("commandName", "addBrandCase");
 		
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -556,8 +627,17 @@ public class Controllers {
 	}
 	
 	@PutMapping("/updateBrand/{brandId}")
-	public String updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
+	public String updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId)
 	{
+		
+		String user = JwtUtil.getUserIdFromToken(sessionId);
+		String[] adminArr = user.split(";");
+		
+		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+		{
+			return "You must be an Admin";
+		}
+		
 		body.put("parameter", brandId);
 		body.put("commandName", "updateBrandCase");
 		
