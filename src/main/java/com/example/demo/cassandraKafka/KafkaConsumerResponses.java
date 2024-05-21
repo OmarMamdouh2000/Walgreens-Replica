@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class KafkaConsumerResponses {
 	@Autowired
 	public KafkaProducer kafkaProducer;
-	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerResponses.class);
 
 	@KafkaListener(topics="ProductsResponses",groupId = "KafkaGroupResponseProduct")
 	public void consumeMessage(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic) {
