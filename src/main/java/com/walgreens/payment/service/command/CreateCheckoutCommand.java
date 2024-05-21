@@ -140,25 +140,28 @@ public class CreateCheckoutCommand implements Command{
     public List<ProductsDto> getProducts() {
         List<ProductsDto> products = new ArrayList<>();
 
-        for(CartItem cartItem : this.cartItems){
-            ProductsDto productDto = new ProductsDto();
-            productDto.setProductName(cartItem.getItemName());
-            productDto.setProductPrice(cartItem.getPurchasedPrice());
-            productDto.setProductQuantity(cartItem.getItemCount());
-            products.add(productDto);
-        }
-//        ProductsDto product1 = new ProductsDto("Shoes XL", 40, 2);
-//        ProductsDto product2 = new ProductsDto("Towels", 10, 10);
-//        ProductsDto product3 = new ProductsDto("Pillows", 20, 5);
-//        ProductsDto product4 = new ProductsDto("Cups", 5, 20);
-//        ProductsDto product5 = new ProductsDto("Mobile", 5, 200);
-//        ProductsDto product6 = new ProductsDto("TV", 5, 200);
-//        products.add(product1);
-//        products.add(product2);
-//        products.add(product3);
-//        products.add(product4);
-//        products.add(product5);
-//        products.add(product6);
+        if (this.cartItems.size() > 0) {
+            for (CartItem cartItem : this.cartItems) {
+                ProductsDto productDto = new ProductsDto();
+                productDto.setProductName(cartItem.getItemName());
+                productDto.setProductPrice(cartItem.getPurchasedPrice());
+                productDto.setProductQuantity(cartItem.getItemCount());
+                products.add(productDto);
+            }
+        } else {
+        ProductsDto product1 = new ProductsDto("Shoes XL", 40, 2);
+        ProductsDto product2 = new ProductsDto("Towels", 10, 10);
+        ProductsDto product3 = new ProductsDto("Pillows", 20, 5);
+        ProductsDto product4 = new ProductsDto("Cups", 5, 20);
+        ProductsDto product5 = new ProductsDto("Mobile", 5, 200);
+        ProductsDto product6 = new ProductsDto("TV", 5, 200);
+        products.add(product1);
+        products.add(product2);
+        products.add(product3);
+        products.add(product4);
+        products.add(product5);
+        products.add(product6);
+    }
         return products;
 
     }
