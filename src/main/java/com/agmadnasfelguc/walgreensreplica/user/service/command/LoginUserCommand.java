@@ -1,5 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.command;
 import com.agmadnasfelguc.walgreensreplica.user.cache.OTPTypes;
+import com.agmadnasfelguc.walgreensreplica.user.model.enums.Role;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.LoginResult;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.LoginResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.UserRepository;
@@ -84,7 +85,7 @@ public class LoginUserCommand extends Command {
     }
 
     private void setUpCreateSessionCommandAndExecute(){
-        sessionId = JwtUtil.generateToken(String.valueOf(userId));
+        sessionId = JwtUtil.generateToken(String.valueOf(userId), "");
         createSessionCommand.setSessionId(sessionId);
         createSessionCommand.execute();
     }
