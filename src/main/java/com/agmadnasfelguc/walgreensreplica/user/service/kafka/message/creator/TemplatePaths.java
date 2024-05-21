@@ -1,7 +1,7 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator;
 
 public class TemplatePaths {
-    public static final String basePath = "messageTemplates/userManagement/";
+    public static final String basePath = "messageTemplates/userManagement/requests/";
     
     // Admin JSON paths
     public static final String addAdminPath = basePath + "AddAdmin.json";
@@ -26,6 +26,13 @@ public class TemplatePaths {
     public static final String userLoginPath = basePath + "UserLogin.json";
     public static final String verifyMailPath = basePath + "VerifyMail.json";
     public static final String verifyMailCheckOtpPath = basePath + "VerifyMailCheckOtp.json";
+
+    public static final String uploadImagePath = basePath + "UploadImage.json";
+
+    public static final String viewUserPath = basePath + "ViewUser.json";
+
+
+    public static final String responsePath = "messageTemplates/userManagement/response/Response.json";
 
 
 }

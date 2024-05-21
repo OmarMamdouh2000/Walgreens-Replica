@@ -11,8 +11,4 @@ public class LoginResult {
     private UUID userId;
     private String status;
     private String message;
-    private String role;
-    private String email;
-    private String first_name;
-    private String last_name;
 }

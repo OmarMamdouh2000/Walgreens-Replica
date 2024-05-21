@@ -11,7 +11,7 @@ public class ChangeEmailProcessor extends Processor {
         public void process() {
             ChangeEmailCommand typeCastedCommand = (ChangeEmailCommand) getCommand();
             Map<String,String> paramsInfo = getMessageInfo().get(Keys.params);
-            typeCastedCommand.setSessionID(paramsInfo.get(Keys.sessionId));
+            typeCastedCommand.setSessionId(paramsInfo.get(Keys.sessionId));
             Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
             typeCastedCommand.setPassword(messageInfo.get(Keys.password));
             typeCastedCommand.setEmail(messageInfo.get(Keys.newEmail));

@@ -5,21 +5,33 @@ import com.agmadnasfelguc.walgreensreplica.user.repository.AdminRepository;
 import com.agmadnasfelguc.walgreensreplica.user.repository.Converters.AdminLoginResultConverter;
 import com.agmadnasfelguc.walgreensreplica.user.repository.ResultSetsMapping.AdminLoginResult;
 import com.agmadnasfelguc.walgreensreplica.user.service.Utils.JwtUtil;
+import com.agmadnasfelguc.walgreensreplica.user.service.Utils.PasswordHasher;
 import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
+import com.agmadnasfelguc.walgreensreplica.user.service.command.helpers.ResponseFormulator;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseState;
 import com.agmadnasfelguc.walgreensreplica.user.service.response.ResponseStatus;
 import jakarta.persistence.Tuple;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @EqualsAndHashCode(callSuper = true)
 @Service
-@Data
+@Slf4j
 public class LoginAdminCommand extends Command {
+    @Setter
     private String username;
+    @Setter
     private String password;
+
+    private String sessionId;
 
     @Autowired
     AdminRepository adminRepository;
@@ -28,24 +40,24 @@ public class LoginAdminCommand extends Command {
     private SessionCache sessionCache;
 
 
+
     @Override
     public void execute() {
-        //add logic to check if user is logged in, i.e. data already available in redis
-
-        //call stored procedure from postgres to check if user exists and password is correct
-//        try{
-            Tuple result = adminRepository.loginAdmin(username, password);
+        try{
+            Tuple result = adminRepository.loginAdmin(username, PasswordHasher.hashPassword(password));
             AdminLoginResult response = AdminLoginResultConverter.convertTupleToLoginResult(result);
             this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
-            if(this.getState().getStatus().equals(ResponseState.Failure)){
-                return;
+            if(this.getState().getStatus().equals(ResponseState.Success)){
+                this.sessionId = JwtUtil.generateToken(response.getUserId().toString());
+                this.sessionCache.createAdminSession(sessionId, response.getUserId().toString());
             }
-            String sessionId = JwtUtil.generateToken(response.getUserId().toString());
-            this.sessionCache.createAdminSession(sessionId, response.getUserId().toString(),username);
-
-//        }catch(Exception e){
-//            this.setState(new ResponseStatus(ResponseState.FAILURE, e.getMessage()));
-//        }
-        //add logic to add user session data to redis upon successful login
+        }catch(Exception e){
+            ResponseFormulator.formulateException(this,e);
+        }
+        if(this.getState().getStatus().equals(ResponseState.Success)){
+            ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("sessionId",sessionId));
+        }else{
+            ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);
+        }
     }
 }

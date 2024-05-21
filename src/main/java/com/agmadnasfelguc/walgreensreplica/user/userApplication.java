@@ -2,9 +2,10 @@ package com.agmadnasfelguc.walgreensreplica.user;
 
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.MessageCreator;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,11 +17,12 @@ import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @SpringBootApplication
 public class userApplication {
-	@Bean
-	CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
+	//@Bean
+	/*CommandLineRunner commandLineRunner(KafkaTemplate<String, Message<Object>> kafkaTemplate){
 		System.out.println("NOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 		return args -> {
@@ -38,10 +40,9 @@ public class userApplication {
 			);
 
 		};
-	}
+	}*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(userApplication.class, args);
 	}
-
 }

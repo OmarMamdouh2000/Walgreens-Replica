@@ -11,7 +11,7 @@ public class ChangePasswordProcessor extends Processor {
     public void process() {
         ChangePasswordCommand typeCastedCommand = (ChangePasswordCommand) getCommand();
         Map<String,String> paramsInfo = getMessageInfo().get(Keys.params);
-        typeCastedCommand.setSessionID(paramsInfo.get(Keys.sessionId));
+        typeCastedCommand.setSessionId(paramsInfo.get(Keys.sessionId));
         Map<String, String> messageInfo = getMessageInfo().get(Keys.body);
         typeCastedCommand.setOldPassword(messageInfo.get(Keys.oldPassword));
         typeCastedCommand.setNewPassword(messageInfo.get(Keys.newPassword));

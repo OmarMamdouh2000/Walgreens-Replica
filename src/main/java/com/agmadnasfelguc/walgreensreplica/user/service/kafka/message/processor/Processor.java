@@ -4,7 +4,10 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.Command;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,8 +20,20 @@ public abstract class Processor {
     private Map<String,Map<String, String>> messageInfo;
     public abstract void process();
 
+    Logger logger = LoggerFactory.getLogger(Processor.class);
+
     public void init(Command command, JsonNode message) {
         this.command = command;
+        if(!message.get("correlationId").isNull()){
+            try {
+                this.command.setCorrelationId(message.get("correlationId").binaryValue());
+            } catch (IOException e) {
+                logger.error("Error while setting correlationId");
+            }
+        }
+        if(!message.get("replyTopic").isNull()){
+            this.command.setReplyTopic(message.get("replyTopic").asText());
+        }
         this.message = message;
         loadMessageInfo();
     }
