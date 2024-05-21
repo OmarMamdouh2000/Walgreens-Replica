@@ -1,5 +1,6 @@
 package com.agmadnasfelguc.walgreensreplica.user.service.kafka;
 
+import com.agmadnasfelguc.walgreensreplica.user.UserApplication;
 import com.agmadnasfelguc.walgreensreplica.user.service.invoker.UserInvoker;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,11 +22,12 @@ import org.springframework.stereotype.Service;
 public class KafkaListeners {
     @Autowired
     private UserInvoker userInvoker;
+
     Logger logger = LoggerFactory.getLogger(KafkaListeners.class);
 
     @KafkaListener(topics = "userManagement", groupId = "user")
     void listener(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic ) {
-       ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode rootNode = mapper.readTree(message);
             System.out.println("Received message: " + rootNode);
@@ -42,5 +44,6 @@ public class KafkaListeners {
             logger.error(e.getMessage());
         }
     }
+
 
 }
