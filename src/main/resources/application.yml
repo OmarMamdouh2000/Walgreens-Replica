@@ -25,7 +25,14 @@ spring:
   kafka:
     bootstrap-servers: host.docker.internal:29092,host.docker.internal:39092,host.docker.internal:49092
 
-
+logging:
+  level:
+    com.walgreens.payment: TRACE
+  pattern:
+    console: "%d [%level] %c{1.} [%t] %m%n"
+    file: "%d [%level] %c{1.} [%t] %m%n"
+  file:
+    name: appLog.log
 
 
 api:
