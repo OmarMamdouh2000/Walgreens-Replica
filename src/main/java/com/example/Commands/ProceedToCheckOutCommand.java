@@ -75,7 +75,7 @@ public class ProceedToCheckOutCommand implements Command {
         request.put("commandName", "ConfirmCheckoutCommand");
         request.put("transactionNumber",UUID.randomUUID().toString());
         String userCartString = objectMapper.writeValueAsString(request);
-        kafkaProducer.publishToTopic("cartRequests", userCartString);
+        //kafkaProducer.publishToTopic("cartRequests", userCartString);
         return "Proceed to checkout request sent";
 
         

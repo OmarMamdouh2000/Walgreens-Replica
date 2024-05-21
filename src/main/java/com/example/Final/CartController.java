@@ -20,6 +20,8 @@ import com.example.Cache.SessionCache;
 import com.example.Commands.Invoker;
 import com.example.Commands.JwtDecoderService;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.Kafka.CartFormulator;
 import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +40,8 @@ public class CartController {
 	@Autowired
 	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
 
-
+	@Autowired
+	private CartFormulator cartFormulator;
 	@Autowired
 	private SessionCache sessionCache;
 	@GetMapping("/getToken")
@@ -98,7 +101,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return objectMapper.readTree(payload);
+		return cartFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
@@ -122,8 +125,19 @@ public class CartController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString,random);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return (String)cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 		//return invoker.executeCommand("UpdateItemCountCommand", data).toString();
 
 	}
@@ -133,6 +147,7 @@ public class CartController {
 		data.put("userId", userId);
 		data.put("commandName", "AddToSavedForLaterCache");
 		data.put("sessionId", sessionId);
+		String random=UUID.randomUUID().toString();
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -140,9 +155,19 @@ public class CartController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return (String)cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 		//return invoker.executeCommand("AddToSavedForLater", data).toString();
 	}
 	@PostMapping("/returnItemFromSavedLater")
@@ -153,14 +178,25 @@ public class CartController {
 		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
+		String random=UUID.randomUUID().toString();
         try {
             jsonString = objectMapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return (String)cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 		//return invoker.executeCommand("ReturnFromSavedForLater", data).toString();
 	}
 
@@ -172,14 +208,26 @@ public class CartController {
 		data.put("commandName", "RemoveItem");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString(data);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 	}
 
 	@PostMapping("/changeOrderType")
@@ -190,14 +238,26 @@ public class CartController {
 		data.put("commandName", "ChangeOrderType");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString(data);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 
 	}
 
@@ -209,14 +269,26 @@ public class CartController {
 		data.put("commandName", "ApplyPromo");
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString(data);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 
 	}
 
@@ -231,6 +303,7 @@ public class CartController {
 		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString(data);
 		} catch (JsonProcessingException e) {
@@ -238,8 +311,19 @@ public class CartController {
 			return e.getMessage();
 		}
 		
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 
 	}
 
@@ -250,6 +334,7 @@ public class CartController {
 		data.put("userId", userId);
 		data.put("commandName", "AddComment");
 		ObjectMapper objectMapper = new ObjectMapper();
+		String random=UUID.randomUUID().toString();
 		String jsonString = null;
 		try {
 			jsonString = objectMapper.writeValueAsString(data);
@@ -257,9 +342,19 @@ public class CartController {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
-
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 	}
 
 	@PostMapping("/proceedToCheckOut")
@@ -267,14 +362,26 @@ public class CartController {
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString( Map.of("sessionId", sessionId,"userId",userId, "commandName", "ProceedToCheckOutCommand"));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 	}
 	@PostMapping("/confirmCheckout")
 	public Object confirmCheckout(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
@@ -283,14 +390,26 @@ public class CartController {
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
 		data.put("userId", userId);
 		data.put("commandName", "ConfirmCheckoutCommand");
+		String random=UUID.randomUUID().toString();
 		try {
 			jsonString = objectMapper.writeValueAsString( data);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return cartFormulator.getData(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
 	}
 
 }

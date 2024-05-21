@@ -63,7 +63,7 @@ public class ConfirmCheckoutCommand implements Command {
             return e.getMessage();
         }
 
-        kafkaProducer.publishToTopic("orderRequests",jsonString);
+        //kafkaProducer.publishToTopic("orderRequests",jsonString);
 
         // call createOrderAPi or publish to kafka orders with items and transaction
         userCart.getItems().clear();
