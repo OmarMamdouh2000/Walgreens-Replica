@@ -50,6 +50,7 @@ public class CartController {
 	}
 	@GetMapping("/getUserId")
 	public String getUserId(@RequestParam String sessionId) {
+		System.out.println("JWT DECODE RESULT: " + jwtDecoderService.getUserIdFromToken(sessionId));
 		return jwtDecoderService.getUserIdFromToken(sessionId);
 	}
 
@@ -82,6 +83,10 @@ public class CartController {
 	@GetMapping("/getCart")
 	public Object getCart(@RequestParam String sessionId) throws InterruptedException, ExecutionException {
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		String random=UUID.randomUUID().toString();
@@ -91,28 +96,27 @@ public class CartController {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		//kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
 		 RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
                     .withPayload(jsonString)
                     .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
                     .setHeader(KafkaHeaders.TOPIC, "cartRequests")
                     .setHeader(KafkaHeaders.KEY, random)
-					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return cartFormulator.getData(payload);
+			return cartFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
-		//return "success";
-		//return invoker.executeCommand("GetUserCart", Map.of("User", claims.get("userId")));
 	}
 
 	@PostMapping("/editItemCount")
 	public String editItemCount(@RequestParam String sessionId,@RequestBody Map<String,Object> data) {
 
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("userId", userId);
 		data.put("commandName", "UpdateItemCountCommandCache");
 		data.put("sessionId", sessionId);
@@ -143,7 +147,10 @@ public class CartController {
 	}
 	@PostMapping("/addItemToSavedLater")
 	public String addItemToSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("userId", userId);
 		data.put("commandName", "AddToSavedForLaterCache");
 		data.put("sessionId", sessionId);
@@ -172,7 +179,10 @@ public class CartController {
 	}
 	@PostMapping("/returnItemFromSavedLater")
 	public String returnItemFromSavedLater(@RequestParam String sessionId,@RequestBody Map<String, Object> data) {
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("userId", userId);
 		data.put("commandName", "ReturnFromSavedForLaterCache");
 		data.put("sessionId", sessionId);
@@ -202,7 +212,10 @@ public class CartController {
 
 	@PostMapping("/removeItem")
 	public Object removeItemFromCart(@RequestParam String sessionId ,@RequestBody Map<String, Object> data) throws Exception {
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "RemoveItem");
@@ -232,7 +245,10 @@ public class CartController {
 
 	@PostMapping("/changeOrderType")
 	public Object setOrderType(@RequestParam String sessionId, @RequestBody Map<String, Object> data) throws Exception{
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ChangeOrderType");
@@ -263,7 +279,10 @@ public class CartController {
 
 	@PostMapping("/applyPromo")
 	public Object applyPromo(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "ApplyPromo");
@@ -296,7 +315,10 @@ public class CartController {
 	@PostMapping("/addItem")
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "GetProductForCartCommand");
@@ -329,7 +351,10 @@ public class CartController {
 
 	@PostMapping("/addComment")
 	public Object addComment(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
 		data.put("commandName", "AddComment");
@@ -359,7 +384,10 @@ public class CartController {
 
 	@PostMapping("/proceedToCheckOut")
 	public Object proceedToCheckOut(@RequestParam String sessionId){
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		String random=UUID.randomUUID().toString();
@@ -387,7 +415,10 @@ public class CartController {
 	public Object confirmCheckout(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
+		if(userId==null){
+			return "Invalid Token";
+		}
 		data.put("userId", userId);
 		data.put("commandName", "ConfirmCheckoutCommand");
 		String random=UUID.randomUUID().toString();
