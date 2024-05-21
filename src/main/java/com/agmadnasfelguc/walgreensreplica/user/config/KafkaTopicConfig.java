@@ -14,4 +14,11 @@ public class KafkaTopicConfig {
                 .partitions(3)
                 .build();
     }
+
+    @Bean
+    public NewTopic controllerTopic(){
+        return TopicBuilder.name("controller")
+                .partitions(1)
+                .build();
+    }
 }

@@ -63,10 +63,6 @@ public class CommandToReqMapper {
         return commandToReqMapper;
     }
 
-//    public static void main(String[] args) {
-//        CommandToReqMapper commandToReqMapper = CommandToReqMapper.getInstance();
-//        System.out.println(commandToReqMapper.getCommandsMap());
-//    }
 
 
 
