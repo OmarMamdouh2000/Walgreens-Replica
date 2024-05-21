@@ -35,7 +35,7 @@ public class CreateCheckoutCommand implements Command{
 
     private UUID cartUuid;
 
-    private List<CartItem> cartItems;
+    private List<CartItem> cartItems=new ArrayList<>();
 
 
     Logger logger= LoggerFactory.getLogger(CreateCheckoutCommand.class);
@@ -145,12 +145,12 @@ public class CreateCheckoutCommand implements Command{
     public List<ProductsDto> getProducts() {
         List<ProductsDto> products = new ArrayList<>();
 
-        if (this.cartItems.size() > 0) {
+        if (this.cartItems!=null && this.cartItems.size() > 0) {
             for (CartItem cartItem : this.cartItems) {
                 ProductsDto productDto = new ProductsDto();
-                productDto.setProductName(cartItem.getItemName());
-                productDto.setProductPrice(cartItem.getPurchasedPrice());
-                productDto.setProductQuantity(cartItem.getItemCount());
+                productDto.setProductName(cartItem.getItem_name());
+                productDto.setProductPrice(cartItem.getPurchased_price());
+                productDto.setProductQuantity(cartItem.getItem_count());
                 products.add(productDto);
             }
         } else {

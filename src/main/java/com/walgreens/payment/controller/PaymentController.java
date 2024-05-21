@@ -73,7 +73,12 @@ public class PaymentController {
 
         Stripe.apiKey = stripeApiKey;
     }
-
+    @PostMapping("/testZiad")
+    public String testZiad(@RequestBody Map<String,Object> payload) {
+        //payload={"request":"CheckPaymentMethod","commandName":"ProceedToCheckOutCommand","customerUuid":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","sessionId":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmMzJhYzBkYi04OWI4LTRjZDMtYTk2Ny0wZWI3YzY1NmMxYTEiLCJpYXQiOjE3MTYzMjgzOTksImV4cCI6MTcxNjM2NDM5OX0.XS-cZcD-GlZTFMRpR6WVOhxTWLNo0kii5on34f1OPU0","cartItems":[{"deliveryType":"standard","comment":"Great product","itemCount":2,"itemId":"5ef821aa-5558-405d-ba17-9cf114cd6c26","purchasedPrice":10.99,"itemName":null}],"paymentAmount":"16.98","userId":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","cartUuid":"a3b8a792-41c4-4b04-919e-8ea7a28ddfef"}
+        //call commands
+        return "success";
+    }
     @PostMapping("/createCustomer")
     public String createCustomer(UUID customerUuid, String name, String email) {
         ObjectMapper objectMapper = new ObjectMapper();

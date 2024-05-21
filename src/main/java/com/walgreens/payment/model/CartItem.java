@@ -1,6 +1,8 @@
 package com.walgreens.payment.model;
 
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,18 +12,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItem {
-    @JsonProperty("item_name")
-    String itemName;
 
+    
+    @JsonProperty("item_id")
+
+    private UUID item_id;
     @JsonProperty("item_count")
-    int itemCount;
 
+    private int item_count;
+    @JsonProperty("item_name")
+
+    private String item_name;
     @JsonProperty("purchased_price")
-    double purchasedPrice;
 
+    private double purchased_price;
     @JsonProperty("deliveryType")
-    String deliveryType;
-
+    private String deliveryType;
     @JsonProperty("comment")
-    String comment;
+    private String comment;
 }

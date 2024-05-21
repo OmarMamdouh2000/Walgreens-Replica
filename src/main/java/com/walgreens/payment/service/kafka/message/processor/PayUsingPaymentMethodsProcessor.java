@@ -29,13 +29,7 @@ public class PayUsingPaymentMethodsProcessor extends Processor{
         payUsingPaymentMethodsCommand.setPaymentMethodUuid(UUID.fromString(message.get(Keys.paymentMethodUuid)));
         payUsingPaymentMethodsCommand.setAmount(Double.valueOf(message.get(Keys.paymentAmount)));
 
-        try {
-            String cartItemsJson = message.get(Keys.cartItems);
-            List<CartItem> cartItems = mapper.readValue(cartItemsJson, new TypeReference<List<CartItem>>() {});
-            payUsingPaymentMethodsCommand.setCartItems(cartItems);
-        } catch (IOException e) {
-            e.printStackTrace();  // Handle exceptions appropriately
-        };
+       
 
     }
 }
