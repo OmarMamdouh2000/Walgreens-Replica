@@ -60,7 +60,8 @@ public class KafkaConsumerRequests {
 							.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
 							.setHeader(KafkaHeaders.TOPIC, "cartRequests")
 							.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
-							.build());					break;
+							.build());
+					break;
 
 				case "UpdateItemCountCommand":
 					finalData= (String) invoker.executeCommand("UpdateItemCountCommand", data);

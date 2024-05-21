@@ -29,11 +29,12 @@ public class CartFormulator {
 
             // Extract the "data" field and convert it into a CartTable object
             JsonNode dataNode = jsonNode.get("data");
+            System.out.println("DATA NODE: " + dataNode);
             CartTable cart = objectMapper.treeToValue(dataNode, CartTable.class);
 
             return cart;
         }catch(Exception e){
-            logger.error("Error: {}", jsonNode.get("data"));
+            logger.info("INFO: {}", jsonNode.get("data"));
             return jsonNode.get("data");
         }
     }
