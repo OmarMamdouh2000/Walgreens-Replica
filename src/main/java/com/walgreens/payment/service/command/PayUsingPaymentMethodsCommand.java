@@ -2,12 +2,16 @@ package com.walgreens.payment.service.command;
 
 import com.walgreens.payment.exceptions.InsufficientFundsException;
 import com.walgreens.payment.model.CartItem;
+import com.walgreens.payment.repository.CustomerRepository;
 import com.walgreens.payment.repository.PaymentMethodsRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import  java.util.*;
@@ -34,14 +38,30 @@ public class PayUsingPaymentMethodsCommand implements Command {
     private PaymentMethodsRepository paymentMethodsRepository;
 
     @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
     private CreateATransactionCommand createATransactionCommand;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
+    Logger logger= LoggerFactory.getLogger(PayUsingPaymentMethodsCommand.class);
 
 
 
     @Override
     public void execute()  {
         try{
+
+            boolean customerExists = customerRepository.check_customer_exists(customerUuid);
+
+            if(!customerExists){
+                CreateCustomerCommand createCustomerCommand = (CreateCustomerCommand) applicationContext.getBean("createCustomerCommand");
+                createCustomerCommand.setCustomerUuid(customerUuid);
+                createCustomerCommand.execute();
+            }
             boolean hasFunds = paymentMethodsRepository.check_has_funds(paymentMethodUuid);
 
             if(!hasFunds){
@@ -55,9 +75,12 @@ public class PayUsingPaymentMethodsCommand implements Command {
             createATransactionCommand.setTransactionTime(Timestamp.from(Instant.now()));
             createATransactionCommand.execute();
 
+            logger.info("Payment Methods");
+
+
 
         }catch(InsufficientFundsException e){
-            log.error("ERROR: " + e.getMessage());
+            logger.error("ERROR: " + e.getMessage());
         }
 
     }

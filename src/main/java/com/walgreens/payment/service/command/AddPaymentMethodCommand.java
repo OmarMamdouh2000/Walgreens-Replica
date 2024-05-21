@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jasypt.util.text.AES256TextEncryptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class AddPaymentMethodCommand implements Command{
     private String cardholderName;
     private Boolean isDefault;
     private Boolean hasFunds;
+
+    Logger logger= LoggerFactory.getLogger(AddPaymentMethodCommand.class);
+
 
     @Value("${encryption.secret.key}")
     private String encryptionPassword;
@@ -69,6 +74,8 @@ public class AddPaymentMethodCommand implements Command{
                 isDefault,
                 hasFunds
         );
+
+        logger.trace("Payment Method Added");
 
     }
 }

@@ -27,6 +27,8 @@ public interface CustomerRepository extends JpaRepository<CustomerDto, UUID> {
     @Procedure(name = "get_loyalty_points")
     int get_loyalty_points(@Param("p_customer_uuid") UUID customerUuid);
 
+    @Procedure(name = "check_customer_exists")
+    boolean check_customer_exists(@Param("p_customer_uuid") UUID customerUuid);
 
 
 

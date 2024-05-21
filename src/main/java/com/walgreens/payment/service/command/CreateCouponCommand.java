@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,8 @@ public class CreateCouponCommand implements Command{
     private Duration duration;
     private Long duration_in_months;
 
+
+    Logger logger= LoggerFactory.getLogger(CreateCouponCommand.class);
 
     @Autowired
     CouponRepository couponRepository;
@@ -53,8 +57,10 @@ public class CreateCouponCommand implements Command{
 
             couponRepository.create_coupon(couponUuid, coupon.getId());
 
+            logger.info("Coupon Created");
+
         } catch (StripeException e) {
-            log.error("Exception createCouponCommand", e);
+            logger.error("Exception createCouponCommand", e);
 
         }
     }

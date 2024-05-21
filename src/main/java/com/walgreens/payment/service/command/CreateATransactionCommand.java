@@ -4,6 +4,8 @@ import com.walgreens.payment.repository.TransactionsRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class CreateATransactionCommand implements Command{
     private TransactionsRepository transactionsRepository;
 
 
-
+    Logger logger= LoggerFactory.getLogger(CreateATransactionCommand.class);
 
     private double amount;
 
@@ -49,6 +51,8 @@ public class CreateATransactionCommand implements Command{
                 transactionTime,
                 Amount
         );
+        logger.trace("Create a Transaction");
+
 
 
 

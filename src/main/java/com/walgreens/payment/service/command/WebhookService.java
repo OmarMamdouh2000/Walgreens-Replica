@@ -10,6 +10,8 @@ import com.stripe.net.Webhook;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,8 @@ public class WebhookService {
     private String payload;
     private String sigHeader;
     private Event event;
+
+    Logger logger= LoggerFactory.getLogger(WebhookService.class);
 
     @Autowired
     CreateATransactionCommand createATransactionCommand;
@@ -75,6 +79,8 @@ public class WebhookService {
                 }
 
             }
+            logger.info("Web Hook Service");
+
         } catch (SignatureVerificationException e) {
             return ResponseEntity.badRequest().body("Invalid signature");
         } catch (StripeException e){

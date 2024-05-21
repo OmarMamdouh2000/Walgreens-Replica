@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +38,7 @@ public class CreateCheckoutCommand implements Command{
     private List<CartItem> cartItems;
 
 
-
+    Logger logger= LoggerFactory.getLogger(CreateCheckoutCommand.class);
 
 
 
@@ -128,6 +130,9 @@ public class CreateCheckoutCommand implements Command{
             CheckoutSessionResponse response= new CheckoutSessionResponse(session.getUrl(), null);
 
             System.out.println(response.getSessionUrl());
+
+            logger.info(response.getSessionUrl());
+            logger.info("Checking out");
 
 
         }catch (StripeException e){
