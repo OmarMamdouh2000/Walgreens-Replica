@@ -29,7 +29,7 @@ public class FirebaseConfig {
 
     @Bean
     public static Storage initializeStorage() throws IOException {
-        System.out.println("Ana Haneen?");
+        System.out.println("Ana Sara?");
         //FirebaseApp app = initializeFirebaseApp();
         Path path = Paths.get("/app/resources/google-services.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(Files.newInputStream(path));
