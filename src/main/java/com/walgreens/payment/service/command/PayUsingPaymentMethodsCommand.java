@@ -1,6 +1,7 @@
 package com.walgreens.payment.service.command;
 
 import com.walgreens.payment.exceptions.InsufficientFundsException;
+import com.walgreens.payment.model.CartItem;
 import com.walgreens.payment.repository.PaymentMethodsRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import  java.util.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,6 +27,8 @@ public class PayUsingPaymentMethodsCommand implements Command {
     private UUID cartUuid;
     private UUID paymentMethodUuid;
     private Double amount;
+
+    private List<CartItem> cartItems;
 
     @Autowired
     private PaymentMethodsRepository paymentMethodsRepository;
