@@ -5,10 +5,13 @@ import java.util.UUID;
 
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 
 @Table("cart")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartTable {
 
     @PrimaryKey
@@ -30,17 +33,12 @@ public class CartTable {
     
     private double promoCodeAmount;
 
-//    @Column("promocodeamount")
-//    private double promocodeamount;
-
-    @Column("ordertype")
-    private String ordertype;
 
     public CartTable(){
 
     }
 
-    public CartTable(UUID id,String appliedPromoCodeId, List<CartItem> items, String orderType,
+    public CartTable(UUID id,String appliedPromoCodeId, List<CartItem> items,
                      List<CartItem> savedForLaterItems, double totalAmount, UUID userId)
     {
         this.id = id;
@@ -49,7 +47,6 @@ public class CartTable {
         this.savedforlateritems = savedForLaterItems;
         this.total_amount = totalAmount;
         this.appliedPromoCodeId = appliedPromoCodeId;
-        this.ordertype = orderType;
     }
 
     // Getters and setters
@@ -105,13 +102,7 @@ public class CartTable {
 //
 //    public void setPromocodeamount(double promocodeamount) {this.promocodeamount = promocodeamount; }
 
-    public String getOrderType() {
-        return ordertype;
-    }
-
-    public void setOrderType(String orderType) {
-        this.ordertype = orderType;
-    }
+  
 
     @Override
     public String toString() {
@@ -122,7 +113,6 @@ public class CartTable {
                 ", savedForLaterItems=" + savedforlateritems +
                 ", totalAmount=" + total_amount +
                 ", appliedPromoCodeId=" + appliedPromoCodeId +
-                ", orderType='" + ordertype + '\'' +
                 '}';
     }
 

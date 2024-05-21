@@ -24,10 +24,11 @@ public class KafkaConsumerRequests {
 	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequestCart")
 	public void consumeMessage(String message) {
 		try {
-			logger.info("Request: "+message);
+			
 			
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
+			logger.info("Request: "+message);
 			ObjectMapper objectMapper = new ObjectMapper();
 			@SuppressWarnings("unchecked")
 			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);

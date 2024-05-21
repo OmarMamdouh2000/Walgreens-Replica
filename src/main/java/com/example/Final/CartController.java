@@ -35,7 +35,7 @@ public class CartController {
 	private SessionCache sessionCache;
 	@GetMapping("/getToken")
 	public String getToken() {
-		return jwtDecoderService.generateToken("235772bd-f0de-41ee-8280-642a5bdf837f");
+		return jwtDecoderService.generateToken("f7bc65aa-d86e-4f3b-b803-838be1964a3c");
 	}
 	@GetMapping("/getUserId")
 	public String getUserId(@RequestParam String sessionId) {

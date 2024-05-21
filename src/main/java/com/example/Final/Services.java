@@ -34,7 +34,7 @@ public class Services {
             if(userCart != null){
                 return userCart;
             }else{
-                return new CartTable(UUID.randomUUID(),"",new ArrayList<CartItem>(), "online", new ArrayList<CartItem>(), 0.0, userId);
+                return new CartTable(UUID.randomUUID(),"",new ArrayList<CartItem>(), new ArrayList<CartItem>(), 0.0, userId);
             }
         }catch (Exception e){
             throw new Exception(e.getMessage());
