@@ -3,13 +3,19 @@ package com.example.Kafka;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import com.example.Commands.Invoker;
@@ -23,6 +29,8 @@ public class KafkaConsumerRequests {
 	Invoker invoker=new Invoker();
 	@Autowired
 	KafkaProducer kafkaProducer;
+	@Autowired
+	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
 	
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequestCart")
@@ -47,19 +55,28 @@ public class KafkaConsumerRequests {
 					finalData = (String) invoker.executeCommand("UpdateItemCountCommandCache", data);
 					data.replace("commandName", "UpdateItemCountCommand");
 					jsonString2=objectMapper.writeValueAsString(data);
-					kafkaProducer.publishToTopic("cartRequests", jsonString2, correlationIdBytes);
-					break;
+					replyingKafkaTemplate.sendAndReceive(MessageBuilder
+							.withPayload(jsonString2)
+							.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+							.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+							.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+							.build());					break;
 
 				case "UpdateItemCountCommand":
 					finalData= (String) invoker.executeCommand("UpdateItemCountCommand", data);
 					break;
 
 				case "AddToSavedForLaterCache":
-				finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
-				data.replace("commandName", "AddToSavedForLater");
-				jsonString2=objectMapper.writeValueAsString(data);
-				kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
-				break;
+					finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
+					data.replace("commandName", "AddToSavedForLater");
+					jsonString2=objectMapper.writeValueAsString(data);
+					replyingKafkaTemplate.sendAndReceive(MessageBuilder
+							.withPayload(jsonString2)
+							.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+							.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+							.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+							.build());
+					break;
 				case "AddToSavedForLater":
 					finalData= (String) invoker.executeCommand("AddToSavedForLater", data);
 					break;
@@ -68,7 +85,12 @@ public class KafkaConsumerRequests {
 					finalData = (String) invoker.executeCommand("ReturnFromSavedForLaterCache", data);
 					data.replace("commandName", "ReturnFromSavedForLater");
 					jsonString2=objectMapper.writeValueAsString(data);
-					kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+					replyingKafkaTemplate.sendAndReceive(MessageBuilder
+							.withPayload(jsonString2)
+							.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+							.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+							.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+							.build());
 					break;
 				case "ReturnFromSavedForLater":
 					finalData= (String) invoker.executeCommand("ReturnFromSavedForLater", data);
@@ -83,9 +105,15 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+						replyingKafkaTemplate.sendAndReceive(MessageBuilder
+								.withPayload(jsonString2)
+								.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+								.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+								.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+								.build());
 					}catch(Exception e){
 						System.out.println("Item wasn't removed");
+						logger.error("Item wasn't removed");
 					}
 					break;
 				case "ChangeOrderType":
@@ -95,9 +123,17 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+						replyingKafkaTemplate.sendAndReceive(MessageBuilder
+								.withPayload(jsonString2)
+								.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+								.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+								.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+//								.setHeader(KafkaHeaders.CORRELATION_ID, UUID.randomUUID())
+								.build());
+//						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Cart wasn't changed");
+						logger.error("Cart wasn't changed");
 					}
 					break;
 				case "ApplyPromo":
@@ -107,9 +143,15 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+						replyingKafkaTemplate.sendAndReceive(MessageBuilder
+								.withPayload(jsonString2)
+								.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+								.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+								.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+								.build());
 					}catch(Exception e){
 						System.out.println("Promo Not Applied");
+						logger.error("Promo Not Applied");
 					}
 
 					break;
@@ -120,9 +162,15 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+						replyingKafkaTemplate.sendAndReceive(MessageBuilder
+								.withPayload(jsonString2)
+								.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+								.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+								.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+								.build());
 					}catch(Exception e){
 						System.out.println("Item wasn't added");
+						logger.error("Item wasn't added");
 					}
 					break;
 				case "AddComment":
@@ -132,9 +180,15 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
+						replyingKafkaTemplate.sendAndReceive(MessageBuilder
+								.withPayload(jsonString2)
+								.setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+								.setHeader(KafkaHeaders.TOPIC, "cartRequests")
+								.setHeader(KafkaHeaders.KEY, UUID.randomUUID().toString())
+								.build());
 					}catch(Exception e){
 						System.out.println("Comment wasn't added");
+						logger.error("Comment wasn't added");
 					}
 					break;
 			
