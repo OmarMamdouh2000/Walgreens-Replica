@@ -48,7 +48,7 @@ public class LoginAdminCommand extends Command {
             AdminLoginResult response = AdminLoginResultConverter.convertTupleToLoginResult(result);
             this.setState(new ResponseStatus(ResponseState.valueOf(response.getStatus()), response.getMessage()));
             if(this.getState().getStatus().equals(ResponseState.Success)){
-                this.sessionId = JwtUtil.generateToken(response.getUserId().toString());
+                this.sessionId = JwtUtil.generateToken(response.getUserId().toString(),"admin");
                 this.sessionCache.createAdminSession(sessionId, response.getUserId().toString());
             }
         }catch(Exception e){

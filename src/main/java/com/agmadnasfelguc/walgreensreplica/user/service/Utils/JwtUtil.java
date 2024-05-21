@@ -17,10 +17,17 @@ public class JwtUtil {
     // Set to store blacklisted tokens
     private static final Set<String> blacklistedTokens = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    public static String generateToken(String userId) {
+    //userId:role
+    public static String generateToken(String userId, String role) {
+        String hashedKey;
+        if(role.equals("admin")){
+            hashedKey = String.format("%s:%s",userId,role);
+        }else{
+            hashedKey = userId;
+        }
         long now = System.currentTimeMillis();
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(hashedKey)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + 1000 * 60 * 60 * 10)) // 10 hours validity
                 .signWith(SignatureAlgorithm.HS256, secret)
@@ -53,4 +60,7 @@ public class JwtUtil {
     public static boolean isTokenBlacklisted(String token) {
         return blacklistedTokens.contains(token);
     }
+
+
+
 }

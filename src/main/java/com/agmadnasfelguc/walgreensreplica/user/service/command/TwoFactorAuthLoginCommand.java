@@ -44,7 +44,7 @@ public class TwoFactorAuthLoginCommand extends Command {
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid OTP"));
             }
             else{
-                sessionId = JwtUtil.generateToken(userId);
+                sessionId = JwtUtil.generateToken(userId,"");
                 setUpCreateSessionCommandAndExecute();
                 if(createSessionCommand.getState().getStatus().equals(ResponseState.Failure)) {
                     this.setState(createSessionCommand.getState());
