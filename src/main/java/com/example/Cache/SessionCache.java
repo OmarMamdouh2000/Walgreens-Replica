@@ -29,11 +29,15 @@ public class SessionCache {
 
     public Map<String, Object> getSessionSection(String sessionId, String section) {
         String sectionKey = buildSectionKey(sessionId, section);
-        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries(sectionKey);
+        try{
+            Map<Object, Object> rawMap = redisTemplate.opsForHash().entries(sectionKey);
         Map<String, Object> data = new HashMap<>();
         rawMap.forEach((key, value) ->
                 data.put(String.valueOf(key), value));
         return data;
+        }catch(Exception e){
+            return new HashMap<>();
+        }
     }
 
     public void createSession(String sessionId, String section, Map<String, Object> detailsToBeAdded) {

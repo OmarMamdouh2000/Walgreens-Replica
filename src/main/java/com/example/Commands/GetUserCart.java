@@ -50,8 +50,9 @@ public class GetUserCart implements Command {
         ObjectMapper objectMapper = new ObjectMapper();
 
         CartTable userCart;
+        System.out.println("Before Cache");
         Map<String, Object> cachedCart = sessionCache.getSessionSection(sessionId, "cart");
-
+        System.out.println("After Cache");
         if(!cachedCart.isEmpty()){
             System.out.println("Cart from Cache");
             userCart = objectMapper.convertValue(cachedCart, CartTable.class);
@@ -68,6 +69,7 @@ public class GetUserCart implements Command {
             jsonString = objectMapper.writeValueAsString(userCart);
 
             Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});
+            System.out.println(map);
             sessionCache.createSession((String)data.get("sessionId"), "cart", map);
 
             return userCart;

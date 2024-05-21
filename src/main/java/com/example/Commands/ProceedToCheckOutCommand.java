@@ -59,24 +59,28 @@ public class ProceedToCheckOutCommand implements Command {
         
         
         //------------ karim integration
-        // request.put("request", "CheckPaymentMethod");
-        // request.put("customerUuid", user);
-        // request.put("paymentAmount", userCart.getTotalAmount()+"");
-        // request.put("cartUuid", userCart.getId().toString());
-        // request.put("cartItems", userCart.getItems());
-        //request.putAll(data);
-        // String userCartString = objectMapper.writeValueAsString(request);
-        // kafkaProducer.publishToTopic("payment", userCartString);
-        // return "Proceed to checkout request sent";
+        request.put("request", "CheckPaymentMethod");
+        request.put("customerUuid", user);
+        request.put("paymentAmount", userCart.getTotalAmount()+"");
+        request.put("cartUuid", userCart.getId().toString());
+        request.put("cartItems", userCart.getItems());
+        request.putAll(data);
+        String userCartString = objectMapper.writeValueAsString(request);
+        UUID corrId=UUID.randomUUID();
+        byte[] corrIdBytes = corrId.toString().getBytes();
+        
+        kafkaProducer.publishToTopic("payment",userCartString, corrIdBytes);
+        
+        return "Proceed to checkout request sent";
 
 
         //---------- no integration
-        request.putAll(data);
-        request.put("commandName", "ConfirmCheckoutCommand");
-        request.put("transactionNumber",UUID.randomUUID().toString());
-        String userCartString = objectMapper.writeValueAsString(request);
-        //kafkaProducer.publishToTopic("cartRequests", userCartString);
-        return "Proceed to checkout request sent";
+        // request.putAll(data);
+        // request.put("commandName", "ConfirmCheckoutCommand");
+        // request.put("transactionNumber",UUID.randomUUID().toString());
+        // String userCartString = objectMapper.writeValueAsString(request);
+        // //kafkaProducer.publishToTopic("cartRequests", userCartString);
+        // return "Proceed to checkout request sent";
 
         
     }
