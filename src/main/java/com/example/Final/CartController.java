@@ -3,6 +3,7 @@ package com.example.Final;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import io.jsonwebtoken.Claims;
 
@@ -10,6 +11,10 @@ import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.example.Cache.SessionCache;
 import com.example.Commands.Invoker;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.messaging.Message;
 
 @RestController
 public class CartController {
@@ -29,6 +35,8 @@ public class CartController {
 	public Invoker invoker=new Invoker();
 	@Autowired
 	private KafkaProducer kafkaProducerRequest;
+	@Autowired
+	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
 
 
 	@Autowired
@@ -69,18 +77,32 @@ public class CartController {
 	}
 
 	@GetMapping("/getCart")
-	public Object getCart(@RequestParam String sessionId) {
+	public Object getCart(@RequestParam String sessionId) throws InterruptedException, ExecutionException {
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
+		String random=UUID.randomUUID().toString();
 		try {
-			jsonString = objectMapper.writeValueAsString( Map.of("userId", userId, "commandName", "GetUserCart", "sessionId", sessionId));
+			jsonString = objectMapper.writeValueAsString( Map.of("userId", userId, "commandName", "GetUserCart", "sessionId", sessionId,"correlationId",random));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
-		return "success";
+		//kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		 RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
+		try{
+			String payload = (String) result.get().getPayload();
+		return objectMapper.readTree(payload);
+		}catch(Exception e){
+			return e.getMessage();
+		}
+		//return "success";
 		//return invoker.executeCommand("GetUserCart", Map.of("User", claims.get("userId")));
 	}
 
@@ -92,13 +114,15 @@ public class CartController {
 		data.put("commandName", "UpdateItemCountCommandCache");
 		data.put("sessionId", sessionId);
 		ObjectMapper objectMapper = new ObjectMapper();
+		String random=UUID.randomUUID().toString();
+		data.put("correlationId", random);
         String jsonString = null;
         try {
             jsonString = objectMapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-		kafkaProducerRequest.publishToTopic("cartRequests",jsonString);
+		kafkaProducerRequest.publishToTopic("cartRequests",jsonString,random);
 		return "success";
 		//return invoker.executeCommand("UpdateItemCountCommand", data).toString();
 

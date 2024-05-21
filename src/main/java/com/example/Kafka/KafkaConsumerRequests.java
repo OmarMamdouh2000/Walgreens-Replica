@@ -1,11 +1,15 @@
 package com.example.Kafka;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import com.example.Commands.Invoker;
@@ -22,13 +26,14 @@ public class KafkaConsumerRequests {
 	
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 	@KafkaListener(topics="cartRequests",groupId = "KafkaGroupRequestCart")
-	public void consumeMessage(String message) {
+	public void consumeMessage(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic) {
 		try {
 			
-			
+			logger.info("correlationid recieved: "+Arrays.toString(correlationIdBytes));
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
 			logger.info("Request: "+message);
+			//[99, -17, -95, 46, -54, 23, 68, -64, -74, 87, 98, 62, 15, 22, 3, 26]
 			ObjectMapper objectMapper = new ObjectMapper();
 			@SuppressWarnings("unchecked")
 			Map<String,Object> data = objectMapper.readValue(message, HashMap.class);
@@ -42,7 +47,7 @@ public class KafkaConsumerRequests {
 					finalData = (String) invoker.executeCommand("UpdateItemCountCommandCache", data);
 					data.replace("commandName", "UpdateItemCountCommand");
 					jsonString2=objectMapper.writeValueAsString(data);
-					kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					kafkaProducer.publishToTopic("cartRequests", jsonString2, correlationIdBytes);
 					break;
 
 				case "UpdateItemCountCommand":
@@ -53,7 +58,7 @@ public class KafkaConsumerRequests {
 				finalData = (String) invoker.executeCommand("AddToSavedForLaterCache", data);
 				data.replace("commandName", "AddToSavedForLater");
 				jsonString2=objectMapper.writeValueAsString(data);
-				kafkaProducer.publishToTopic("cartRequests", jsonString2);
+				kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 				break;
 				case "AddToSavedForLater":
 					finalData= (String) invoker.executeCommand("AddToSavedForLater", data);
@@ -63,7 +68,7 @@ public class KafkaConsumerRequests {
 					finalData = (String) invoker.executeCommand("ReturnFromSavedForLaterCache", data);
 					data.replace("commandName", "ReturnFromSavedForLater");
 					jsonString2=objectMapper.writeValueAsString(data);
-					kafkaProducer.publishToTopic("cartRequests", jsonString2);
+					kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					break;
 				case "ReturnFromSavedForLater":
 					finalData= (String) invoker.executeCommand("ReturnFromSavedForLater", data);
@@ -78,7 +83,7 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Item wasn't removed");
 					}
@@ -90,7 +95,7 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Cart wasn't changed");
 					}
@@ -102,7 +107,7 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Promo Not Applied");
 					}
@@ -115,7 +120,7 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Item wasn't added");
 					}
@@ -127,7 +132,7 @@ public class KafkaConsumerRequests {
 						data.replace("commandName", "UpdateCart");
 						data.put("cart", finalData);
 						jsonString2=objectMapper.writeValueAsString(data);
-						kafkaProducer.publishToTopic("cartRequests", jsonString2);
+						kafkaProducer.publishToTopic("cartRequests", jsonString2,correlationIdBytes);
 					}catch(Exception e){
 						System.out.println("Comment wasn't added");
 					}
@@ -149,8 +154,9 @@ public class KafkaConsumerRequests {
 					break;
 			}
 			result.put("data", finalData);
+			result.put("correlationId", data.get("correlationId"));
 			String response = objectMapper.writeValueAsString(result);
-			kafkaProducer.publishToTopic("cartResponses", response);
+			kafkaProducer.publishToTopic("cartResponses", response,correlationIdBytes);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
