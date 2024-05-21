@@ -4,6 +4,8 @@ import com.example.Final.CartTable;
 import com.example.Final.OrderItem;
 import com.example.Final.OrderRepo;
 import com.example.Final.OrderTable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +37,9 @@ public class CreateOrder implements Command{
         UUID transactionId = UUID.fromString(transcaction);
 
         OrderTable newOrder = new OrderTable();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        CartTable userCart = (CartTable)data.get("cart");
+        CartTable userCart = objectMapper.convertValue(data.get("cart"), CartTable.class);
 
         List<OrderItem> items = new ArrayList<>();
 
@@ -51,7 +54,7 @@ public class CreateOrder implements Command{
         }
 
         newOrder.setId(UUID.randomUUID());
-        newOrder.setUserId(userId);
+        newOrder.setUserId(UUID.fromString(user));
         newOrder.setTransactionNumber(transactionId);
         newOrder.setOrderType("online");
         newOrder.setTotalAmount(userCart.getTotalAmount());
@@ -63,7 +66,7 @@ public class CreateOrder implements Command{
         newOrder.setItems(items);
         newOrder.setRefundedItems(new ArrayList<>());
         newOrder.setAddress("5th settlement, new cairo, egypt");
-
+        
         orderRepo.save(newOrder);
 
         return "Order Created Successfully";

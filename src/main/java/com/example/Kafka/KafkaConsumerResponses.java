@@ -5,6 +5,9 @@ import com.example.Final.CartTable;
 import com.example.Final.OrderController;
 import com.example.Final.OrderTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +18,8 @@ import java.util.Map;
 
 @Service
 public class KafkaConsumerResponses {
-
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerResponses.class);
+	
 	@KafkaListener(topics="orderResponses",groupId = "KafkaGroupResponse")
 	public void consumeMessage(String message) {
 		try {
@@ -28,21 +32,21 @@ public class KafkaConsumerResponses {
 				case "FilterOrders", "GetOrdersCommand", "GetActiveOrdersCommand":
 					try{
 						List<OrderTable> filteredOrders = objectMapper.convertValue(data.get("data"), List.class);
-						System.out.println("Response: "+filteredOrders);
+						logger.info("Response: "+filteredOrders);
 					}catch(Exception e){
 						String error = (String)data.get("data");
-						System.out.println("Response: "+error);
+						logger.info("Response: "+error);
 					}
 					break;
 				case "CreateOrder":
 					String result=(String) data.get("data");
-					System.out.println("Response: "+result);
+					logger.info("Response: "+result);
 
 				default:
 					break;
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 		}
 	}
 

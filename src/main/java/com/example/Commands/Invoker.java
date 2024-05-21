@@ -26,6 +26,7 @@ public class Invoker {
         commandMap.put("GetActiveOrdersCommand", "com.example.Commands.GetActiveOrdersCommand");
         commandMap.put("FilterOrders", "com.example.Commands.FilterOrders");
         commandMap.put("ConfirmRefund", "com.example.Commands.ConfirmRefund");
+        commandMap.put("CreateOrder", "com.example.Commands.CreateOrder");
 
 
     }

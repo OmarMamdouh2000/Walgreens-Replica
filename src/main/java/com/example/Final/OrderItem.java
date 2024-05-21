@@ -1,49 +1,83 @@
 package com.example.Final;
 
+import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 import java.util.UUID;
 
-@UserDefinedType("orderItem")
+@UserDefinedType("orderitem")
 public class OrderItem {
 
-    private UUID itemId;
-    private int itemCount;
-    private String itemName;
-    private double purchasedPrice;
+    @CassandraType(type = CassandraType.Name.UUID)
+    private UUID item_id;
+
+    @CassandraType(type = CassandraType.Name.INT)
+    private int item_count;
+
+    @CassandraType(type = CassandraType.Name.TEXT)
+    private String item_name;
+
+    @CassandraType(type = CassandraType.Name.DOUBLE)
+    private double purchased_price;
+
+    @CassandraType(type = CassandraType.Name.TEXT)
     private String deliveryType;
+
+    @CassandraType(type = CassandraType.Name.TEXT)
     private String comment;
+
+    public OrderItem() {
+    }
+
+    public OrderItem(UUID itemId, int itemCount,String itemName, double purchasedPrice, String deliveryType, String comment) {
+        this.item_id = itemId;
+        this.item_count = itemCount;
+        this.purchased_price = purchasedPrice;
+        this.deliveryType = deliveryType;
+        this.comment = comment;
+        this.item_name = itemName;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "itemId=" + item_id +
+                ", itemCount=" + item_count +
+                ", purchasedPrice=" + purchased_price +
+                ", deliveryType='" + deliveryType + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 
     // Getters and setters
 
     public UUID getItemId() {
-        return itemId;
+        return item_id;
     }
 
     public void setItemId(UUID itemId) {
-        this.itemId = itemId;
+        this.item_id = itemId;
     }
-
+    public String getItemName() {
+        return item_name;
+    }
+    public void setItemName(String itemName) {
+        this.item_name = itemName;
+    }
     public int getItemCount() {
-        return itemCount;
+        return item_count;
     }
 
     public void setItemCount(int itemCount) {
-        this.itemCount = itemCount;
-    }
-    public String getItemName() {
-        return itemName;
-    }
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+        this.item_count = itemCount;
     }
 
     public double getPurchasedPrice() {
-        return purchasedPrice;
+        return purchased_price;
     }
 
     public void setPurchasedPrice(double purchasedPrice) {
-        this.purchasedPrice = purchasedPrice;
+        this.purchased_price = purchasedPrice;
     }
 
     public String getDeliveryType() {
@@ -62,3 +96,4 @@ public class OrderItem {
         this.comment = comment;
     }
 }
+

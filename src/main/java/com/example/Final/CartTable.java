@@ -1,14 +1,14 @@
 package com.example.Final;
 
-import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.UUID;
 
-@Component
+import org.springframework.data.cassandra.core.mapping.Table;
+
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+
+@Table("cart")
 public class CartTable {
 
     @PrimaryKey
@@ -40,7 +40,7 @@ public class CartTable {
 
     }
 
-    public CartTable(UUID id, String appliedPromoCodeId, List<CartItem> items, String orderType,
+    public CartTable(UUID id,String appliedPromoCodeId, List<CartItem> items, String orderType,
                      List<CartItem> savedForLaterItems, double totalAmount, UUID userId)
     {
         this.id = id;

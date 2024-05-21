@@ -15,6 +15,8 @@ public class CartItem {
     @CassandraType(type = CassandraType.Name.INT)
     private int item_count;
 
+    @CassandraType(type=CassandraType.Name.TEXT)
+    private String item_name;
     @CassandraType(type = CassandraType.Name.DOUBLE)
     private double purchased_price;
 
@@ -27,12 +29,13 @@ public class CartItem {
     public CartItem() {
     }
 
-    public CartItem(UUID itemId, int itemCount, double purchasedPrice, String deliveryType, String comment) {
+    public CartItem(UUID itemId, int itemCount,String item_name, double purchasedPrice, String deliveryType, String comment) {
         this.item_id = itemId;
         this.item_count = itemCount;
         this.purchased_price = purchasedPrice;
         this.deliveryType = deliveryType;
         this.comment = comment;
+        this.item_name = item_name;
     }
 
     @Override
@@ -40,6 +43,7 @@ public class CartItem {
         return "CartItem{" +
                 "itemId=" + item_id +
                 ", itemCount=" + item_count +
+                ", item_name='" + item_name +
                 ", purchasedPrice=" + purchased_price +
                 ", deliveryType='" + deliveryType + '\'' +
                 ", comment='" + comment + '\'' +
@@ -54,6 +58,12 @@ public class CartItem {
 
     public void setItemId(UUID itemId) {
         this.item_id = itemId;
+    }
+    public String getItemName() {
+        return item_name;
+    }
+    public void setItemName(String item_name) {
+        this.item_name = item_name;
     }
 
     public int getItemCount() {

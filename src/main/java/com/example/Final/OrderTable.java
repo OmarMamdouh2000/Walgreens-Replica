@@ -1,7 +1,7 @@
 package com.example.Final;
 
 import java.time.LocalDate;
-import java.util.Date;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ public class OrderTable {
 
     private List<OrderItem> items;
 
-    @Column("refundedItems")
+    
     private List<OrderItem> refundedItems;
 
 	private double promoAmount;

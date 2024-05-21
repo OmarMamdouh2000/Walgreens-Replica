@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -13,13 +15,14 @@ import com.example.Commands.Invoker;
 import com.example.Final.OrderTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 @Service
 public class KafkaConsumerRequests {
 	@Autowired
 	Invoker invoker=new Invoker();
 	@Autowired
 	KafkaProducer kafkaProducer;
-	
+	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 	@KafkaListener(topics="orderRequests",groupId = "KafkaGroupRequest")
 	public void consumeMessage(String message) {
 		
@@ -27,6 +30,7 @@ public class KafkaConsumerRequests {
 			ObjectMapper objectMapper = new ObjectMapper();
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
+			logger.info("Request: "+message);
 			@SuppressWarnings("unchecked")
 			Map<String ,Object>data = objectMapper.readValue(message, HashMap.class);
 			Object finalData =null;
