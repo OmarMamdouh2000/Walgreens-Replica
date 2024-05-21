@@ -1,6 +1,5 @@
 package com.example.demo.cassandraKafka;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.cassandraModels.Brands;
@@ -23,7 +25,7 @@ public class KafkaConsumerResponses {
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 
 	@KafkaListener(topics="ProductsResponses",groupId = "KafkaGroupResponseProduct")
-	public void consumeMessage(String message) {
+	public void consumeMessage(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic) {
 		try{
 			message=message.replace("\\", "");
 			message=message.substring(1, message.length()-1);
@@ -152,7 +154,9 @@ public class KafkaConsumerResponses {
 							data.put("discount", 0.0);
 
 						data.put("itemName", product.getName());
-						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data));
+						data.put("correlationId", data.get("correlationId"));
+
+						kafkaProducer.publishToTopic("cartRequests", objectMapper.writeValueAsString(data),correlationIdBytes);
 					}catch(Exception e){
 						String error = (String)data.get("data");
 						logger.info("Response: "+error);

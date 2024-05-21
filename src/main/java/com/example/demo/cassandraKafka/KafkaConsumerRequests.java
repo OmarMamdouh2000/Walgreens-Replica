@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.cassandraCommands.Invoker;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.kafka.support.KafkaHeaders;
 @Service
 public class KafkaConsumerRequests {
 	@Autowired
@@ -21,8 +23,7 @@ public class KafkaConsumerRequests {
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
 	
 	@KafkaListener(topics="ProductsRequests",groupId = "KafkaGroupRequestProduct")
-	
-	public void consumeMessage(String message) {
+	public void consumeMessage(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic) {
 		try {
 			logger.info("Request: "+message);
 			message=message.replace("\\", "");
@@ -98,8 +99,10 @@ public class KafkaConsumerRequests {
 					break;
 			}
 			result.put("data", finalData);
+			result.put("correlationId", data.get("correlationId"));
+
 			String response = objectMapper.writeValueAsString(result);
-			kafkaProducer.publishToTopic("ProductsResponses", response);
+			kafkaProducer.publishToTopic("ProductsResponses", response,correlationIdBytes);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

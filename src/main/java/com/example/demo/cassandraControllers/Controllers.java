@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,24 +26,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.example.demo.cassandraFirebase.FirebaseService;
-import com.example.demo.cassandraKafka.KafkaProducer;
+import org.springframework.messaging.Message;
 
 
 @RestController
 public class Controllers {
 	
+	
 	@Autowired
-	private KafkaProducer kafkaProducerRequest;
+	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
+
 	@Autowired
 	FirebaseService firebaseService;
 	// --------------------------------------------- CATEGORIES ------------------------------------------------
 	
 	@GetMapping("/listCategories")
-	public void listCategories()
+	public Object listCategories()
 	{	
 		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "listCategoriesCase");
-		
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -48,11 +54,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		 RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+                    .build());
+					try{
+						String payload = (String) result.get().getPayload();
+					return payload;
+					}catch(Exception e){
+						return e.getMessage();
+					}
 	}
 	
 	@GetMapping("/getCategory/{categoryId}")
-	public void getCategory(@PathVariable Object categoryId)
+	public Object getCategory(@PathVariable Object categoryId)
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", categoryId);
@@ -66,11 +85,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@GetMapping("/listCategoryProducts/{categoryId}")
-	public void listCategoryProducts(@PathVariable Object categoryId) 
+	public Object listCategoryProducts(@PathVariable Object categoryId) 
 	{ 
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", categoryId);
@@ -84,11 +116,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@DeleteMapping("/deleteCategory/{categoryId}")
-	public void deleteCategory(@PathVariable Object categoryId)
+	public String deleteCategory(@PathVariable Object categoryId)
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", categoryId);
@@ -102,11 +147,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@PostMapping("/addCategory")
-	public void addCategory(@RequestBody Map<String, Object> body)
+	public String addCategory(@RequestBody Map<String, Object> body)
 	{
 		body.put("commandName", "addCategoryCase");
 		
@@ -118,11 +176,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@PutMapping("/updateCategory/{categoryId}")
-	public void updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
+	public String updateCategory(@PathVariable Object categoryId, @RequestBody Map<String, Object> body)
 	{
 		body.put("parameter", categoryId);
 		body.put("commandName", "updateCategoryCase");
@@ -135,7 +206,20 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	// --------------------------------------------- END CATEGORIES ------------------------------------------------
@@ -145,7 +229,7 @@ public class Controllers {
 	// --------------------------------------------- PRODUCTS ------------------------------------------------
 	
 	@GetMapping("/listProducts")
-	public void listProducts(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
+	public Object listProducts(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
 			int [] params = new int [2];
 			params[0] = page;
 			params[1] = size; //(List<Products>)
@@ -162,11 +246,24 @@ public class Controllers {
 				e.printStackTrace();
 				System.out.print(e.getMessage());
 			}
-			kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+			// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+			String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 
 	@GetMapping("/getProduct/{productId}")
-	public void getProduct(@PathVariable Object productId)
+	public Object getProduct(@PathVariable Object productId)
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", productId);
@@ -180,11 +277,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@DeleteMapping("/deleteProduct/{productId}")
-	public void deleteProduct(@PathVariable Object productId) 
+	public String deleteProduct(@PathVariable Object productId) 
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", productId);
@@ -198,12 +308,25 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	
 	@PostMapping("/addProduct")
-    public void addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image) 
+    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image) 
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addProductCase");
@@ -227,11 +350,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
    	}
 	
 	@PutMapping("/updateProduct/{productId}")
-	public void updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) 
+	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body) 
 	{
 		body.put("parameter", productId);
 		body.put("commandName", "updateProductCase");
@@ -244,7 +380,20 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	
@@ -253,7 +402,7 @@ public class Controllers {
 	// --------------------------------------------- BRANDS ------------------------------------------------
 
 	@GetMapping("/listBrand")
-	public void ListBrand()
+	public Object ListBrand()
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "listBrandCase");
@@ -266,11 +415,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		// kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@GetMapping("/getBrand/{brandId}")
-	public void getBrand(@PathVariable Object brandId)
+	public Object getBrand(@PathVariable Object brandId)
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", brandId);
@@ -284,11 +446,25 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		//kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
+		
 	}
 	
 	@GetMapping("/listBrandProducts/{brandId}")
-	public void listBrandProducts(@PathVariable Object brandId) 
+	public Object listBrandProducts(@PathVariable Object brandId) 
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", brandId);
@@ -302,11 +478,24 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		//kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@DeleteMapping("/deleteBrand/{brandId}")
-	public void deleteBrand(@PathVariable Object brandId)
+	public String deleteBrand(@PathVariable Object brandId)
 	{
 		Map<String,Object> body = new HashMap<>();
 		body.put("parameter", brandId);
@@ -321,10 +510,23 @@ public class Controllers {
 			e.printStackTrace();
 			System.out.print(e.getMessage());
 		}
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		//kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	@PostMapping("/addBrand")
-	public void addBrand(@RequestBody Map<String, Object> body)
+	public String addBrand(@RequestBody Map<String, Object> body)
 	{
 		body.put("commandName", "addBrandCase");
 		
@@ -337,11 +539,24 @@ public class Controllers {
 			System.out.print(e.getMessage());
 		}
 		
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		//kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	@PutMapping("/updateBrand/{brandId}")
-	public void updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
+	public String updateBrand(@PathVariable Object brandId, @RequestBody Map<String, Object> body)
 	{
 		body.put("parameter", brandId);
 		body.put("commandName", "updateBrandCase");
@@ -355,7 +570,20 @@ public class Controllers {
 			System.out.print(e.getMessage());
 		}
 		
-		kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		//kafkaProducerRequest.publishToTopic("ProductsRequests", jsonString);
+		String random=UUID.randomUUID().toString();
+		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+				   .withPayload(jsonString)
+				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+				   .setHeader(KafkaHeaders.KEY, random)
+				   .build());
+				   try{
+					   String payload = (String) result.get().getPayload();
+				   return payload;
+				   }catch(Exception e){
+					   return e.getMessage();
+				   }
 	}
 	
 	// --------------------------------------------- END BRANDS ---------------------------------------------
