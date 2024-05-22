@@ -39,6 +39,16 @@ public class Controllers {
 
 	@Autowired
 	FirebaseService firebaseService;
+	
+	@GetMapping("/getToken")
+    public String getToken(@RequestParam String userId) {
+        return JwtUtil.generateToken(userId,"admin");
+    }
+    @GetMapping("/getUserId")
+    public String getUserId(@RequestParam String sessionId) {
+        System.out.println("JWT DECODE RESULT: " + JwtUtil.getUserIdFromToken(sessionId));
+        return JwtUtil.getUserIdFromToken(sessionId);
+    }
 	// --------------------------------------------- CATEGORIES ------------------------------------------------
 	
 	@GetMapping("/listCategories")
@@ -137,7 +147,7 @@ public class Controllers {
 	public String deleteCategory(@PathVariable Object categoryId, @RequestParam("sessionId") String sessionId)
 	{
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -177,11 +187,16 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
-		
+		String[] adminArr = user.split(":");
+		System.out.println("ppppppppeeeettttttteeerrrrrr"+user);
+		System.out.println(adminArr[0]);
+		System.out.println(adminArr[1]);
+		System.out.println(adminArr.length);
+		System.out.println("///////////////");
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
 			return "You must be an Admin";
+			
 		}
 		
 		body.put("commandName", "addCategoryCase");
@@ -215,7 +230,13 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
+		
+		System.out.println("ppppppppeeeettttttteeerrrrrr"+user);
+		System.out.println(adminArr[0]);
+		System.out.println(adminArr[1]);
+		System.out.println(adminArr.length);
+		System.out.println("///////////////");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -325,7 +346,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -361,61 +382,166 @@ public class Controllers {
 	}
 	
 	
+//	@PostMapping("/addProduct")
+//    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image, @RequestParam("sessionId") String sessionId) 
+//	{
+//		
+//		String user = JwtUtil.getUserIdFromToken(sessionId);
+//		String[] adminArr = user.split(":");
+//		
+//		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+//		{
+//			return "You must be an Admin";
+//		}
+//		
+//		Map<String,Object> body = new HashMap<>();
+//		body.put("commandName", "addProductCase");
+//		body.putAll(all);
+//		
+//		UUID randomId = Uuids.timeBased();
+//		String randomIdString = randomId.toString();
+//		try {
+//			firebaseService.uploadPhoto(randomIdString, image);
+//			body.put("image", randomIdString);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		String jsonString = null;
+//		try {
+//			jsonString = objectMapper.writeValueAsString(body);
+//		} catch (JsonProcessingException e) {
+//			e.printStackTrace();
+//			System.out.print(e.getMessage());
+//		}
+//		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+//		String random=UUID.randomUUID().toString();
+//		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+//				   .withPayload(jsonString)
+//				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+//				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+//				   .setHeader(KafkaHeaders.KEY, random)
+//				   .build());
+//				   try{
+//					   String payload = (String) result.get().getPayload();
+//				   return payload;
+//				   }catch(Exception e){
+//					   return e.getMessage();
+//				   }
+//   	}
+	
 	@PostMapping("/addProduct")
-    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image, @RequestParam("sessionId") String sessionId) 
-	{
-		
-		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
-		
-		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
-		{
-			return "You must be an Admin";
-		}
-		
-		Map<String,Object> body = new HashMap<>();
-		body.put("commandName", "addProductCase");
-		body.putAll(all);
-		
-		UUID randomId = Uuids.timeBased();
-		String randomIdString = randomId.toString();
-		try {
-			firebaseService.uploadPhoto(randomIdString, image);
-			body.put("image", randomIdString);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = null;
-		try {
-			jsonString = objectMapper.writeValueAsString(body);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			System.out.print(e.getMessage());
-		}
-		// kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
-		String random=UUID.randomUUID().toString();
-		RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
-				   .withPayload(jsonString)
-				   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
-				   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
-				   .setHeader(KafkaHeaders.KEY, random)
-				   .build());
-				   try{
-					   String payload = (String) result.get().getPayload();
-				   return payload;
-				   }catch(Exception e){
-					   return e.getMessage();
-				   }
-   	}
+	public String addProduct(@RequestParam Map<String, Object> all, 
+	                         @RequestParam(value = "image", required = false) MultipartFile image, 
+	                         @RequestParam("sessionId") String sessionId) {
+
+	    String user = JwtUtil.getUserIdFromToken(sessionId);
+	    String[] adminArr = user.split(":");
+	    
+	    if (adminArr.length == 1 || !adminArr[1].equals("admin")) {
+	        return "You must be an Admin";
+	    }
+	    
+	    Map<String, Object> body = new HashMap<>();
+	    body.put("commandName", "addProductCase");
+	    body.putAll(all);
+	    
+	    UUID randomId = Uuids.timeBased();
+	    String randomIdString = randomId.toString();
+	    
+	    if (image != null && !image.isEmpty()) {
+	        try {
+	            firebaseService.uploadPhoto(randomIdString, image);
+	            body.put("image", randomIdString);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            // Handle the exception as needed
+	        }
+	    }
+	    
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    String jsonString = null;
+	    try {
+	        jsonString = objectMapper.writeValueAsString(body);
+	    } catch (JsonProcessingException e) {
+	        e.printStackTrace();
+	        System.out.print(e.getMessage());
+	        return "Error processing request";
+	    }
+	    
+	    // kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+	    String random = UUID.randomUUID().toString();
+	    RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(
+	        MessageBuilder.withPayload(jsonString)
+	                      .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+	                      .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+	                      .setHeader(KafkaHeaders.KEY, random)
+	                      .build()
+	    );
+	    
+	    try {
+	        String payload = (String) result.get().getPayload();
+	        return payload;
+	    } catch (Exception e) {
+	        return e.getMessage();
+	    }
+	}
+//	@PostMapping("/addProduct")
+//    public String addProduct(@RequestBody Map<String, Object> body, @RequestParam( name = "image", required = false) MultipartFile image , @RequestParam("sessionId") String sessionId) 
+//    {
+//
+//        String user = JwtUtil.getUserIdFromToken(sessionId);
+//        String[] adminArr = user.split(":");
+//
+//        if(adminArr.length == 1 || !adminArr[1].equals("admin"))
+//        {
+//            return "You must be an Admin";
+//        }
+//
+//        body.put("commandName", "addProductCase");
+//
+//        UUID randomId = Uuids.timeBased();
+//        String randomIdString = randomId.toString();
+//        try {
+//            firebaseService.uploadPhoto(randomIdString, image);
+//            body.put("image", randomIdString);
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String jsonString = null;
+//        try {
+//            jsonString = objectMapper.writeValueAsString(body);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//            System.out.print(e.getMessage());
+//        }
+//        // kafkaProducerRequest.publishToTopic("ProductsRequests",jsonString);
+//        String random=UUID.randomUUID().toString();
+//        RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+//                   .withPayload(jsonString)
+//                   .setHeader(KafkaHeaders.REPLY_TOPIC, "ProductsResponses")
+//                   .setHeader(KafkaHeaders.TOPIC, "ProductsRequests")
+//                   .setHeader(KafkaHeaders.KEY, random)
+//                   .build());
+//                   try{
+//                       String payload = (String) result.get().getPayload();
+//                   return payload;
+//                   }catch(Exception e){
+//                       return e.getMessage();
+//                   }
+//       }
+
 	
 	@PutMapping("/updateProduct/{productId}")
 	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId) 
 	{
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -552,7 +678,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -592,7 +718,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -631,7 +757,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{

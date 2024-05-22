@@ -31,7 +31,8 @@ public class FirebaseConfig {
     public static Storage initializeStorage() throws IOException {
         System.out.println("Ana Sara?");
         //FirebaseApp app = initializeFirebaseApp();
-        Path path = Paths.get("/app/resources/google-services.json");
+        Path path = Paths.get("app/resources/google-services.json");
+        ///app/resources/google-services.json
         GoogleCredentials credentials = GoogleCredentials.fromStream(Files.newInputStream(path));
         System.out.println("credentials:"+ credentials);
 

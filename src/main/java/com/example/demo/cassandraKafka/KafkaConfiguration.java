@@ -22,6 +22,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import org.springframework.messaging.Message;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,12 +53,16 @@ public class KafkaConfiguration {
     public KafkaTemplate<String, Message<String>> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
+    @Value("${kafka.reply.timeout.ms:60000}") // default to 60000 ms (60 seconds)
+    private long replyTimeout;
     @Bean
-    public ReplyingKafkaTemplate<String, Message<String>, Message<String> > replyKafkaTemplate(
-            ProducerFactory<String, Message<String>> producerFactory,
-            KafkaMessageListenerContainer<String, Message<String>> replyContainer
-    ) {
-        return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
+    public ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyKafkaTemplate(
+        ProducerFactory<String, Message<String>> producerFactory,
+        KafkaMessageListenerContainer<String, Message<String>> replyContainer) {
+    	ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate =
+            new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
+    replyingKafkaTemplate.setDefaultReplyTimeout(Duration.ofDays(replyTimeout)); // Set the reply timeout
+    return replyingKafkaTemplate;
     }
     @Bean
     public Map<String,Object> consumerConfig(){
