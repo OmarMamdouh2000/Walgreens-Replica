@@ -62,10 +62,11 @@ public class ConfirmCheckoutCommand implements Command {
             e.printStackTrace();
             return e.getMessage();
         }
+        UUID random=UUID.randomUUID();
+        byte[] correlationId = random.toString().getBytes();
 
-        //kafkaProducer.publishToTopic("orderRequests",jsonString);
+        kafkaProducer.publishToTopic("orderRequests",jsonString,correlationId);
 
-        // call createOrderAPi or publish to kafka orders with items and transaction
         userCart.getItems().clear();
         userCart.setTotalAmount(0);
         userCart.setAppliedPromoCodeId("");

@@ -14,6 +14,7 @@ import com.example.Final.CartTable;
 import com.example.Final.PromoRepo;
 import com.example.Final.UserUsedPromoRepo;
 import com.example.Kafka.KafkaProducer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -65,9 +66,12 @@ public class ProceedToCheckOutCommand implements Command {
         request.put("cartUuid", userCart.getId().toString());
         request.put("cartItems", userCart.getItems());
         request.putAll(data);
-        String userCartString = objectMapper.writeValueAsString(request);
+        JsonNode jsonNode = objectMapper.convertValue(request, JsonNode.class);
+        String userCartString = objectMapper.writeValueAsString(jsonNode);
         UUID corrId=UUID.randomUUID();
         byte[] corrIdBytes = corrId.toString().getBytes();
+        // userCartString=userCartString.replace("\\", "");
+        // userCartString=userCartString.substring(1, userCartString.length()-1);
         
         kafkaProducer.publishToTopic("payment",userCartString, corrIdBytes);
         
