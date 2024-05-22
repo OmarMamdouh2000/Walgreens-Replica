@@ -29,20 +29,13 @@ public class GetActiveOrdersCommand implements Command {
 
     @Override
     public Object execute(Map<String, Object> data) {
-        String token=(String) data.get("token");
-        String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa"; 
-        Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
-        if (claims != null) {
-            String userId=(String) claims.get("userId");
+        String userId=(String)data.get("userId");
+            if(userId !=null){
             
-            return orderRepo.getActiveOrders(UUID.fromString(userId));
-            
-            
-        }else {
-            return new ArrayList<OrderTable>();
-        }
-        
-        
+            return orderRepo.getActiveOrders(UUID.fromString(userId));	
+            }else {
+            	return new ArrayList<OrderTable>();
+            }
     }
 
 

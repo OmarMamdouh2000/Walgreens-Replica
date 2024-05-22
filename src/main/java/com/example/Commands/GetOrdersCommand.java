@@ -29,15 +29,11 @@ public class GetOrdersCommand implements Command {
 
     @Override
     public Object execute(Map<String, Object> data) {
-        String token=(String) data.get("token");
-            String secretKey = "ziad1234aaaa&&&&&thisisasecretekeyaaa"; 
-		    Claims claims = jwtDecoderService.decodeJwtToken(token, secretKey);
-	        if (claims != null) {
-	        	String userId=(String) claims.get("userId");
-	        	
-	        	return orderRepo.getOrders(UUID.fromString(userId));
-	        	
-	        	
+        String userId=(String)data.get("userId");
+            if(userId !=null){
+            List<OrderTable> orders = orderRepo.getOrders(UUID.fromString(userId));
+            System.out.println(orders);
+            return orders;	
 	        }else {
 	        	return new ArrayList<OrderTable>();
 	        }

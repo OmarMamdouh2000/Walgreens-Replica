@@ -9,6 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import com.example.Commands.Invoker;
@@ -22,9 +27,11 @@ public class KafkaConsumerRequests {
 	Invoker invoker=new Invoker();
 	@Autowired
 	KafkaProducer kafkaProducer;
+	@Autowired
+	private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerRequests.class);
-	@KafkaListener(topics="orderRequests",groupId = "KafkaGroupRequest")
-	public void consumeMessage(String message) {
+	@KafkaListener(topics="orderRequests",groupId = "KafkaGroupRequestOrder")
+	public void consumeMessage(@Payload String message, @Header(KafkaHeaders.CORRELATION_ID) byte[] correlationIdBytes, @Header(KafkaHeaders.REPLY_TOPIC) String replyTopic) {
 		
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -65,7 +72,7 @@ public class KafkaConsumerRequests {
         }
 		result.put("data",finalData);
 		String response = objectMapper.writeValueAsString(result);
-		kafkaProducer.publishToTopic("orderResponses", response);
+		kafkaProducer.publishToTopic("orderResponses", response,correlationIdBytes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

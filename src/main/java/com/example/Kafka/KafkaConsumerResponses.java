@@ -20,7 +20,7 @@ import java.util.Map;
 public class KafkaConsumerResponses {
 	Logger logger = LoggerFactory.getLogger(KafkaConsumerResponses.class);
 	
-	@KafkaListener(topics="orderResponses",groupId = "KafkaGroupResponse")
+	@KafkaListener(topics="orderResponses",groupId = "KafkaGroupResponseOrder")
 	public void consumeMessage(String message) {
 		try {
 			message = message.replace("\\", "");
