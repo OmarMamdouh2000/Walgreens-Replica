@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.Kafka.CartFormulator;
 import com.example.Kafka.KafkaProducer;
+import com.example.Kafka.StringFormulator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.messaging.Message;
@@ -43,10 +44,12 @@ public class CartController {
 	@Autowired
 	private CartFormulator cartFormulator;
 	@Autowired
+	private StringFormulator stringFormulator;
+	@Autowired
 	private SessionCache sessionCache;
 	@GetMapping("/getToken")
 	public String getToken(@RequestParam String userId) {
-		return jwtDecoderService.generateToken(userId);
+		return jwtDecoderService.generateToken(userId,"normalUser");
 	}
 	@GetMapping("/getUserId")
 	public String getUserId(@RequestParam String sessionId) {
@@ -113,7 +116,7 @@ public class CartController {
 	@PostMapping("/editItemCount")
 	public String editItemCount(@RequestParam String sessionId,@RequestBody Map<String,Object> data) {
 
-		String userId=jwtDecoderService.getUserIdFromToken(sessionId);;
+		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
 		if(userId==null){
 			return "Invalid Token";
 		}
@@ -138,7 +141,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return (String)cartFormulator.getData(payload);
+		return (String)stringFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
@@ -171,7 +174,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return (String)cartFormulator.getData(payload);
+		return (String)stringFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
@@ -203,7 +206,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return (String)cartFormulator.getData(payload);
+		return (String)stringFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
@@ -406,7 +409,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return cartFormulator.getData(payload);
+		return stringFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}
@@ -437,7 +440,7 @@ public class CartController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-		return cartFormulator.getData(payload);
+		return stringFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}

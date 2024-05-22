@@ -62,6 +62,7 @@ public class UpdateItemCountCommandCache implements Command{
         UUID cartId=oldCart.getId();
         boolean found=false;
         double newTotal=0;
+        System.out.println(oldItems);
         for(int i=0;oldItems!=null && i<oldItems.size();i++) {
             if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 if(count>0) {

@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 
 @Component
-public class CartFormulator {
-    Logger logger = LoggerFactory.getLogger(CartFormulator.class);
+public class StringFormulator {
+    Logger logger = LoggerFactory.getLogger(StringFormulator.class);
 
-    public CartFormulator(){
+    public StringFormulator(){
         
     }
 
@@ -27,7 +27,7 @@ public class CartFormulator {
             JsonNode jsonNode = objectMapper.readTree(message);
             Map<String, Object> map = objectMapper.convertValue(jsonNode, new TypeReference<Map<String, Object>>() {});
             // Extract the "data" field and convert it into a CartTable object
-            CartTable res= objectMapper.convertValue(map.get("data"), CartTable.class);
+            String res= (String)map.get("data");
             return res;
         }catch(Exception e){
             return "Invalid Data";
