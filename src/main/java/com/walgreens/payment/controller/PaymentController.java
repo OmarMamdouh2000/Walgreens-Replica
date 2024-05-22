@@ -9,6 +9,7 @@ import com.walgreens.payment.service.command.*;
 
 import com.walgreens.payment.service.kafka.KafkaPublisher;
 import com.walgreens.payment.service.kafka.message.keys.Keys;
+import com.walgreens.payment.utils.JwtUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 
 
 @RestController
@@ -40,6 +42,7 @@ public class PaymentController {
 
     @Autowired
     private KafkaPublisher kafkaPublisher;
+
 
 
     @Autowired
@@ -65,6 +68,8 @@ public class PaymentController {
         this.webhookService = webhookService;
     }
 
+
+
     @Value("${api.stripe.key}")
     private String stripeApiKey;
 
@@ -73,6 +78,16 @@ public class PaymentController {
 
         Stripe.apiKey = stripeApiKey;
     }
+
+
+    @PostMapping("/createToken")
+    public String createToken(UUID userUuid) {
+
+        String token = JwtUtil.generateToken(String.valueOf(userUuid),"");
+        return token;
+    }
+
+
     @PostMapping("/testZiad")
     public String testZiad(@RequestBody Map<String,Object> payload) {
         //payload={"request":"CheckPaymentMethod","commandName":"ProceedToCheckOutCommand","customerUuid":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","sessionId":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmMzJhYzBkYi04OWI4LTRjZDMtYTk2Ny0wZWI3YzY1NmMxYTEiLCJpYXQiOjE3MTYzMjgzOTksImV4cCI6MTcxNjM2NDM5OX0.XS-cZcD-GlZTFMRpR6WVOhxTWLNo0kii5on34f1OPU0","cartItems":[{"deliveryType":"standard","comment":"Great product","itemCount":2,"itemId":"5ef821aa-5558-405d-ba17-9cf114cd6c26","purchasedPrice":10.99,"itemName":null}],"paymentAmount":"16.98","userId":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","cartUuid":"a3b8a792-41c4-4b04-919e-8ea7a28ddfef"}
@@ -80,7 +95,15 @@ public class PaymentController {
         return "success";
     }
     @PostMapping("/createCustomer")
-    public String createCustomer(UUID customerUuid, String name, String email) {
+    public String createCustomer(String sessionID, String name, String email) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
+        System.out.println(customerUuid);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
 
@@ -93,6 +116,7 @@ public class PaymentController {
                             Keys.customerEmail, email
                     )
             );
+            System.out.println("KARIM: " + jsonString);
 
             kafkaPublisher.publish("payment", jsonString);
             return "success";
@@ -108,7 +132,14 @@ public class PaymentController {
 
 
     @PostMapping("/addPaymentMethod")
-    public String addPaymentMethod(UUID customerUuid, String cardNumber, String expiryMonth, String expiryYear, String cvv, String cardholderName, boolean isDefault, boolean hasFunds) {
+    public String addPaymentMethod(String sessionID, String cardNumber, String expiryMonth, String expiryYear, String cvv, String cardholderName, boolean isDefault, boolean hasFunds) {
+
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -144,7 +175,14 @@ public class PaymentController {
     }
 
     @PostMapping("/viewPaymentMethods")
-    public Object viewPaymentMethods(UUID customerUuid) {
+    public Object viewPaymentMethods(String sessionID) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -166,7 +204,13 @@ public class PaymentController {
     }
 
     @PostMapping("/viewBalance")
-    public String viewBalance(UUID customerUuid) {
+    public String viewBalance(String sessionID) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -189,7 +233,14 @@ public class PaymentController {
     }
 
     @PostMapping("/viewLoyaltyPoints")
-    public String viewLoyaltyPoints(UUID customerUuid) {
+    public String viewLoyaltyPoints(String sessionID) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
@@ -211,7 +262,13 @@ public class PaymentController {
     }
 
     @PostMapping("/createCheckout")
-    public String createCheckout(UUID customerUuid, UUID couponUuid) {
+    public String createCheckout(String sessionID, UUID couponUuid) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -267,7 +324,14 @@ public class PaymentController {
     }
 
     @PostMapping("/payUsingPaymentMethod")
-    public String payUsingPaymentMethod(UUID customerUuid, UUID cartUuid, UUID paymentMethodUuid, Double amount) {
+    public String payUsingPaymentMethod(String sessionID, UUID cartUuid, UUID paymentMethodUuid, Double amount) {
+
+        String customerID = JwtUtil.getUserIdFromToken(sessionID);
+        if(customerID == null){
+            return "Session is invalid";
+        }
+        UUID customerUuid = UUID.fromString(customerID);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
         try {
