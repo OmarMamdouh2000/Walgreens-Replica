@@ -28,9 +28,9 @@ public interface PaymentMethodsRepository extends JpaRepository<PaymentMethodsDt
     );
 
     @Procedure(name = "get_default_payment_method")
-    UUID get_default_payment_method(
-            @Param("p_customer_uuid") UUID customerUuid
-    );
+    String get_default_payment_method(@Param("p_customer_uuid") UUID customerUuid);
+
+
     @Procedure(name = "has_funds_default_payment_method")
         boolean has_funds_default_payment_method(
                 @Param("p_customer_uuid") UUID customerUuid

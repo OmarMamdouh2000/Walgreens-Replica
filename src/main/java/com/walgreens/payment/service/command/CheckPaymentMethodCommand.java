@@ -49,9 +49,10 @@ public class CheckPaymentMethodCommand implements Command {
 
         boolean hasPaymentMethods = paymentMethodsRepository.has_funds_default_payment_method(customerUuid);
         if (hasPaymentMethods) {
-            UUID paymentMethodUuid= (UUID)paymentMethodsRepository.get_default_payment_method(customerUuid) ;
+            UUID paymentMethodUuid= UUID.fromString(paymentMethodsRepository.get_default_payment_method(customerUuid));
             PayUsingPaymentMethodsCommand payUsingPaymentMethodsCommand =(PayUsingPaymentMethodsCommand) applicationContext.getBean("payUsingPaymentMethodsCommand");
             payUsingPaymentMethodsCommand.setCustomerUuid(customerUuid);
+            payUsingPaymentMethodsCommand.setCartUuid(cartUuid);
             payUsingPaymentMethodsCommand.setPaymentMethodUuid(paymentMethodUuid);
             payUsingPaymentMethodsCommand.setAmount(amount);
             payUsingPaymentMethodsCommand.execute();

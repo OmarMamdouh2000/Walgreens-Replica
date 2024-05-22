@@ -20,7 +20,6 @@ public class KafkaListeners {
 
     @KafkaListener(topics = "payment", groupId = "payment")
     void listener(String message){
-        System.out.println("MESSAGE BEFORE CONVERSION: " + message);
         ObjectMapper objectMapper = new ObjectMapper();
         try{
 //            message=message.replace("\\", "");

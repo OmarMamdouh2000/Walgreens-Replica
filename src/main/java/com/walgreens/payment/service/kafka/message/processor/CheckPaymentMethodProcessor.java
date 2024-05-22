@@ -30,7 +30,6 @@ public class CheckPaymentMethodProcessor extends Processor{
         try {
             // Assuming this is a JSON string of an array of CartItem objects
             String cartItemsJson = (String) message.get(Keys.cartItems);
-            System.out.println("Cart Items JSON: " + cartItemsJson);
 
             // Deserialize JSON string into a List of CartItem objects
             JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, CartItem.class);
