@@ -38,7 +38,7 @@ public class WebhookService {
     private String payload;
     private String sigHeader;
     private Event event;
-
+    private String sessionIdCart;
     Logger logger= LoggerFactory.getLogger(WebhookService.class);
 
     @Autowired
@@ -61,6 +61,7 @@ public class WebhookService {
                     Map<String, String> metadata = paymentIntent.getMetadata();
                     cartUuid = UUID.fromString(metadata.get("cart_uuid"));
                     customerUuid = UUID.fromString(metadata.get("customer_uuid"));
+                    sessionIdCart = metadata.get("sessionIdCart");
 
                     double amount = (double) sessionEvent.getAmountSubtotal() / 100;
 
@@ -72,6 +73,7 @@ public class WebhookService {
                     createATransactionCommand.setCartUuid(cartUuid);
                     createATransactionCommand.setAmount(amount);
                     createATransactionCommand.setSessionId(sessionEvent.getId());
+                    createATransactionCommand.setSessionIdCart(sessionIdCart);
                     createATransactionCommand.execute();
 
                 } else {

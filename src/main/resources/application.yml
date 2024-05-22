@@ -9,7 +9,7 @@ spring:
   application:
     name: PaymentMicroservice
   datasource:
-    url: jdbc:postgresql://localhost:5332/paymentsstripe
+    url: jdbc:postgresql://host.docker.internal:5332/paymentsstripe
     username: paymentcluster
     password: password
   jpa:
@@ -23,7 +23,7 @@ spring:
   main:
     web-application-type: servlet
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: host.docker.internal:29092,host.docker.internal:39092,host.docker.internal:49092
 
 #    bootstrap-servers: host.docker.internal:29092,host.docker.internal:39092,host.docker.internal:49092
 

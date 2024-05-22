@@ -26,6 +26,7 @@ public class CheckPaymentMethodCommand implements Command {
     private double amount;
     private UUID paymentMethodUuid;
     private List<CartItem> cartItems;
+    private String sessionIdCart;
 
     @Autowired
     private PaymentMethodsRepository paymentMethodsRepository;
@@ -55,6 +56,7 @@ public class CheckPaymentMethodCommand implements Command {
             payUsingPaymentMethodsCommand.setCartUuid(cartUuid);
             payUsingPaymentMethodsCommand.setPaymentMethodUuid(paymentMethodUuid);
             payUsingPaymentMethodsCommand.setAmount(amount);
+            payUsingPaymentMethodsCommand.setSessionIdCart(sessionIdCart);
             payUsingPaymentMethodsCommand.execute();
         } else{
             System.out.println(customerUuid);
@@ -62,6 +64,7 @@ public class CheckPaymentMethodCommand implements Command {
             createCheckoutCommand.setCustomerUuid(customerUuid);
             createCheckoutCommand.setCartUuid(cartUuid);
             createCheckoutCommand.setCartItems(cartItems);
+            createCheckoutCommand.setSessionIdCart(sessionIdCart);
             createCheckoutCommand.execute();
         }
     }

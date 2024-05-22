@@ -1,4 +1,11 @@
 services:
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe-cli
+    command: stripe listen --api-key sk_test_51P8PpqC0ZDZEI6HDMJ1lWvt421a5HzvPoETyIV5p8m7hiwxODqHZhVHATtoKHdHnZX9ZQrMiJ3o0QVkVLT12wv1y00DWdQ010x --forward-to host.docker.internal:9095/api/integration/stripe/webhook
+    ports:
+      - 9000:9000  # Replace with the actual port if needed
+    restart: unless-stopped
   springboot-payment:
     ports:
       - 9095:9095

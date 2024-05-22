@@ -31,7 +31,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
     private UUID cartUuid;
     private UUID paymentMethodUuid;
     private Double amount;
-
+    private String sessionIdCart;
     private List<CartItem> cartItems;
 
     @Autowired
@@ -66,6 +66,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
             createATransactionCommand.setCartUuid(cartUuid);
             createATransactionCommand.setAmount(amount);
             createATransactionCommand.setTransactionTime(Timestamp.from(Instant.now()));
+            createATransactionCommand.setSessionIdCart(sessionIdCart);
             createATransactionCommand.execute();
 
             logger.info("Payment Methods");

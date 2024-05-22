@@ -22,8 +22,11 @@ public class KafkaListeners {
     void listener(String message){
         ObjectMapper objectMapper = new ObjectMapper();
         try{
-//            message=message.replace("\\", "");
-//			message=message.substring(1, message.length()-1);
+            
+            message=message.replace("\\", "");
+            if(message.charAt(0)=='"' && message.charAt(message.length()-1)=='"')
+			    message=message.substring(1, message.length()-1);
+            System.out.println("Received message"+message);
             JsonNode rootNode = objectMapper.readTree(message);
             System.out.println("Received message");
             System.out.println(rootNode);

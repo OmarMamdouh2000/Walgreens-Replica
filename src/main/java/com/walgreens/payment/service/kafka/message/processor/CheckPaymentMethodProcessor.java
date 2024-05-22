@@ -25,6 +25,7 @@ public class CheckPaymentMethodProcessor extends Processor{
         checkPaymentMethodCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
         checkPaymentMethodCommand.setCartUuid(UUID.fromString((String) message.get(Keys.cartUuid)));
         checkPaymentMethodCommand.setAmount(Double.parseDouble((String) message.get(Keys.paymentAmount)));
+        checkPaymentMethodCommand.setSessionIdCart((String) message.get("sessionId"));
 
         ObjectMapper mapper = new ObjectMapper();
         try {

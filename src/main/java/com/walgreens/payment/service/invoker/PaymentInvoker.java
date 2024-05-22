@@ -1,8 +1,15 @@
 package com.walgreens.payment.service.invoker;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walgreens.payment.model.CartItem;
 import com.walgreens.payment.service.command.Command;
 import com.walgreens.payment.service.kafka.message.processor.Processor;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -21,8 +28,11 @@ public class PaymentInvoker {
         this.map = CommandToReqMapper.getInstance();
     }
 
-    public void callCommand(JsonNode body){
-        String request = body.get("request").asText();
+    public void callCommand(JsonNode body2){
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> body = objectMapper.convertValue(body2, new TypeReference<Map<String, Object>>() {});
+        String request =(String) body.get("request");
+        
 
         String commandName = map.getCommandsMap().get(request);
         if(commandName == null){
@@ -34,7 +44,7 @@ public class PaymentInvoker {
             Class<?> processorClass = Class.forName("com.walgreens.payment.service.kafka.message.processor." + request + "Processor");
             Processor processor = (Processor) processorClass.getDeclaredConstructor().newInstance();
             Command command = (Command) applicationContext.getBean(commandName);
-            processor.init(command,body);
+            processor.init(command,body2);
 
             processor.process();
             command.execute();

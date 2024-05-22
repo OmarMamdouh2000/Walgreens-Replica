@@ -1,6 +1,10 @@
 package com.walgreens.payment.service.command;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walgreens.payment.repository.TransactionsRepository;
+import com.walgreens.payment.service.kafka.KafkaPublisher;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -26,10 +32,13 @@ public class CreateATransactionCommand implements Command{
     private String sessionId;
     private Timestamp transactionTime;
     private Double Amount;
+    private String sessionIdCart;
 
     @Autowired
     private TransactionsRepository transactionsRepository;
 
+    @Autowired
+    KafkaPublisher kafkaPublisher;
 
     Logger logger= LoggerFactory.getLogger(CreateATransactionCommand.class);
 
@@ -51,6 +60,21 @@ public class CreateATransactionCommand implements Command{
                 transactionTime,
                 Amount
         );
+        Map<String,Object> map = new HashMap<>();
+        map.put("transactionNumber",transactionUuid);
+       map.put("sessionId", sessionIdCart);
+        map.put("userId", customerUuid);
+        map.put("commandName", "ConfirmCheckoutCommand");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String result="";
+        try {
+            result = objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        kafkaPublisher.publish("cartRequests", result);
         logger.trace("Create a Transaction");
 
 

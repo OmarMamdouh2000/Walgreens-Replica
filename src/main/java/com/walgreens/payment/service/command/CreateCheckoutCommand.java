@@ -36,7 +36,7 @@ public class CreateCheckoutCommand implements Command{
     private UUID cartUuid;
 
     private List<CartItem> cartItems=new ArrayList<>();
-
+    private String sessionIdCart;
 
     Logger logger= LoggerFactory.getLogger(CreateCheckoutCommand.class);
 
@@ -108,6 +108,7 @@ public class CreateCheckoutCommand implements Command{
                     SessionCreateParams.PaymentIntentData.builder()
                             .putMetadata("cart_uuid", String.valueOf(cartUuid))
                             .putMetadata("customer_uuid", this.customerUuid.toString())
+                            .putMetadata("sessionIdCart", sessionIdCart)
                             .build()
             );
 

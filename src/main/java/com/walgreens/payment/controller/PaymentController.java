@@ -91,7 +91,10 @@ public class PaymentController {
 
     @PostMapping("/testZiad")
     public String testZiad(String payload) {
-        payload = "{\"request\":\"CheckPaymentMethod\",\"commandName\":\"ProceedToCheckOutCommand\",\"customerUuid\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartItems\":[{\"deliveryType\":\"standard\",\"comment\":\"Great product\",\"itemCount\":2,\"itemId\":\"5ef821aa-5558-405d-ba17-9cf114cd6c26\",\"purchasedPrice\":10.99,\"itemName\":\"Shampoo\"}],\"paymentAmount\":\"16.98\",\"userId\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartUuid\":\"a3b8a792-41c4-4b04-919e-8ea7a28ddfef\"}";
+        // "{\"request\":\"CheckPaymentMethod\",\"commandName\":\"ProceedToCheckOutCommand\",\"customerUuid\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartItems\":[{\"deliveryType\":\"standard\",\"comment\":\"Great product\",\"itemCount\":5,\"itemName\":null,\"purchasedPrice\":10.99,\"itemId\":\"5ef821aa-5558-405d-ba17-9cf114cd6c26\"}],\"paymentAmount\":\"49.45545\",\"userId\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartUuid\":\"a3b8a792-41c4-4b04-919e-8ea7a28ddfef\"}"
+        //payload = "{\"request\":\"CheckPaymentMethod\",\"commandName\":\"ProceedToCheckOutCommand\",\"customerUuid\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartItems\":[{\"deliveryType\":\"standard\",\"comment\":\"Great product\",\"itemCount\":2,\"itemId\":\"5ef821aa-5558-405d-ba17-9cf114cd6c26\",\"purchasedPrice\":10.99,\"itemName\":\"Shampoo\"}],\"paymentAmount\":\"16.98\",\"userId\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartUuid\":\"a3b8a792-41c4-4b04-919e-8ea7a28ddfef\"}";
+        payload=payload.replace("\\", "");
+        payload=payload.substring(1, payload.length()-1);
         kafkaPublisher.publish("payment", payload);
 //        ObjectMapper objectMapper = new ObjectMapper();
 //        try {
