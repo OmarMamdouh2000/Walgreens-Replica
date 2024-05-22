@@ -5,6 +5,7 @@ import com.example.Final.CartTable;
 import com.example.Final.OrderController;
 import com.example.Final.OrderTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class KafkaConsumerResponses {
 			message = message.replace("\\", "");
 			message = message.substring(1, message.length() - 1);
 			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(new JavaTimeModule());
 			@SuppressWarnings("unchecked")
 			Map<String, Object> data = objectMapper.readValue(message, HashMap.class);
 			switch (data.get("commandName").toString()) {

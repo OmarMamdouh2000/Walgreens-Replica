@@ -136,8 +136,8 @@ public class OrderController {
                     .build());
 		try{
 			String payload = (String) result.get().getPayload();
-			return payload;
-			//return (List<OrderTable>)orderFormulator.getData(payload);
+			
+			return (List<OrderTable>)orderFormulator.getData(payload);
 		}catch(Exception e){
 			return e.getMessage();
 		}

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.example.Commands.Invoker;
 import com.example.Final.OrderTable;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 @Service
@@ -40,6 +41,7 @@ public class KafkaConsumerRequests {
 			logger.info("Request: "+message);
 			@SuppressWarnings("unchecked")
 			Map<String ,Object>data = objectMapper.readValue(message, HashMap.class);
+			objectMapper.registerModule(new JavaTimeModule());
 			Object finalData =null;
 			Map<String,Object> result=new HashMap<>();
 			result.put("commandName",data.get("commandName").toString());
