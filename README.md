@@ -8,29 +8,29 @@ Check the tree shown at the bottom.
 
 DevTree\
 |-- Order\
-|    |-- Walgreens-Replica\
-|    |    |-- Docker\
-|    |    |    |-- order-mini-serivce\
-|    |    |    |    |-- Dockerfile\
+|  &emsp;  |-- Walgreens-Replica\
+|  &emsp;  |  &emsp;  |-- Docker\
+|  &emsp;  |  &emsp;  |  &emsp;  |-- order-mini-serivce\
+|  &emsp;  |  &emsp;  |  &emsp;  |  &emsp;  |-- Dockerfile\
 |-- Cart\
-|    |-- Walgreens-Replica\
-|    |    |-- Docker\
-|    |    |    |-- cart-mini-serivce\
-|    |    |    |    |-- Dockerfile\
+|  &emsp;  |-- Walgreens-Replica\
+|  &emsp;  |  &emsp;  |-- Docker\
+|  &emsp;  |  &emsp;  |  &emsp;  |-- cart-mini-serivce\
+|  &emsp;  |  &emsp;  |  &emsp;  |  &emsp;  |-- Dockerfile\
 |-- Payment\
-|    |-- Walgreens-Replica\
-|    |    |-- Docker\
-|    |    |    |-- payment-mini-serivce\
-|    |    |    |    |-- Dockerfile\
+|  &emsp;  |-- Walgreens-Replica\
+|  &emsp;  |  &emsp;  |-- Docker\
+|  &emsp;  |  &emsp;  |  &emsp;  |-- payment-mini-serivce\
+|  &emsp;  |  &emsp;  |  &emsp;  |  &emsp;  |-- Dockerfile\
 |-- Product\
-|    |-- Walgreens-Replica\
-|    |    |-- Docker\
-|    |    |    |-- product-mini-serivce\
-|    |    |    |    |-- Dockerfile\
+|  &emsp;  |-- Walgreens-Replica\
+|  &emsp;  |  &emsp;  |-- Docker\
+|  &emsp;  |  &emsp;  |  &emsp;  |-- product-mini-serivce\
+|  &emsp;  |  &emsp;  |  &emsp;  |  &emsp;  |-- Dockerfile\
 |-- User\
-|    |-- Walgreens-Replica\
-|    |    |-- Docker\
-|    |    |    |-- userManagement-mini-serivce\
-|    |    |    |    |-- Dockerfile\
+| &emsp;   |-- Walgreens-Replica\
+|  &emsp;  |  &emsp;  |-- Docker\
+|  &emsp;  |  &emsp;  |  &emsp;  |-- userManagement-mini-serivce\
+|  &emsp;  |  &emsp;  |  &emsp;  |  &emsp;  |-- Dockerfile\
 |-- External Docker\
 |-- Kubernetes
