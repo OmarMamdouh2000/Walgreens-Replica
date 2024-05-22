@@ -37,11 +37,12 @@ public class AddAdminCommand extends Command {
     @Override
     public void execute() {
         try{
-            userId = JwtUtil.getUserIdFromToken(sessionId);
-            if(userId == null){
+            String hashedKey = JwtUtil.getUserIdFromToken(sessionId);
+            if(hashedKey == null || !hashedKey.contains(":") || !hashedKey.split(":")[1].equals("admin")){
                 this.setState(new ResponseStatus(ResponseState.Failure, "Invalid Session"));
             }
             else{
+                userId = hashedKey.split(":")[0];
                 setUpAdminSessionCommandAndExecute();
                 if(adminSessionCommand.getState().getStatus().equals(ResponseState.Failure)){
                     this.setState(adminSessionCommand.getState());
