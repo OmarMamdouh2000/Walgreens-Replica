@@ -1,0 +1,24 @@
+
+
+1. minikube start
+
+    Make sure to have the correct docker images in the minikube docker env
+
+    Run from DevTree
+
+    1. docker build --no-cache -f User/Walgreens-Replica/Docker/userManagment-mini-service/Dockerfile -t  walgreens/mini-service/user-management .
+    2. docker build --no-cache -f Cart/Walgreens-Replica/Docker/cart-mini-service/Dockerfile -t  walgreens/mini-service/cart .
+    3. docker build --no-cache -f Product/Walgreens-Replica/Docker/product-mini-service/Dockerfile -t  walgreens/mini-service/product .
+    4. docker build --no-cache -f Order/Walgreens-Replica/Docker/order-mini-service/Dockerfile -t  walgreens/mini-service/order .
+    5. docker build --no-cache -f Payment/Walgreens-Replica/Docker/payment-mini-service/Dockerfile -t  walgreens/mini-service/payment .
+
+
+2. minikube tunnel
+3. kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+4. kubectl apply -f metrics-server.yaml
+5. kubectl apply -f userManagement-deployment.yaml
+6. kubectl apply -f cart-deployment.yaml
+7. kubectl apply -f product-deployment.yaml
+8. kubectl apply -f order-deployment.yaml
+9. kubectl apply -f payment-deployment.yaml
+10. kubectl apply -f ingress.yaml

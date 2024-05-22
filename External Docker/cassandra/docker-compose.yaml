@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+
+  cassandradb:
+    image: cassandra
+    container_name: cassandra
+    environment:
+      - HEAP_NEWSIZE=128M
+      - MAX_HEAP_SIZE=2048M
+    ports:
+      - "9043:9042"
+    volumes:
+      - walgreens_cart_cassandra:/var/lib/cassandra
+
+  cassandradbproduct:
+    image: cassandra
+    container_name: cassandraProduct
+    environment:
+      - HEAP_NEWSIZE=128M
+      - MAX_HEAP_SIZE=2048M
+    ports:
+      - "9042:9042"
+    volumes:
+      - walgreens_product_cassandra:/var/lib/cassandra
+
+  cassandradorder:
+    image: cassandra
+    container_name: cassandraOrder
+    environment:
+      - HEAP_NEWSIZE=128M
+      - MAX_HEAP_SIZE=2048M
+    ports:
+      - "9044:9042"
+    volumes:
+      - walgreens_order_cassandra:/var/lib/cassandra
+
+volumes:
+  walgreens_cart_cassandra:
+  walgreens_product_cassandra:
+  walgreens_order_cassandra:

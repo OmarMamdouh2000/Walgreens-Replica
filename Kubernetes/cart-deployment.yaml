@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-mini-service-deployment
+  labels:
+    app: cart-mini-service
+spec:
+  selector:
+    matchLabels:
+      app: cart-mini-service
+  template:
+    metadata:
+      labels:
+        app: cart-mini-service
+    spec:
+      containers:
+      - name: cart-mini-service
+        image: walgreens/mini-service/cart
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 300m
+          requests:
+            cpu: 200m
+        # readinessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8080
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 2
+        #   timeoutSeconds: 1
+        #   successThreshold: 1
+        #   failureThreshold: 2
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cart-mini-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cart-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cart-mini-service-deployment
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
