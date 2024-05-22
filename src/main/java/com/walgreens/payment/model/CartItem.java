@@ -14,20 +14,18 @@ import lombok.NoArgsConstructor;
 public class CartItem {
 
     
-    @JsonProperty("item_id")
 
-    private UUID item_id;
-    @JsonProperty("item_count")
+    private UUID itemId;
 
-    private int item_count;
-    @JsonProperty("item_name")
+    private int itemCount;
 
-    private String item_name;
-    @JsonProperty("purchased_price")
 
-    private double purchased_price;
-    @JsonProperty("deliveryType")
+    private String itemName;
+
+
+    private double purchasedPrice;
+
     private String deliveryType;
-    @JsonProperty("comment")
+
     private String comment;
 }

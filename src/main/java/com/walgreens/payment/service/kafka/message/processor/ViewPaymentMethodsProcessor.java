@@ -14,8 +14,8 @@ public class ViewPaymentMethodsProcessor extends Processor{
     @Override
     public void process() {
         ViewPaymentMethodsCommand viewPaymentMethodsCommand = (ViewPaymentMethodsCommand) getCommand();
-        Map<String, String> message = getMessageInfo();
+        Map<String, Object> message = getMessageInfo();
 
-        viewPaymentMethodsCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
+        viewPaymentMethodsCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
     }
 }

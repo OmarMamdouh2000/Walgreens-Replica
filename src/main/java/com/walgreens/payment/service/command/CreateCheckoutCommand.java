@@ -148,9 +148,9 @@ public class CreateCheckoutCommand implements Command{
         if (this.cartItems!=null && this.cartItems.size() > 0) {
             for (CartItem cartItem : this.cartItems) {
                 ProductsDto productDto = new ProductsDto();
-                productDto.setProductName(cartItem.getItem_name());
-                productDto.setProductPrice(cartItem.getPurchased_price());
-                productDto.setProductQuantity(cartItem.getItem_count());
+                productDto.setProductName(cartItem.getItemName());
+                productDto.setProductPrice(cartItem.getPurchasedPrice());
+                productDto.setProductQuantity(cartItem.getItemCount());
                 products.add(productDto);
             }
         } else {

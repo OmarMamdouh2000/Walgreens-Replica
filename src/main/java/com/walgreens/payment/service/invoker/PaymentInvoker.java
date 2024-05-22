@@ -24,6 +24,7 @@ public class PaymentInvoker {
     public void callCommand(JsonNode body){
         String request = body.get("request").asText();
         System.out.println("Request: " + request);
+
         String commandName = map.getCommandsMap().get(request);
         if(commandName == null){
             System.out.println("Command not found");

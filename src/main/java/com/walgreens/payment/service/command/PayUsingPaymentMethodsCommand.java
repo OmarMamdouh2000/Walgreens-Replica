@@ -37,8 +37,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
     @Autowired
     private PaymentMethodsRepository paymentMethodsRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+
 
     @Autowired
     private CreateATransactionCommand createATransactionCommand;
@@ -55,13 +54,7 @@ public class PayUsingPaymentMethodsCommand implements Command {
     public void execute()  {
         try{
 
-            boolean customerExists = customerRepository.check_customer_exists(customerUuid);
 
-            if(!customerExists){
-                CreateCustomerCommand createCustomerCommand = (CreateCustomerCommand) applicationContext.getBean("createCustomerCommand");
-                createCustomerCommand.setCustomerUuid(customerUuid);
-                createCustomerCommand.execute();
-            }
             boolean hasFunds = paymentMethodsRepository.check_has_funds(paymentMethodUuid);
 
             if(!hasFunds){

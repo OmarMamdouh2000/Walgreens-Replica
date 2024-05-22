@@ -11,8 +11,8 @@ public class ViewBalanceProcessor extends Processor{
     @Override
     public void process() {
         ViewBalanceCommand viewBalanceCommand = (ViewBalanceCommand) getCommand();
-        Map<String, String> message = getMessageInfo();
+        Map<String, Object> message = getMessageInfo();
 
-        viewBalanceCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
+        viewBalanceCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
     }
 }

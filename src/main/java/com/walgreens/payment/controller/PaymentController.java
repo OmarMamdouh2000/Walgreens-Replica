@@ -1,6 +1,7 @@
 package com.walgreens.payment.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.walgreens.payment.model.Enums.Duration;
@@ -89,8 +90,17 @@ public class PaymentController {
 
 
     @PostMapping("/testZiad")
-    public String testZiad(@RequestBody Map<String,Object> payload) {
-        //payload={"request":"CheckPaymentMethod","commandName":"ProceedToCheckOutCommand","customerUuid":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","sessionId":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmMzJhYzBkYi04OWI4LTRjZDMtYTk2Ny0wZWI3YzY1NmMxYTEiLCJpYXQiOjE3MTYzMjgzOTksImV4cCI6MTcxNjM2NDM5OX0.XS-cZcD-GlZTFMRpR6WVOhxTWLNo0kii5on34f1OPU0","cartItems":[{"deliveryType":"standard","comment":"Great product","itemCount":2,"itemId":"5ef821aa-5558-405d-ba17-9cf114cd6c26","purchasedPrice":10.99,"itemName":null}],"paymentAmount":"16.98","userId":"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1","cartUuid":"a3b8a792-41c4-4b04-919e-8ea7a28ddfef"}
+    public String testZiad(String payload) {
+        payload = "{\"request\":\"CheckPaymentMethod\",\"commandName\":\"ProceedToCheckOutCommand\",\"customerUuid\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartItems\":[{\"deliveryType\":\"standard\",\"comment\":\"Great product\",\"itemCount\":2,\"itemId\":\"5ef821aa-5558-405d-ba17-9cf114cd6c26\",\"purchasedPrice\":10.99,\"itemName\":\"Shampoo\"}],\"paymentAmount\":\"16.98\",\"userId\":\"f32ac0db-89b8-4cd3-a967-0eb7c656c1a1\",\"cartUuid\":\"a3b8a792-41c4-4b04-919e-8ea7a28ddfef\"}";
+        kafkaPublisher.publish("payment", payload);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            Map<String, Object> map = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {});
+//            System.out.println(map);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
         //call commands
         return "success";
     }
@@ -116,7 +126,6 @@ public class PaymentController {
                             Keys.customerEmail, email
                     )
             );
-            System.out.println("KARIM: " + jsonString);
 
             kafkaPublisher.publish("payment", jsonString);
             return "success";

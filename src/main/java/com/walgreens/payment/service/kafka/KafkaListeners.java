@@ -20,6 +20,7 @@ public class KafkaListeners {
 
     @KafkaListener(topics = "payment", groupId = "payment")
     void listener(String message){
+        System.out.println("MESSAGE BEFORE CONVERSION: " + message);
         ObjectMapper objectMapper = new ObjectMapper();
         try{
 //            message=message.replace("\\", "");
@@ -27,6 +28,15 @@ public class KafkaListeners {
             JsonNode rootNode = objectMapper.readTree(message);
             System.out.println("Received message");
             System.out.println(rootNode);
+
+            // Specifically check for cartItems
+//            JsonNode cartItemsNode = rootNode.path("cartItems");
+//            if (!cartItemsNode.isMissingNode()) {
+//                System.out.println("Cart items: " + cartItemsNode.toString());
+//            } else {
+//                System.out.println("No cart items found.");
+//            }
+
             paymentInvoker.callCommand(rootNode);
         }catch (Exception e){
             System.out.println(e.getMessage());

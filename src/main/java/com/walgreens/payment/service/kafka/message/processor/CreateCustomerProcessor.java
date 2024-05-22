@@ -10,11 +10,11 @@ public class CreateCustomerProcessor extends Processor{
     @Override
     public void process() {
         CreateCustomerCommand createCustomerCommand = (CreateCustomerCommand) getCommand();
-        Map<String, String> message = getMessageInfo();
+        Map<String, Object> message = getMessageInfo();
         System.out.println(message);
-        createCustomerCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
-        createCustomerCommand.setName(message.get(Keys.customerName));
-        createCustomerCommand.setEmail(message.get(Keys.customerEmail));
+        createCustomerCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
+        createCustomerCommand.setName((String) message.get(Keys.customerName));
+        createCustomerCommand.setEmail((String) message.get(Keys.customerEmail));
 
     }
 }

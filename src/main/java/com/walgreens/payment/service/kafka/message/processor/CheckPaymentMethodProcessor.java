@@ -1,6 +1,7 @@
 package com.walgreens.payment.service.kafka.message.processor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walgreens.payment.model.CartItem;
 import com.walgreens.payment.service.command.CheckPaymentMethodCommand;
@@ -18,22 +19,28 @@ public class CheckPaymentMethodProcessor extends Processor{
     @Override
     public void process() {
         CheckPaymentMethodCommand checkPaymentMethodCommand = (CheckPaymentMethodCommand) getCommand();
-        Map<String, String> message = getMessageInfo();
+        Map<String, Object> message = getMessageInfo();
         System.out.println(message.get(Keys.customerUuid));
         System.out.println("the message: "+message);
-        checkPaymentMethodCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
-        checkPaymentMethodCommand.setCartUuid(UUID.fromString(message.get(Keys.cartUuid)));
-        checkPaymentMethodCommand.setAmount(Double.parseDouble(message.get(Keys.paymentAmount)));
-        ObjectMapper mapper = new ObjectMapper();
-         try {
-            String cartItemsJson = message.get(Keys.cartItems);
-            System.out.println("aaaaaA: "+cartItemsJson);
-            // Map<String,Object> map = mapper.readValue(cartItemsJson, Map.class);
+        checkPaymentMethodCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
+        checkPaymentMethodCommand.setCartUuid(UUID.fromString((String) message.get(Keys.cartUuid)));
+        checkPaymentMethodCommand.setAmount(Double.parseDouble((String) message.get(Keys.paymentAmount)));
 
-            // List<CartItem> cartItems = (List<CartItem>) map.get("cartItems");
-            checkPaymentMethodCommand.setCartItems(new ArrayList<CartItem>());
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // Assuming this is a JSON string of an array of CartItem objects
+            String cartItemsJson = (String) message.get(Keys.cartItems);
+            System.out.println("Cart Items JSON: " + cartItemsJson);
+
+            // Deserialize JSON string into a List of CartItem objects
+            JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, CartItem.class);
+            List<CartItem> cartItems = mapper.readValue(cartItemsJson, type);
+
+            // Set the deserialized list to the command object
+            checkPaymentMethodCommand.setCartItems(cartItems);
+
         } catch (Exception e) {
-            e.printStackTrace();  // Handle exceptions appropriately
-        };
+            e.printStackTrace();  // Proper error handling
+        }
     }
 }

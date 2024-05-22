@@ -10,15 +10,15 @@ public class AddPaymentMethodProcessor extends Processor{
     @Override
     public void process() {
         AddPaymentMethodCommand addPaymentMethodCommand = (AddPaymentMethodCommand) getCommand();
-        Map<String, String> messageInfo = getMessageInfo();
-        addPaymentMethodCommand.setCustomerUuid(UUID.fromString(messageInfo.get(Keys.customerUuid)));
-        addPaymentMethodCommand.setCardNumber(messageInfo.get(Keys.cardNumber));
-        addPaymentMethodCommand.setExpiryMonth(messageInfo.get(Keys.expiryMonth));
-        addPaymentMethodCommand.setExpiryYear(messageInfo.get(Keys.expiryYear));
-        addPaymentMethodCommand.setCvv(messageInfo.get(Keys.cvv));
-        addPaymentMethodCommand.setCardholderName(messageInfo.get(Keys.cardholderName));
-        addPaymentMethodCommand.setIsDefault(Boolean.valueOf(messageInfo.get(Keys.isDefault)));
-        addPaymentMethodCommand.setHasFunds(Boolean.valueOf(messageInfo.get(Keys.hasFunds)));
+        Map<String, Object> messageInfo = getMessageInfo();
+        addPaymentMethodCommand.setCustomerUuid(UUID.fromString((String) messageInfo.get(Keys.customerUuid)));
+        addPaymentMethodCommand.setCardNumber((String) messageInfo.get(Keys.cardNumber));
+        addPaymentMethodCommand.setExpiryMonth((String) messageInfo.get(Keys.expiryMonth));
+        addPaymentMethodCommand.setExpiryYear((String) messageInfo.get(Keys.expiryYear));
+        addPaymentMethodCommand.setCvv((String) messageInfo.get(Keys.cvv));
+        addPaymentMethodCommand.setCardholderName((String) messageInfo.get(Keys.cardholderName));
+        addPaymentMethodCommand.setIsDefault(Boolean.valueOf((Boolean) messageInfo.get(Keys.isDefault)));
+        addPaymentMethodCommand.setHasFunds(Boolean.valueOf((Boolean) messageInfo.get(Keys.hasFunds)));
 
 
 

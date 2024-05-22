@@ -10,8 +10,8 @@ public class CreateCheckoutProcessor extends Processor{
     @Override
     public void process() {
         CreateCheckoutCommand createCheckoutCommand = (CreateCheckoutCommand) getCommand();
-        Map<String, String> message = getMessageInfo();
-        createCheckoutCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
-        createCheckoutCommand.setCouponUuid(UUID.fromString(message.get(Keys.couponUuid)));
+        Map<String, Object> message = getMessageInfo();
+        createCheckoutCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
+        createCheckoutCommand.setCouponUuid(UUID.fromString((String) message.get(Keys.couponUuid)));
     }
 }

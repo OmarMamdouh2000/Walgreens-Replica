@@ -19,15 +19,15 @@ public class PayUsingPaymentMethodsProcessor extends Processor{
         PayUsingPaymentMethodsCommand payUsingPaymentMethodsCommand = (PayUsingPaymentMethodsCommand) getCommand();
         ObjectMapper mapper = new ObjectMapper();
 
-        Map<String, String> message = getMessageInfo();
+        Map<String, Object> message = getMessageInfo();
 
 
-        payUsingPaymentMethodsCommand.setCustomerUuid(UUID.fromString(message.get(Keys.customerUuid)));
+        payUsingPaymentMethodsCommand.setCustomerUuid(UUID.fromString((String) message.get(Keys.customerUuid)));
 
-        payUsingPaymentMethodsCommand.setCartUuid(UUID.fromString(message.get(Keys.cartUuid)));
+        payUsingPaymentMethodsCommand.setCartUuid(UUID.fromString((String) message.get(Keys.cartUuid)));
 
-        payUsingPaymentMethodsCommand.setPaymentMethodUuid(UUID.fromString(message.get(Keys.paymentMethodUuid)));
-        payUsingPaymentMethodsCommand.setAmount(Double.valueOf(message.get(Keys.paymentAmount)));
+        payUsingPaymentMethodsCommand.setPaymentMethodUuid(UUID.fromString((String) message.get(Keys.paymentMethodUuid)));
+        payUsingPaymentMethodsCommand.setAmount(Double.valueOf((String) message.get(Keys.paymentAmount)));
 
        
 
