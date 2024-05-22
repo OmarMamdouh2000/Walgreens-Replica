@@ -3,6 +3,7 @@ package com.walgreens.payment.service.command;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.walgreens.payment.cache.CustomerCache;
 import com.walgreens.payment.model.CartItem;
 import com.walgreens.payment.model.ProductsDto;
 import com.walgreens.payment.repository.CouponRepository;
@@ -50,11 +51,21 @@ public class CreateCheckoutCommand implements Command{
     @Autowired
     private CouponRepository couponRepository;
 
+    @Autowired
+    private CustomerCache customerCache;
+
 
     @Override
     public void execute() {
         try{
-            String customerId = customerRepository.get_customer(this.customerUuid);
+            String customerId = "";
+            if(customerCache.getStripeId(this.customerUuid) == null){
+                 customerId = customerRepository.get_customer(this.customerUuid);
+                customerCache.cacheUserIds(this.customerUuid,customerId);
+            }else{
+                 customerId = customerCache.getStripeId(this.customerUuid);
+            }
+//            String customerId = customerRepository.get_customer(this.customerUuid);
             cartUuid = UUID.randomUUID();
             String couponId = null;
             if(couponUuid != null){

@@ -6,6 +6,7 @@ import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PaymentMethodCreateParams;
+import com.walgreens.payment.cache.CustomerCache;
 import com.walgreens.payment.repository.CustomerRepository;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class CreateCustomerCommand implements Command{
 
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private CustomerCache customerCache;
 
 
     Logger logger= LoggerFactory.getLogger(CreateCustomerCommand.class);
@@ -47,6 +50,7 @@ public class CreateCustomerCommand implements Command{
 
             Customer customer = Customer.create(customerCreateParamsBuilder.build());
             customerRepository.create_customer(customerUuid, customer.getId());
+            customerCache.cacheUserIds(customerUuid,customer.getId());
             logger.info("Customer Created");
 
         } catch (StripeException e) {
