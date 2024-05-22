@@ -20,6 +20,14 @@ services:
     ports:
       - "5332:5432"
     restart: unless-stopped
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - db
+    restart: unless-stopped
 networks:
   db:
     driver: bridge
