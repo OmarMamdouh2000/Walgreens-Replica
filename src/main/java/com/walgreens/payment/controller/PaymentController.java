@@ -314,7 +314,7 @@ public class PaymentController {
         try {
             jsonString = objectMapper.writeValueAsString(
                     Map.of(
-                            "request", "PayUsingPaymentMethods",
+                            "request", "CreateCoupon",
                             Keys.couponName, name,
                             Keys.percentOff, percentOff,
                             Keys.duration, duration,

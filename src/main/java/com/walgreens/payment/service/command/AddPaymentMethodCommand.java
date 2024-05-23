@@ -59,8 +59,13 @@ public class AddPaymentMethodCommand implements Command{
 
     @Override
     public void execute() {
-        expiryMonth = expiryMonth.substring(expiryMonth.length() - 2);
-        expiryYear = expiryYear.substring(expiryYear.length() - 2);
+        if(expiryYear.length()>2)
+            expiryYear = expiryYear.substring(expiryYear.length() - 2);
+        if(Integer.parseInt(expiryMonth)>12)
+        {
+            logger.error("Month invalid");
+            return;
+        }
         paymentMethodUuid = UUID.randomUUID();
         System.out.println(hasFunds);
         paymentMethodsRepository.create_payment_method(

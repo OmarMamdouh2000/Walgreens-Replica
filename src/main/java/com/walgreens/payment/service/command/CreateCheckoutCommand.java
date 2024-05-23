@@ -1,6 +1,7 @@
 package com.walgreens.payment.service.command;
 
 import com.stripe.exception.StripeException;
+import com.stripe.model.SourceTransaction;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.walgreens.payment.cache.CustomerCache;
@@ -60,7 +61,10 @@ public class CreateCheckoutCommand implements Command{
         try{
             String customerId = "";
             if(customerCache.getStripeId(this.customerUuid) == null){
-                 customerId = customerRepository.get_customer(this.customerUuid);
+                customerId = customerRepository.get_customer(this.customerUuid);
+                System.out.println("i'll start hereeee");
+                System.out.println(this.customerUuid);
+                System.out.println(customerId);
                 customerCache.cacheUserIds(this.customerUuid,customerId);
             }else{
                  customerId = customerCache.getStripeId(this.customerUuid);

@@ -18,7 +18,7 @@ public class CreateCouponProcessor extends Processor {
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(message.get(Keys.percentOff)));
         createCouponCommand.setPercentOff(bigDecimal);
         createCouponCommand.setDuration(Duration.valueOf((String) message.get(Keys.duration)));
-        createCouponCommand.setDuration_in_months(Long.valueOf((String) message.get(Keys.duration_in_months)));
+        createCouponCommand.setDuration_in_months(Long.valueOf(String.valueOf(message.get(Keys.duration_in_months))));
 
     }
 }

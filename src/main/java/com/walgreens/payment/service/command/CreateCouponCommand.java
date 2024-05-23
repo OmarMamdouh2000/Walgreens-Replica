@@ -50,6 +50,7 @@ public class CreateCouponCommand implements Command{
                             .setName(name)
                             .setCurrency("usd")
                             .setDuration(CouponCreateParams.Duration.valueOf(String.valueOf(duration)))
+                            .setDurationInMonths(duration_in_months)
                             .setPercentOff(percentOff)
                             .build();
 
