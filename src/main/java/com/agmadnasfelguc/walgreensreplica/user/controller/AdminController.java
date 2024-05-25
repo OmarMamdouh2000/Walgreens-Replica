@@ -5,6 +5,9 @@ import com.agmadnasfelguc.walgreensreplica.user.service.command.LogoutCommand;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.UserRequests;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.keys.Keys;
+import com.agmadnasfelguc.walgreensreplica.user.service.requests.AdminAddAdmin;
+import com.agmadnasfelguc.walgreensreplica.user.service.requests.AdminAddPharmacist;
+import com.agmadnasfelguc.walgreensreplica.user.service.requests.AdminLoginRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +25,8 @@ public class AdminController {
     @Autowired
     private UserRequests userRequests;
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
-        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.adminLoginPath, new HashMap<>(), Map.of(Keys.username, username, Keys.password, password)));
+    public ResponseEntity<Object> login(@RequestBody AdminLoginRequest request) {
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.adminLoginPath, new HashMap<>(), Map.of(Keys.username, request.getUsername(), Keys.password, request.getPassword())));
     }
 
     @PostMapping("/banAccount")
@@ -31,7 +34,7 @@ public class AdminController {
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.banAccountPath, Map.of(Keys.sessionId, sessionId), Map.of(Keys.userId, userIdToBan)));
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<Object> logout(@RequestParam String sessionId) {
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
     }
@@ -42,16 +45,16 @@ public class AdminController {
     }
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<Object> addAdmin(@RequestParam String username ,@RequestParam String password, @RequestParam String sessionId) {
-        Map<String,String> paramsMap = Map.of(Keys.sessionId, sessionId);
-        Map<String,String> bodyMap = Map.of(Keys.username, username, Keys.password, password);
+    public ResponseEntity<Object> addAdmin(@RequestBody AdminAddAdmin request) {
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, request.getSessionId());
+        Map<String,String> bodyMap = Map.of(Keys.username, request.getUsername(), Keys.password, request.getPassword());
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.addAdminPath, paramsMap, bodyMap));
     }
 
     @PostMapping("/addPharmacist")
-    public ResponseEntity<Object> addPharmacist(@RequestParam String firstName , @RequestParam String lastName , @RequestParam String email , @RequestParam String password, @RequestParam String sessionId) {
-        Map<String,String> paramsMap = Map.of(Keys.sessionId, sessionId);
-        Map<String,String> bodyMap = Map.of(Keys.firstName, firstName, Keys.lastName, lastName, Keys.email, email, Keys.password, password);
+    public ResponseEntity<Object> addPharmacist(@RequestBody AdminAddPharmacist request) {
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, request.getSessionId());
+        Map<String,String> bodyMap = Map.of(Keys.firstName, request.getFirstName(), Keys.lastName, request.getLastName(), Keys.email, request.getEmail(), Keys.password, request.getPassword());
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.addPharmacistPath, paramsMap, bodyMap));
     }
 
