@@ -526,7 +526,7 @@ Parameters:
 - password: Password provided by the administrator attempting to log in (VARCHAR).
 Returns: Status message indicating the outcome of the login attempt (VARCHAR).
 */
-CREATE OR REPLACE FUNCTION get_all_users()
+CREATE OR REPLACE FUNCTION get_users_by_ids(user_ids UUID[])
 RETURNS TABLE(
     user_id UUID,
     email VARCHAR,
@@ -564,8 +564,10 @@ BEGIN
     LEFT JOIN "Customer" c ON u.id = c.id
     LEFT JOIN "Pharmacist" p ON u.id = p.id
     LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id
+    WHERE u.id = ANY(user_ids);
 END;
 $$;
+
 
 
 
@@ -656,6 +658,16 @@ BEGIN
     END IF;
 END;
 $$;
+
+CREATE OR REPLACE FUNCTION get_all_user_ids()
+RETURNS TABLE(user_id UUID)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY SELECT id AS user_id FROM "User";
+END;
+$$;
+
 
 
 

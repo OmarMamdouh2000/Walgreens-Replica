@@ -32,7 +32,11 @@ public interface AdminRepository extends JpaRepository<Admin, UUID>{
                    @Param("p_email") String email,
                    @Param("p_password") String password);
 
-    @Query(value = "SELECT * FROM get_all_users()", nativeQuery = true)
-    List<Tuple> getAllUsers();
+    @Query(value = "SELECT * FROM get_users_by_ids(:p_user_ids)", nativeQuery = true)
+    List<Tuple> getAllUsers(@Param("p_user_ids") UUID[] userIds);
+
+    @Query(value = "SELECT * FROM get_all_user_ids()", nativeQuery = true)
+    List<UUID> getAllUserIds();
+
 
 }

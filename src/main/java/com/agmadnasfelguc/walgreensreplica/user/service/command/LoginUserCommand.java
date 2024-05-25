@@ -68,7 +68,7 @@ public class LoginUserCommand extends Command {
             ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("sessionId", sessionId));
         } else {
             if(this.getState().getStatus().equals(ResponseState.Pending)){
-                ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("userId", userId));
+                ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), Map.of("userId", userId, "email", email));
             }
             else {
                 ResponseFormulator.formulateResponse(log, this.getState(), this.getReplyTopic(), this.getCorrelationId(), this.getUserRequests(), null);

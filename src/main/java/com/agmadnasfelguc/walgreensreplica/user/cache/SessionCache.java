@@ -2,7 +2,9 @@ package com.agmadnasfelguc.walgreensreplica.user.cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -111,6 +113,24 @@ public class SessionCache {
     // Helper method to construct a Redis key for a given session and section
     private String buildSectionKey(String sessionId, String section) {
         return String.format("%s:%s", sessionId, section); // Constructs a key like "sessionId:section"
+    }
+
+    public List<UUID> getKeysContainingUser() {
+        List<UUID> keysWithUser = new ArrayList<>();
+        ScanOptions options = ScanOptions.scanOptions()
+                .match("*user*")
+                .count(1000)
+                .build();
+
+        try (Cursor<Object> cursor = sessionRedisTemplate.opsForSet().scan("", options)) {
+            while (cursor.hasNext()) {
+                UUID key = UUID.fromString(String.valueOf(cursor.next()));
+                keysWithUser.add(key);
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving keys from Redis: " + e.getMessage());
+        }
+        return keysWithUser;
     }
 
 }

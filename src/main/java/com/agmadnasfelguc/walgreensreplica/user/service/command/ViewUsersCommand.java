@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -65,14 +62,23 @@ public class ViewUsersCommand extends Command {
                 if (adminSessionCommand.getState().getStatus().equals(ResponseState.Failure)) {
                     this.setState(adminSessionCommand.getState());
                 } else {
-                    List<Tuple> rawUsers = adminRepository.getAllUsers();
-                    rawUsers.forEach(tuple -> {
-                        Map<String, Object> tupleMap = new HashMap<>();
-                        tuple.getElements().forEach(element -> tupleMap.put(element.getAlias(), tuple.get(element)));
-                        if(tupleMap.get("image_id") != null)
-                            tupleMap.put("image_url", firebaseService.getPhotoUrl(String.valueOf(tupleMap.get("image_id"))));
-                        userInfo.add(ViewUserResultConverter.convertTupleToDTO(tupleMap));
-                    });
+                    List<UUID> allUserIds = adminRepository.getAllUserIds();
+                    List<UUID> cachedUserIds = sessionCache.getKeysContainingUser();
+                    for(UUID id : cachedUserIds){
+                        Map<String, Object> sessionDetails = sessionCache.getSessionSection(id.toString(),"");
+                        userInfo.add(ViewUserResultConverter.convertTupleToDTO(sessionDetails));
+                    }
+                    UUID[] userIdsToGet = allUserIds.stream().filter(id -> !cachedUserIds.contains(id)).toList().toArray(new UUID[0]);
+                    if(userIdsToGet.length!=0) {
+                        List<Tuple> rawUsers = adminRepository.getAllUsers(userIdsToGet);
+                        rawUsers.forEach(tuple -> {
+                            Map<String, Object> tupleMap = new HashMap<>();
+                            tuple.getElements().forEach(element -> tupleMap.put(element.getAlias(), tuple.get(element)));
+                            if (tupleMap.get("image_id") != null)
+                                tupleMap.put("image_url", firebaseService.getPhotoUrl(String.valueOf(tupleMap.get("image_id"))));
+                            userInfo.add(ViewUserResultConverter.convertTupleToDTO(tupleMap));
+                        });
+                    }
                     if(!userInfo.isEmpty()){
                         this.setState(new ResponseStatus(ResponseState.Success, "Users retrieved successfully"));
                     }

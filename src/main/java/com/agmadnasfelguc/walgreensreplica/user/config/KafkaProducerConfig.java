@@ -48,6 +48,7 @@ public class KafkaProducerConfig {
             ProducerFactory<String, Message<String>> producerFactory,
             KafkaMessageListenerContainer<String, Message<String>> replyContainer
     ) {
+
         return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
     }
 
