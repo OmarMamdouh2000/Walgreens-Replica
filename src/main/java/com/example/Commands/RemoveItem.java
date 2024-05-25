@@ -10,6 +10,8 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +29,13 @@ public class RemoveItem implements Command{
 
     private KafkaProducer kafkaProducer;
 
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
+
     @Autowired
 	private SessionCache sessionCache;
     
     @Autowired
-    public RemoveItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public RemoveItem(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;

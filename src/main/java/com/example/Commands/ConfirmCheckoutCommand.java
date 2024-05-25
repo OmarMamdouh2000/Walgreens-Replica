@@ -8,6 +8,11 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.kafka.common.Uuid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import com.example.Cache.SessionCache;
@@ -30,13 +35,15 @@ public class ConfirmCheckoutCommand implements Command {
 
     @Autowired
 	private SessionCache sessionCache;
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
     
     @Autowired
-    public ConfirmCheckoutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public ConfirmCheckoutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
         this.sessionCache = sessionCache;
+        this.replyingKafkaTemplate=replyingKafkaTemplate;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class ConfirmCheckoutCommand implements Command {
             return "User not found or Invalid Token";
         String sessionId=(String)data.get("sessionId");
         ObjectMapper objectMapper = new ObjectMapper();
-        CartTable userCart = cartRepo.getCart(UUID.fromString(user));;
+        CartTable userCart = cartRepo.getCart(UUID.fromString(user));
         Map<String,Object> session = sessionCache.getSessionSection(sessionId, "cart");
         
 
@@ -62,11 +69,17 @@ public class ConfirmCheckoutCommand implements Command {
             e.printStackTrace();
             return e.getMessage();
         }
-        UUID random=UUID.randomUUID();
+        String random=UUID.randomUUID().toString();
         byte[] correlationId = random.toString().getBytes();
 
-        kafkaProducer.publishToTopic("orderRequests",jsonString,correlationId);
-
+        //kafkaProducer.publishToTopic("orderRequests",jsonString,correlationId);
+        RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(jsonString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "orderRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
         userCart.getItems().clear();
         userCart.setTotalAmount(0);
         userCart.setAppliedPromoCodeId("");

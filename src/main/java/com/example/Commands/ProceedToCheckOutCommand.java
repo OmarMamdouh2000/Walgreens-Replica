@@ -6,6 +6,11 @@ import java.util.UUID;
 
 import org.apache.kafka.common.Uuid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyMessageFuture;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import com.example.Cache.SessionCache;
@@ -30,12 +35,15 @@ public class ProceedToCheckOutCommand implements Command {
     @Autowired
 	private SessionCache sessionCache;
     
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
+    
     @Autowired
-    public ProceedToCheckOutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public ProceedToCheckOutCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
         this.sessionCache = sessionCache;
+        this.replyingKafkaTemplate=replyingKafkaTemplate;
     }
 
     @Override
@@ -55,7 +63,6 @@ public class ProceedToCheckOutCommand implements Command {
             userCart = cartRepo.getCart(UUID.fromString(user));
             sessionCache.createSession(sessionId, "cart", objectMapper.convertValue(userCart, Map.class));
         }
-        System.out.println(userCart);
         Map<String, Object> request = new HashMap<>();
         
         
@@ -85,7 +92,15 @@ public class ProceedToCheckOutCommand implements Command {
         String userCartString = objectMapper.writeValueAsString(request);
         UUID corrId=UUID.randomUUID();
         byte[] corrIdBytes = corrId.toString().getBytes();
-        kafkaProducer.publishToTopic("cartRequests", userCartString,corrIdBytes);
+        //kafkaProducer.publishToTopic("cartRequests", userCartString,corrIdBytes);
+        String random=UUID.randomUUID().toString();
+        RequestReplyMessageFuture<String, Message<String>> result = replyingKafkaTemplate.sendAndReceive(MessageBuilder
+                    .withPayload(userCartString)
+                    .setHeader(KafkaHeaders.REPLY_TOPIC, "cartResponses")
+                    .setHeader(KafkaHeaders.TOPIC, "cartRequests")
+                    .setHeader(KafkaHeaders.KEY, random)
+					//.setHeader(KafkaHeaders.CORRELATION_ID, random)
+                    .build());
         return "Proceed to checkout request sent";
 
         

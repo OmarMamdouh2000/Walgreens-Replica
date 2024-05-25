@@ -11,6 +11,8 @@ import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -24,11 +26,13 @@ public class UpdateItemCountCommandCache implements Command{
     
     private KafkaProducer kafkaProducer;
 
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
+
     @Autowired
 	private SessionCache sessionCache;
     
     @Autowired
-    public UpdateItemCountCommandCache(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public UpdateItemCountCommandCache(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
@@ -62,7 +66,7 @@ public class UpdateItemCountCommandCache implements Command{
         UUID cartId=oldCart.getId();
         boolean found=false;
         double newTotal=0;
-        System.out.println(oldItems);
+        
         for(int i=0;oldItems!=null && i<oldItems.size();i++) {
             if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 if(count>0) {

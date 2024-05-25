@@ -12,6 +12,8 @@ import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -27,9 +29,10 @@ public class AddToSavedForLaterCommandCache implements Command {
 
     @Autowired
 	private SessionCache sessionCache;
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
     
     @Autowired
-    public AddToSavedForLaterCommandCache(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public AddToSavedForLaterCommandCache(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;
@@ -48,7 +51,7 @@ public class AddToSavedForLaterCommandCache implements Command {
             return "User not found or Invalid Token";
         ObjectMapper objectMapper = new ObjectMapper();
         CartTable oldCart =null;
-        if(session !=null) {
+        if(session !=null && !session.isEmpty()) {
             oldCart = objectMapper.convertValue(session, CartTable.class);
         }else{
             oldCart=cartRepo.getCart(UUID.fromString(userId));
@@ -62,6 +65,8 @@ public class AddToSavedForLaterCommandCache implements Command {
         UUID cartId=oldCart.getId();
         boolean found=false;
         double newTotal=0;
+        System.out.println(oldCart);
+        System.out.println(oldItems);
         for(int i=0;oldItems !=null && i<oldItems.size();i++) {
             if(oldItems.get(i).getItemId().equals(UUID.fromString(itemId))) {
                 newSaved.add(oldItems.get(i));

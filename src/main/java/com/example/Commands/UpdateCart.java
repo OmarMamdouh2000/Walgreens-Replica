@@ -8,6 +8,8 @@ import com.example.Final.UserUsedPromoRepo;
 import com.example.Kafka.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -22,11 +24,13 @@ public class UpdateCart implements Command{
 
     private KafkaProducer kafkaProducer;
 
+    private ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
+
     @Autowired
     private SessionCache sessionCache;
 
     @Autowired
-    public UpdateCart(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public UpdateCart(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
         this.cartRepo=cartRepo;
         this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;

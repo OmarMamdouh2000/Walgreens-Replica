@@ -9,6 +9,8 @@ import com.example.Final.*;
 import com.example.Kafka.KafkaProducer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -22,11 +24,13 @@ public class UpdateItemCountCommand implements Command{
     
     private KafkaProducer kafkaProducer;
 
+    private ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
+
     @Autowired
 	private SessionCache sessionCache;
     
     @Autowired
-    public UpdateItemCountCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public UpdateItemCountCommand(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo,KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
     	this.cartRepo=cartRepo;
     	this.jwtDecoderService=jwtDecoderService;
         this.kafkaProducer = kafkaProducer;

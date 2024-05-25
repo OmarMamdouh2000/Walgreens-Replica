@@ -15,6 +15,8 @@ import com.example.Kafka.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import com.example.Cache.SessionCache;
@@ -36,6 +38,9 @@ public class Invoker {
     private KafkaProducer kafkaProducer;
     @Autowired
     private SessionCache sessionCache;
+
+    @Autowired
+    private ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
 
     public Invoker() {
         commandMap = new HashMap<>();
@@ -64,8 +69,8 @@ public class Invoker {
             try{
                 String className = commandMap.get(commandName);
                 Class<?> class1 = Class.forName(className);
-                Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class , PromoRepo.class, UserUsedPromoRepo.class,KafkaProducer.class,SessionCache.class); // replace with your parameter types
-                Object instance = constructor.newInstance(cartRepo, jwtDecoderService, promoRepo, userUsedPromoRepo,kafkaProducer,sessionCache); // replace with your actual parameters
+                Constructor<?> constructor = class1.getDeclaredConstructor(CartRepo.class, JwtDecoderService.class , PromoRepo.class, UserUsedPromoRepo.class,KafkaProducer.class,SessionCache.class,ReplyingKafkaTemplate.class); // replace with your parameter types
+                Object instance = constructor.newInstance(cartRepo, jwtDecoderService, promoRepo, userUsedPromoRepo,kafkaProducer,sessionCache,replyingKafkaTemplate); // replace with your actual parameters
 
                 // If your class has a method you want to invoke, you can do so like this:
                 String methodName = "execute"; // replace with your method name

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,14 +29,15 @@ public class AddComment implements Command{
 
     @Autowired
 	private SessionCache sessionCache;
-
+    ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate;
     @Autowired
-    public AddComment(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer, SessionCache sessionCache) {
+    public AddComment(CartRepo cartRepo, JwtDecoderService jwtDecoderService, PromoRepo promoRepo, UserUsedPromoRepo userUsedPromoRepo, KafkaProducer kafkaProducer, SessionCache sessionCache,ReplyingKafkaTemplate<String, Message<String>, Message<String>> replyingKafkaTemplate) {
         this.cartRepo=cartRepo;
         this.jwtDecoderService=jwtDecoderService;
         this.promoRepo=promoRepo;
         this.userUsedPromoRepo=userUsedPromoRepo;
         this.sessionCache = sessionCache;
+        this.replyingKafkaTemplate=replyingKafkaTemplate;
     }
 
     @Override
