@@ -19,13 +19,13 @@ services:
   
   
  
-  redis:
-    image: redis:latest
-    environment:
-      - REDIS_PASSWORD=root
-    command: ["redis-server", "--requirepass", "root"]
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:latest
+  #   environment:
+  #     - REDIS_PASSWORD=root
+  #   command: ["redis-server", "--requirepass", "root"]
+  #   ports:
+  #     - "6379:6379"
 networks:
   kafka-net:
     driver: bridge
