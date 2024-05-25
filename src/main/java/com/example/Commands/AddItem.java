@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,19 +43,18 @@ public class AddItem implements Command{
     public Object execute(Map<String, Object> data) throws Exception {
         String sessionId = (String) data.get("sessionId");
 
-        //TODO: data is the product from products
         String user=(String)data.get("userId");
         if(user==null)
             return "User not found or Invalid Token";
         UUID userId = UUID.fromString(user);
-
         String itemId = (String) data.get("itemId");
+        
         int itemCount = (int) data.get("itemCount");
         String itemName=(String) data.get("itemName");
 
         double itemPrice = (double) data.get("itemPrice");
         String deliveryType = (String) data.get("deliveryType");
-        double discount = (double) data.get("discount");
+        double discount = Double.parseDouble((String)data.get("discount"));
         itemPrice = itemPrice * (1 - discount / 100);
 
         CartTable Cart;
@@ -63,16 +63,21 @@ public class AddItem implements Command{
 
         if(!cachedCart.isEmpty()) Cart = objectMapper.convertValue(cachedCart, CartTable.class);
         else Cart = cartRepo.getCart(userId);
+        boolean foundCart=false;
+        if (Cart == null){
+            Cart=new CartTable();
+            foundCart=true;
+        } 
+            
 
-        if (Cart == null) return "Cart not found";
-
-        List<CartItem> Cart_Items = Cart.getItems();
-        CartItem first_item = Cart_Items.get(0);
+        List<CartItem> Cart_Items = Cart.getItems()!=null?Cart.getItems():new ArrayList<CartItem>();
+        CartItem first_item = Cart_Items!=null && Cart_Items.size()!=0?Cart_Items.get(0):null;
         double newTotal = Cart.getTotalAmount();
 
         if(first_item!=null){
             String first_item_deliveryType = first_item.getDeliveryType();
             CartItem item_to_be_added = new CartItem();
+            System.out.println(itemId);
             UUID itemIdUUID = UUID.fromString(itemId);
             item_to_be_added.setItemId(itemIdUUID);
             item_to_be_added.setItemCount(itemCount);
@@ -104,6 +109,16 @@ public class AddItem implements Command{
             }
             Cart.setTotalAmount(newTotal);
         }
+        if(foundCart){
+            Cart.setUserId(userId);
+            Cart.setItems(Cart_Items);
+            Cart.setId(UUID.randomUUID());
+            Cart.setSavedForLaterItems(new ArrayList<CartItem>());
+            Cart.setAppliedPromoCodeId("");
+            Cart.setPromoCodeAmount(0);
+            cartRepo.save(Cart);
+        }
+        
 
         String jsonString = objectMapper.writeValueAsString(Cart);
         Map<String, Object> map = objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {});

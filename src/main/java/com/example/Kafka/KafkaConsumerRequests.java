@@ -104,7 +104,7 @@ public class KafkaConsumerRequests {
 					try{
 						CartTable cart = (CartTable) finalData;
 						data.replace("commandName", "UpdateCart");
-						data.put("cart", finalData);
+						data.put("cart", cart);
 						jsonString2=objectMapper.writeValueAsString(data);
 						replyingKafkaTemplate.sendAndReceive(MessageBuilder
 								.withPayload(jsonString2)
@@ -122,7 +122,7 @@ public class KafkaConsumerRequests {
 					try{
 						CartTable cart = (CartTable) finalData;
 						data.replace("commandName", "UpdateCart");
-						data.put("cart", finalData);
+						data.put("cart", cart);
 						jsonString2=objectMapper.writeValueAsString(data);
 						replyingKafkaTemplate.sendAndReceive(MessageBuilder
 								.withPayload(jsonString2)
@@ -142,7 +142,7 @@ public class KafkaConsumerRequests {
 					try{
 						CartTable cart = (CartTable) finalData;
 						data.replace("commandName", "UpdateCart");
-						data.put("cart", finalData);
+						data.put("cart", cart);
 						jsonString2=objectMapper.writeValueAsString(data);
 						replyingKafkaTemplate.sendAndReceive(MessageBuilder
 								.withPayload(jsonString2)
@@ -158,10 +158,11 @@ public class KafkaConsumerRequests {
 					break;
 				case "AddItem":
 					finalData = (Object) invoker.executeCommand("AddItem", data);
+					logger.info("Final Data: "+finalData);
 					try{
 						CartTable cart = (CartTable) finalData;
 						data.replace("commandName", "UpdateCart");
-						data.put("cart", finalData);
+						data.put("cart", cart);
 						jsonString2=objectMapper.writeValueAsString(data);
 						replyingKafkaTemplate.sendAndReceive(MessageBuilder
 								.withPayload(jsonString2)
@@ -179,7 +180,7 @@ public class KafkaConsumerRequests {
 					try{
 						CartTable cart = (CartTable) finalData;
 						data.replace("commandName", "UpdateCart");
-						data.put("cart", finalData);
+						data.put("cart", cart);
 						jsonString2=objectMapper.writeValueAsString(data);
 						replyingKafkaTemplate.sendAndReceive(MessageBuilder
 								.withPayload(jsonString2)
@@ -209,7 +210,7 @@ public class KafkaConsumerRequests {
 					break;
 			}
 			result.put("data", finalData);
-			result.put("correlationId", data.get("correlationId"));
+			//result.put("correlationId", data.get("correlationId"));
 			String response = objectMapper.writeValueAsString(result);
 			kafkaProducer.publishToTopic("cartResponses", response,correlationIdBytes);
 			

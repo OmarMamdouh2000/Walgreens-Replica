@@ -317,15 +317,15 @@ public class CartController {
 
 	@PostMapping("/addItem")
 	public Object addItem(@RequestParam String sessionId, @RequestBody Map<String, Object> data){
-		
+		// itemId, itemCount, itemName, itemPrice, deliveryType, discount
 		String userId=jwtDecoderService.getUserIdFromToken(sessionId);
 		if(userId==null){
 			return "Invalid Token";
 		}
 		data.put("sessionId", sessionId);
 		data.put("userId", userId);
-		data.put("commandName", "GetProductForCartCommand");
-		data.put("sessionId", sessionId);
+		data.put("commandName", "AddItem");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
 		String random=UUID.randomUUID().toString();
