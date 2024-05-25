@@ -3,10 +3,7 @@ import com.agmadnasfelguc.walgreensreplica.user.firebase.FirebaseService;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.UserRequests;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.creator.TemplatePaths;
 import com.agmadnasfelguc.walgreensreplica.user.service.kafka.message.keys.Keys;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangeEmailRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserChangePasswordRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserEditRequest;
-import com.agmadnasfelguc.walgreensreplica.user.service.requests.UserRegistrationRequest;
+import com.agmadnasfelguc.walgreensreplica.user.service.requests.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
@@ -90,17 +87,32 @@ public class UserController {
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.editDetailsPath, paramsMap, bodyMap));
 
     }
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public ResponseEntity<Object> login(@RequestParam String email, @RequestParam String password) {
         Map<String ,String> bodyMap = Map.of(Keys.email, email, Keys.password, password);
         log.info("Logging in user with email: {}", email);
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.userLoginPath, new HashMap<>(), bodyMap));
+    }*/
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody UserLoginRequest request) {
+        Map<String ,String> bodyMap = Map.of(Keys.email, request.getEmail(), Keys.password, request.getPassword());
+        log.info("Logging in user with email: {}", request.getEmail());
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.userLoginPath, new HashMap<>(), bodyMap));
     }
 
-    @PostMapping("/logout")
+    /*@PostMapping("/logout")
+    public ResponseEntity<Object> logout(@RequestParam UserLogoutRequest request) {
+        log.info("Logging out user with session id: {}", request.getSessionId());
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, Map.of(Keys.sessionId, request.getSessionId()), new HashMap<>()));
+    }*/
+
+    @GetMapping("/logout")
     public ResponseEntity<Object> logout(@RequestParam String sessionId) {
+
+        Map<String,String> paramsMap = Map.of(Keys.sessionId, sessionId);
         log.info("Logging out user with session id: {}", sessionId);
-        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, Map.of(Keys.sessionId, sessionId), new HashMap<>()));
+        return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.logoutPath, paramsMap, new HashMap<>()));
     }
 
     @PostMapping("/twoFactorAuthLogin")
@@ -143,6 +155,7 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<Object> getUser(@RequestParam String sessionId) {
+
         log.info("Getting user by session: {}", sessionId);
         return formulateResponse(userRequests.sendAndReceiveRequest(TemplatePaths.viewUserPath, Map.of(Keys.sessionId, sessionId),  new HashMap<>() ));
     }

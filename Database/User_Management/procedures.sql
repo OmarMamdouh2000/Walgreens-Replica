@@ -18,16 +18,16 @@ RETURNS text
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_user_id UUID;
+v_user_id UUID;
 BEGIN
-    INSERT INTO "User" ("id", "email", "password", "status", "role")
-    VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Customer')
+INSERT INTO "User" ("id", "email", "password", "status", "role")
+VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Customer')
     RETURNING "id" INTO v_user_id;
 
-    INSERT INTO "Customer" ("id", "first_name", "last_name")
-    VALUES (v_user_id, p_first_name, p_last_name);
+INSERT INTO "Customer" ("id", "first_name", "last_name")
+VALUES (v_user_id, p_first_name, p_last_name);
 
-    RETURN 'User Registered Successfully'; -- Return the hashed password
+RETURN 'User Registered Successfully'; -- Return the hashed password
 END;
 $$;
 
@@ -56,7 +56,7 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_phone_id UUID;
+v_phone_id UUID;
     v_old_phone_number VARCHAR;
     v_old_phone_extension VARCHAR;
     v_message VARCHAR := 'Details updated successfully for: ';
@@ -65,89 +65,89 @@ BEGIN
     IF p_address IS NULL AND p_date_of_birth IS NULL AND p_gender IS NULL AND p_phone_number IS NULL AND p_extension IS NULL THEN
         status := 'Failure';
         message := 'No details provided for update';
-    ELSE
+ELSE
        IF (p_phone_number IS NULL AND p_extension IS NOT NULL) OR (p_phone_number IS NOT NULL AND p_extension IS NULL) THEN
             status := 'Failure';
             message := 'Phone number and extension must be provided together or not at all.';
             RETURN;
-       ELSE
+ELSE
             IF p_phone_number IS NOT NULL AND p_extension IS NOT NULL THEN
-                SELECT "id", "number", "extension"
-                INTO v_phone_id, v_old_phone_number, v_old_phone_extension
-                FROM "Phone_Number"
-                WHERE "id" = (SELECT "phone_id" FROM "Customer" WHERE "id" = p_user_id);
+SELECT "id", "number", "extension"
+INTO v_phone_id, v_old_phone_number, v_old_phone_extension
+FROM "Phone_Number"
+WHERE "id" = (SELECT "phone_id" FROM "Customer" WHERE "id" = p_user_id);
 
-                IF v_phone_id IS NOT NULL THEN
-                    UPDATE "Customer"
-                    SET "phone_id" = NULL WHERE "id" = p_user_id;
-                    DELETE FROM "Phone_Number" WHERE "id" = v_phone_id;
-                END IF;
+IF v_phone_id IS NOT NULL THEN
+UPDATE "Customer"
+SET "phone_id" = NULL WHERE "id" = p_user_id;
+DELETE FROM "Phone_Number" WHERE "id" = v_phone_id;
+END IF;
 
-                INSERT INTO "Phone_Number" ("id", "number", "extension")
-                VALUES (gen_random_uuid(), p_phone_number, p_extension)
-                RETURNING "id" INTO v_phone_id;
+INSERT INTO "Phone_Number" ("id", "number", "extension")
+VALUES (gen_random_uuid(), p_phone_number, p_extension)
+    RETURNING "id" INTO v_phone_id;
 
-                UPDATE "Customer"
-                SET "phone_id" = v_phone_id
-                WHERE "id" = p_user_id;
-            END IF;
+UPDATE "Customer"
+SET "phone_id" = v_phone_id
+WHERE "id" = p_user_id;
+END IF;
 
             IF p_phone_number IS NOT NULL THEN
                 IF v_first THEN
                     v_message := v_message || 'phone number';
                     v_first := FALSE;
-                ELSE
+ELSE
                     v_message := v_message || ', phone number';
-                END IF;
-            END IF;
+END IF;
+END IF;
 
             IF p_extension IS NOT NULL THEN
               IF v_first THEN
                   v_message := v_message || 'extension';
                   v_first := FALSE;
-              ELSE
+ELSE
                   v_message := v_message || ', extension';
-              END IF;
-            END IF;
+END IF;
+END IF;
 
             IF p_address IS NOT NULL THEN
                 IF v_first THEN
                     v_message := v_message || 'address';
                     v_first := FALSE;
-                ELSE
+ELSE
                     v_message := v_message || ', address';
-                END IF;
-            END IF;
+END IF;
+END IF;
 
             IF p_date_of_birth IS NOT NULL THEN
                 IF v_first THEN
                     v_message := v_message || 'date of birth';
                     v_first := FALSE;
-                ELSE
+ELSE
                     v_message := v_message || ', date of birth';
-                END IF;
-            END IF;
+END IF;
+END IF;
 
             IF p_gender IS NOT NULL THEN
                 IF v_first THEN
                     v_message := v_message || 'gender';
                     v_first := FALSE;
-                ELSE
+ELSE
                     v_message := v_message || ', gender';
-                END IF;
-            END IF;
-       END IF;
-    END IF;
+END IF;
+END IF;
+END IF;
+END IF;
 
     IF NOT v_first THEN
-        UPDATE "Customer"
-        SET "address" = COALESCE(p_address, "address"),
-            "date_of_birth" = COALESCE(p_date_of_birth, "date_of_birth"),
-            "gender" = COALESCE(p_gender, "gender")
-        WHERE "id" = p_user_id;
-        status := 'Success';
+UPDATE "Customer"
+SET "address" = COALESCE(p_address, "address"),
+    "date_of_birth" = COALESCE(p_date_of_birth, "date_of_birth"),
+    "gender" = COALESCE(p_gender, "gender")
+WHERE "id" = p_user_id;
+status := 'Success';
         message := v_message;
-    END IF;
+END IF;
 END;
 $$;
 
@@ -172,26 +172,26 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_current_password VARCHAR;
+v_current_password VARCHAR;
 BEGIN
-    SELECT password INTO v_current_password
-    FROM "User"
-    WHERE id = p_user_id;
-    IF v_current_password = p_old_password THEN
+SELECT password INTO v_current_password
+FROM "User"
+WHERE id = p_user_id;
+IF v_current_password = p_old_password THEN
         IF p_new_password IS NOT NULL THEN
-            UPDATE "User"
-            SET password = p_new_password
-            WHERE id = p_user_id;
-            status := 'Success';
+UPDATE "User"
+SET password = p_new_password
+WHERE id = p_user_id;
+status := 'Success';
             message := 'Password updated successfully.';
-        ELSE
+ELSE
             status := 'Failure';
             message := 'New password cannot be empty.';
-        END IF;
-    ELSE
+END IF;
+ELSE
         status := 'Failure';
         message := 'Old Password does not match.';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -213,16 +213,16 @@ RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE "User"
-    SET password = p_new_password
-    WHERE email = p_email;
-    IF FOUND THEN
+UPDATE "User"
+SET password = p_new_password
+WHERE email = p_email;
+IF FOUND THEN
         status := 'Success';
         message := 'Password Updated successfully';
-    ELSE
+ELSE
         status := 'Failure';
         message := 'User not found';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -242,16 +242,16 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE "User"
-    SET "email_verified" = TRUE
-    WHERE "id" = p_user_id;
-    IF FOUND THEN
+UPDATE "User"
+SET "email_verified" = TRUE
+WHERE "id" = p_user_id;
+IF FOUND THEN
         status := 'Success';
         message := 'Email verified successfully';
-    ELSE
+ELSE
         status := 'Failure';
         message := 'User not found';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -275,26 +275,26 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_current_password text;
+v_current_password text;
 BEGIN
-    SELECT password INTO v_current_password
-    FROM "User"
-    WHERE id = p_user_id;
-    IF v_current_password = p_password THEN
+SELECT password INTO v_current_password
+FROM "User"
+WHERE id = p_user_id;
+IF v_current_password = p_password THEN
         IF p_new_email IS NOT NULL THEN
-            UPDATE "User"
-            SET email = p_new_email, "email_verified" = FALSE, "TwoFactorAuth_Enabled" = FALSE
-            WHERE id = p_user_id;
-            status := 'Success';
+UPDATE "User"
+SET email = p_new_email, "email_verified" = FALSE, "TwoFactorAuth_Enabled" = FALSE
+WHERE id = p_user_id;
+status := 'Success';
             message := 'Email updated successfully.';
-        ELSE
+ELSE
             status := 'Failure';
             message := 'New Email cannot be empty.';
-        END IF;
-    ELSE
+END IF;
+ELSE
         status := 'Failure';
         message := 'Password does not match.';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -318,35 +318,35 @@ RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_email_verified BOOLEAN;
+v_email_verified BOOLEAN;
 BEGIN
-    SELECT "email_verified" INTO v_email_verified
-    FROM "User"
-    WHERE "id" = p_id;
+SELECT "email_verified" INTO v_email_verified
+FROM "User"
+WHERE "id" = p_id;
 
-    IF NOT FOUND THEN
+IF NOT FOUND THEN
         status := 'Failure';
         message := 'User not found';
         RETURN;
-    END IF;
+END IF;
 
     IF NOT v_email_verified THEN
         status := 'Failure';
         message := 'Email not verified';
         RETURN;
-    END IF;
+END IF;
 
-    UPDATE "User"
-    SET "TwoFactorAuth_Enabled" = p_enabled
-    WHERE "id" = p_id;
+UPDATE "User"
+SET "TwoFactorAuth_Enabled" = p_enabled
+WHERE "id" = p_id;
 
-    IF FOUND THEN
+IF FOUND THEN
         status := 'Success';
         message := '2FA status updated successfully';
-    ELSE
+ELSE
         status := 'Failure';
         message := 'Update failed unexpectedly';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -368,9 +368,9 @@ RETURNS VARCHAR
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO "Administrator" ("id", "username", "password")
-    VALUES (gen_random_uuid(), v_username, v_password);
-    RETURN 'Administrator added successfully';
+INSERT INTO "Administrator" ("id", "username", "password")
+VALUES (gen_random_uuid(), v_username, v_password);
+RETURN 'Administrator added successfully';
 END;
 $$;
 
@@ -394,14 +394,14 @@ RETURNS VARCHAR
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    user_id UUID;
+user_id UUID;
 BEGIN
-    INSERT INTO "User" ("id", "email", "password", "status", "role")
-    VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Pharmacist')
+INSERT INTO "User" ("id", "email", "password", "status", "role")
+VALUES (gen_random_uuid(), p_email, p_password, 'Active', 'Pharmacist')
     RETURNING "id" INTO user_id;
-    INSERT INTO "Pharmacist" ("id", "first_name", "last_name")
-    VALUES (user_id, p_first_name, p_last_name);
-    RETURN 'Pharmacist added successfully';
+INSERT INTO "Pharmacist" ("id", "first_name", "last_name")
+VALUES (user_id, p_first_name, p_last_name);
+RETURN 'Pharmacist added successfully';
 END;
 $$;
 
@@ -421,16 +421,16 @@ RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE "User"
-    SET "status" = 'Banned'
-    WHERE "id" = p_user_id;
-    if found then
+UPDATE "User"
+SET "status" = 'Banned'
+WHERE "id" = p_user_id;
+if found then
         status := 'Success';
         message := 'Account banned successfully';
-    else
+else
         status := 'Failure';
         message := 'Account not found';
-    end if;
+end if;
 END;
 $$;
 
@@ -450,16 +450,16 @@ RETURNS RECORD
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE "User"
-    SET "status" = 'Active'
-    WHERE "id" = p_user_id;
-    if found then
+UPDATE "User"
+SET "status" = 'Active'
+WHERE "id" = p_user_id;
+if found then
         status := 'Success';
         message := 'Account unbanned successfully';
-    else
+else
         status := 'Failure';
         message := 'Account not found';
-    end if;
+end if;
 END;
 $$;
 
@@ -489,31 +489,31 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_HashedPassword TEXT;
+v_HashedPassword TEXT;
     v_TwoFactorAuth_Enabled BOOLEAN;
 BEGIN
     -- Retrieve hashed password and 2FA status
-    SELECT U.id, U.password, U."TwoFactorAuth_Enabled"
-    INTO user_id, v_HashedPassword, v_TwoFactorAuth_Enabled
-    FROM "User" U
-    WHERE U.email = p_email;
+SELECT U.id, U.password, U."TwoFactorAuth_Enabled"
+INTO user_id, v_HashedPassword, v_TwoFactorAuth_Enabled
+FROM "User" U
+WHERE U.email = p_email;
 
-    -- Check if user was found and verify password
-    IF user_id IS NULL THEN
+-- Check if user was found and verify password
+IF user_id IS NULL THEN
         status := 'Failure';
         message := 'User not found';
     ELSIF p_password = v_HashedPassword THEN
         IF v_TwoFactorAuth_Enabled THEN
             status := 'Pending';
             message := '2FA pending. Please complete the authentication.';
-        ELSE
+ELSE
             status := 'Success';
             message := 'Logged in successfully';
-        END IF;
-    ELSE
+END IF;
+ELSE
         status := 'Failure';
         message := 'Wrong Password';
-    END IF;
+END IF;
 END;
 $$;
 
@@ -597,26 +597,26 @@ RETURNS TABLE(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    SELECT
-        u.id AS user_id,
-        u.email,
-        u.role,
-        u.status,
-        u.email_verified,
-        COALESCE(c.first_name, p.first_name, '') AS first_name,
-        COALESCE(c.last_name, p.last_name, '') AS last_name,
-        COALESCE(c.address, '') AS address,
-        c.date_of_birth,
-        u.image_id,
-        c.gender,
-        COALESCE(pn.number, '') AS phone_number,
-        COALESCE(pn.extension, '') AS extension
-    FROM "User" u
-    LEFT JOIN "Customer" c ON u.id = c.id
-    LEFT JOIN "Pharmacist" p ON u.id = p.id
-    LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id
-    WHERE u.id = p_id;
+RETURN QUERY
+SELECT
+    u.id AS user_id,
+    u.email,
+    u.role,
+    u.status,
+    u.email_verified,
+    COALESCE(c.first_name, p.first_name, '') AS first_name,
+    COALESCE(c.last_name, p.last_name, '') AS last_name,
+    COALESCE(c.address, '') AS address,
+    c.date_of_birth,
+    u.image_id,
+    c.gender,
+    COALESCE(pn.number, '') AS phone_number,
+    COALESCE(pn.extension, '') AS extension
+FROM "User" u
+         LEFT JOIN "Customer" c ON u.id = c.id
+         LEFT JOIN "Pharmacist" p ON u.id = p.id
+         LEFT JOIN "Phone_Number" pn ON c.phone_id = pn.id
+WHERE u.id = p_id;
 END;
 $$;
 
@@ -639,23 +639,23 @@ RETURNS record
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_current_password text;  -- Declaration of the variable
+v_current_password text;  -- Declaration of the variable
 BEGIN
-    SELECT A.id, A.password
-    INTO admin_id, v_current_password
-    FROM "Administrator" A
-    WHERE A.username = p_username;
+SELECT A.id, A.password
+INTO admin_id, v_current_password
+FROM "Administrator" A
+WHERE A.username = p_username;
 
-    IF NOT FOUND THEN
+IF NOT FOUND THEN
         status := 'Failure';
         message := 'User not found';
     ELSIF p_password = v_current_password THEN
         status := 'Success';
         message := 'Logged in successfully';
-    ELSE
+ELSE
         status := 'Failure';
         message := 'Wrong password';
-    END IF;
+END IF;
 END;
 $$;
 
