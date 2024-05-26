@@ -1,0 +1,31 @@
+#version: '3'
+services:
+  springboot-cart:
+    ports:
+      - 8082:8082
+    build:
+      context: ../..
+      args:
+        JAR_FILE: /Cart-Service.jar
+    restart: always
+    
+    
+
+  cassandradcart:
+    image: cassandra
+    container_name: cassandraCart
+    ports:
+      - "9043:9042"
+  
+  
+ 
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=root
+    command: ["redis-server", "--requirepass", "root"]
+    ports:
+      - "6379:6379"
+networks:
+  kafka-net:
+    driver: bridge
