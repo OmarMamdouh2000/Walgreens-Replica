@@ -42,8 +42,8 @@ public class CreateOrder implements Command{
         CartTable userCart = objectMapper.convertValue(data.get("cart"), CartTable.class);
 
         List<OrderItem> items = new ArrayList<>();
-
-        for (int i = 0; i < userCart.getItems().size(); i++) {
+        System.out.println("aaaaaaaa"+userCart.getItems());
+        for (int i = 0; userCart.getItems()!=null&& i < userCart.getItems().size(); i++) {
             OrderItem orderItem = new OrderItem();
             orderItem.setItemId(userCart.getItems().get(i).getItemId());
             orderItem.setItemCount(userCart.getItems().get(i).getItemCount());
@@ -62,7 +62,7 @@ public class CreateOrder implements Command{
         newOrder.setPromoCodeId(userCart.getAppliedPromoCodeId());
         newOrder.setPromoAmount(userCart.getPromoCodeAmount());
         newOrder.setDateIssued(LocalDate.now());
-        newOrder.setOrderStatus("confirmed");
+        newOrder.setOrderStatus("active");
         newOrder.setItems(items);
         newOrder.setRefundedItems(new ArrayList<>());
         newOrder.setAddress("5th settlement, new cairo, egypt");
