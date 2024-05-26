@@ -1,0 +1,10 @@
+{
+    "params": {
+        "userId": "placeholder"
+    },
+    "body": {
+        "otp": "placeholder",
+        "email": "placeholder"
+    },
+    "request": "TwoFactorAuthLogin"
+}

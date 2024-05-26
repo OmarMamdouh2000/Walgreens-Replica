@@ -1,0 +1,10 @@
+{
+    "params": {
+        "sessionId": "placeholder"
+    },
+    "body": {
+        "email": "placeholder",
+        "otp": "placeholder"
+    },
+    "request": "VerifyMailCheckOtp"
+}

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres_database:
+    image: postgres:13
+    command: ["postgres", "-c", "log_statement=all"]
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=user_management
+    volumes:
+      - "walgreens_user_managmenet_postgres:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8081:80"
+    volumes:
+      - walgreens_user_managmenet_pgadmin:/var/lib/pgadmin
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=root
+    command: ["redis-server", "--requirepass", "root", "--maxmemory-policy", "volatile-lru"]
+    ports:
+      - "6379:6379"
+
+  otp_redis:  # New Redis instance dedicated for OTPs
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=otp_secret
+    command: ["redis-server", "--requirepass", "otp_secret", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "6380:6379"  # Note: Different port to avoid conflict with the other Redis instance
+
+volumes:
+  walgreens_user_managmenet_postgres:
+  walgreens_user_managmenet_pgadmin:

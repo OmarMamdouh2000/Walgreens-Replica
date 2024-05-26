@@ -1,0 +1,9 @@
+{
+  "params": {
+    "sessionId": "placeholder"
+  },
+  "body": {
+    "imageId": "placeholder"
+  },
+  "request": "UploadImage"
+}
