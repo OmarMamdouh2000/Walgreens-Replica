@@ -1,13 +1,44 @@
 # Walmart-Replica
-## To run Postgres and pgAdmin
-1. Navigate in the terminal to the repo root folder which contains the docker-compose.yaml file.
-2. Run ```docker-compose up``` in the terminal.
-3. Wait for the containers to run.
-4. Open ```http://localhost:8080/``` on your browser to open pgadmin.
-5. Use ```root@root.com``` as the email and ```root``` as the password.
-6. Right-click on the server tab in the object explorer and choose register then server.
-7. Type the name as ```Walgreens```.
-8. Switch to the connection tab.
-9. Write ```postgres_database``` in the hostname field. Leave the port as ```5432```.
-10. Write both the username and password as ```root```.
-11. Now, you will have the pgadmin connected to the user_management database so that you can visualize some statistics and run queries from pgadmin.
+# Walgreens Replica Spring Boot Application
+
+This repository contains a Spring Boot application designed to mimic a simplified version of the Walgreens service. The application is built with microservices architecture, focusing on scalability and performance.
+
+## Features
+
+The application offers the following services:
+
+- **User Management**: Handles user registration, authentication, and profile management.
+- **Payment**: Processes payments and manages transaction records.
+- **Orders**: Manages order creation, tracking, and history.
+- **Cart**: Provides functionalities for adding, updating, and removing items from the shopping cart.
+- **Products**: Manages product inventory, search, and details.
+
+## Technology Stack
+
+- **Spring Boot**: Framework for building Java-based applications.
+- **PostgreSQL**: Primary relational database for user and order data.
+- **Cassandra**: Used for handling large datasets of product information.
+- **Redis**: Caching layer to enhance performance.
+- **Apache Kafka**: Message queue for handling service communication.
+- **Kubernetes**: Deployment and orchestration of the application containers.
+- **Firebase**: Media storage and retrieval.
+
+## Prerequisites
+
+To run this project, you will need:
+
+- JDK 1.8 or later
+- Docker and Kubernetes
+- Apache Kafka setup
+- PostgreSQL, Cassandra, and Redis instances
+- Firebase account and configured project
+
+## Local Development Setup
+
+### Environment Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/walgreens-replica.git
+   cd walgreens-replica
+
