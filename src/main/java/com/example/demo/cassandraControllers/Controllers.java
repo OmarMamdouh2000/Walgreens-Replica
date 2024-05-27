@@ -538,8 +538,12 @@ public class Controllers {
 
 	
 	@PutMapping("/updateProduct/{productId}")
-	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId) 
+	public String updateProduct(@PathVariable Object productId,
+								@RequestParam Map<String, Object> all, 
+					            @RequestParam(value = "image", required = false) MultipartFile image, 
+					            @RequestParam("sessionId") String sessionId) 
 	{
+		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
 		String[] adminArr = user.split(":");
 		
@@ -548,8 +552,22 @@ public class Controllers {
 			return "You must be an Admin";
 		}
 		
+		Map<String, Object> body = new HashMap<>();
 		body.put("parameter", productId);
 		body.put("commandName", "updateProductCase");
+		
+		UUID randomId = Uuids.timeBased();
+	    String randomIdString = randomId.toString();
+	    
+	    if (image != null && !image.isEmpty()) {
+	        try {
+	            firebaseService.uploadPhoto(randomIdString, image);
+	            body.put("image", randomIdString);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            // Handle the exception as needed
+	        }
+	    }
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = null;
