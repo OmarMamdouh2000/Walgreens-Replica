@@ -137,7 +137,7 @@ public class Controllers {
 	public String deleteCategory(@PathVariable Object categoryId, @RequestParam("sessionId") String sessionId)
 	{
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -177,7 +177,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -215,7 +215,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -325,7 +325,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -362,20 +362,18 @@ public class Controllers {
 	
 	
 	@PostMapping("/addProduct")
-    public String addProduct(@RequestParam Map<String, Object> all, @RequestParam("image") MultipartFile image, @RequestParam("sessionId") String sessionId) 
+    public String addProduct(@RequestBody Map<String, Object> body, @RequestParam("image") MultipartFile image, @RequestParam("sessionId") String sessionId) 
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
 			return "You must be an Admin";
 		}
 		
-		Map<String,Object> body = new HashMap<>();
 		body.put("commandName", "addProductCase");
-		body.putAll(all);
 		
 		UUID randomId = Uuids.timeBased();
 		String randomIdString = randomId.toString();
@@ -415,7 +413,7 @@ public class Controllers {
 	public String updateProduct(@PathVariable Object productId, @RequestBody Map<String, Object> body, @RequestParam("sessionId") String sessionId) 
 	{
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -552,7 +550,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -592,7 +590,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
@@ -631,7 +629,7 @@ public class Controllers {
 	{
 		
 		String user = JwtUtil.getUserIdFromToken(sessionId);
-		String[] adminArr = user.split(";");
+		String[] adminArr = user.split(":");
 		
 		if(adminArr.length == 1 || !adminArr[1].equals("admin"))
 		{
