@@ -39,20 +39,32 @@ public class CreateCouponCommand implements Command{
 
     @Override
     public void execute() {
-        if(duration != Duration.REPEATING){
-            duration_in_months = 0L;
-        }
+//        if(duration != Duration.REPEATING){
+//            duration_in_months = 0L;
+//        }
         couponUuid = UUID.randomUUID();
 
         try {
-            CouponCreateParams couponCreateParams =
-                    CouponCreateParams.builder()
-                            .setName(name)
-                            .setCurrency("usd")
-                            .setDuration(CouponCreateParams.Duration.valueOf(String.valueOf(duration)))
-                            .setDurationInMonths(duration_in_months)
-                            .setPercentOff(percentOff)
-                            .build();
+            CouponCreateParams couponCreateParams;
+            if(duration != Duration.REPEATING) {
+                 couponCreateParams =
+                        CouponCreateParams.builder()
+                                .setName(name)
+                                .setCurrency("usd")
+                                .setDuration(CouponCreateParams.Duration.valueOf(String.valueOf(duration)))
+                                .setPercentOff(percentOff)
+                                .build();
+            } else{
+                 couponCreateParams =
+                        CouponCreateParams.builder()
+                                .setName(name)
+                                .setCurrency("usd")
+                                .setDuration(CouponCreateParams.Duration.valueOf(String.valueOf(duration)))
+                                .setPercentOff(percentOff)
+                                .setDurationInMonths(duration_in_months)
+                                .build();
+
+            }
 
             Coupon coupon = Coupon.create(couponCreateParams);
 

@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,8 @@ public class CreateCheckoutCommand implements Command{
 
 
 
-
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -60,7 +62,13 @@ public class CreateCheckoutCommand implements Command{
     public void execute() {
         try{
             String customerId = "";
-            if(customerCache.getStripeId(this.customerUuid) == null){
+            boolean customerExists = customerRepository.check_customer_exists(this.customerUuid);
+            if(!customerExists){
+                CreateCustomerCommand createCustomerCommand = (CreateCustomerCommand) applicationContext.getBean("createCustomerCommand");
+                createCustomerCommand.setCustomerUuid(customerUuid);
+                createCustomerCommand.execute();
+            }
+            if(customerCache.getStripeId(this.customerUuid) == null ){
                 customerId = customerRepository.get_customer(this.customerUuid);
                 System.out.println("i'll start hereeee");
                 System.out.println(this.customerUuid);

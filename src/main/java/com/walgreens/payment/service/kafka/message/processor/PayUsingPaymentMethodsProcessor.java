@@ -27,7 +27,7 @@ public class PayUsingPaymentMethodsProcessor extends Processor{
         payUsingPaymentMethodsCommand.setCartUuid(UUID.fromString((String) message.get(Keys.cartUuid)));
 
         payUsingPaymentMethodsCommand.setPaymentMethodUuid(UUID.fromString((String) message.get(Keys.paymentMethodUuid)));
-        payUsingPaymentMethodsCommand.setAmount(Double.valueOf((String) message.get(Keys.paymentAmount)));
+        payUsingPaymentMethodsCommand.setAmount(Double.valueOf(String.valueOf(message.get(Keys.paymentAmount))));
 
        
 
