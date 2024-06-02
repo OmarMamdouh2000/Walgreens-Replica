@@ -1,4 +1,3 @@
-# Walmart-Replica
 # Walgreens Replica Spring Boot Application
 
 This repository contains a Spring Boot application designed to mimic a simplified version of the Walgreens service. The application is built with microservices architecture, focusing on scalability and performance.
