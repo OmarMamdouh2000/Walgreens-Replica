@@ -115,7 +115,8 @@ The system utilizes a variety of databases tailored to specific needs:
 - They consume messages from the Apache Kafka message broker and respond through Apache Kafka MQ as well.
 - Requests are cached in Redis, so if the same request is sent more than once, there is no need to recompute the response every time and fetch the data again from the database as it can be retrieved directly from the cache 🗃️.
 - In some cases, a microservice would have to communicate with another one to complete a certain functionality, which is done through Apache Kafka MQ. Every microservice can be scaled up or down independently of other microservices to adapt to the amount of incoming traffic.
-
+- 
+### User Management Microservice
 <details>
    <summary>
       👥 User Management Microservice
@@ -123,6 +124,7 @@ The system utilizes a variety of databases tailored to specific needs:
  The User Management Microservice primarily focuses on user authentication (Login & Registration), implemented using Spring Boot Security. This service interacts mainly with PostgreSQL for user data storage and management. Additionally, to optimize authentication performance, the service caches the generated JWT tokens upon successful login in a shared Redis cache. This microservice also handles common operations shared by all users, such as changing usernames/passwords and managing user-related functionalities.
 </details>
 
+### Payment Microservice
 <details>
    <summary>
       💳 Payment Microservice
@@ -130,6 +132,7 @@ The system utilizes a variety of databases tailored to specific needs:
    The Payment Microservice handles all aspects of financial transactions within the system, including processing payments, managing wallets, and maintaining transaction history. It employs PostgreSQL due to its strong ACID properties, ensuring data consistency and reliability for all financial operations. To enhance performance, frequently accessed data such as transaction histories and balance checks are cached using Redis, ensuring quick access and a smooth user experience.
 </details>
 
+### Cart Microservice
 <details>
    <summary>
       🛒 Cart Microservice
@@ -137,6 +140,7 @@ The system utilizes a variety of databases tailored to specific needs:
    The Cart Microservice manages the shopping cart functionality, allowing users to add, update, or remove products from their cart. This service utilizes a NoSQL database for high performance and scalability, especially suitable for the dynamic nature of cart operations which require high-speed read and write capabilities. Redis is also used to cache cart data, significantly speeding up cart operations and improving response times during high traffic periods.
 </details>
 
+### Orders Microservice
 <details>
    <summary>
       📦 Orders Microservice
@@ -144,6 +148,7 @@ The system utilizes a variety of databases tailored to specific needs:
    The Orders Microservice oversees the order processing workflow, from order placement to final delivery tracking. It leverages NoSQL databases to handle large volumes of orders with high availability and fault tolerance. This microservice is optimized for quick access to order data and scalability, using Redis to cache order statuses and summary data for fast retrieval.
 </details>
 
+### Products Microservice
 <details>
    <summary>
       🛍️ Products Microservice
