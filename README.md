@@ -1,4 +1,4 @@
-# Guru.com-Clone: A Scalable Microservices Application Replicated From Guru
+# Walgreens-Replica: A walgreens Replica
 
 ![SpringBoot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
 ![ApacheCassandra](https://img.shields.io/badge/cassandra-%231287B1.svg?style=for-the-badge&logo=apache-cassandra&logoColor=white)
